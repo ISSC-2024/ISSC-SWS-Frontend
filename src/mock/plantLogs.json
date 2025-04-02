@@ -1,0 +1,212 @@
+[
+  {
+    "id": "LOG001",
+    "timestamp": "2023-06-15T08:12:34",
+    "type": "系统启动",
+    "message": "化工厂控制系统启动完成",
+    "severity": "info"
+  },
+  {
+    "id": "LOG002",
+    "timestamp": "2023-06-15T08:15:22",
+    "type": "设备状态",
+    "message": "反应釜R-101温度达到设定值75°C",
+    "severity": "info"
+  },
+  {
+    "id": "LOG003",
+    "timestamp": "2023-06-15T08:30:45",
+    "type": "物料添加",
+    "message": "向反应釜R-101添加原料A 500kg",
+    "severity": "info"
+  },
+  {
+    "id": "LOG004",
+    "timestamp": "2023-06-15T08:45:12",
+    "type": "参数变化",
+    "message": "反应釜R-101压力上升至2.5MPa",
+    "severity": "info"
+  },
+  {
+    "id": "LOG005",
+    "timestamp": "2023-06-15T09:02:33",
+    "type": "警告",
+    "message": "储罐T-201液位低于30%，请及时补充",
+    "severity": "warning"
+  },
+  {
+    "id": "LOG006",
+    "timestamp": "2023-06-15T09:15:40",
+    "type": "物料添加",
+    "message": "向反应釜R-101添加催化剂C-01 50kg",
+    "severity": "info"
+  },
+  {
+    "id": "LOG007",
+    "timestamp": "2023-06-15T09:30:18",
+    "type": "参数变化",
+    "message": "反应釜R-101温度上升至85°C",
+    "severity": "info"
+  },
+  {
+    "id": "LOG008",
+    "timestamp": "2023-06-15T09:45:22",
+    "type": "警告",
+    "message": "反应釜R-101温度超过安全阈值，自动降温启动",
+    "severity": "warning"
+  },
+  {
+    "id": "LOG009",
+    "timestamp": "2023-06-15T09:50:05",
+    "type": "紧急事件",
+    "message": "反应釜R-101压力急剧上升，紧急排放阀已启动",
+    "severity": "danger"
+  },
+  {
+    "id": "LOG010",
+    "timestamp": "2023-06-15T09:55:30",
+    "type": "系统响应",
+    "message": "紧急冷却系统已启动，降低反应釜R-101温度",
+    "severity": "warning"
+  },
+  {
+    "id": "LOG011",
+    "timestamp": "2023-06-15T10:05:12",
+    "type": "参数变化",
+    "message": "反应釜R-101温度下降至正常范围70°C",
+    "severity": "info"
+  },
+  {
+    "id": "LOG012",
+    "timestamp": "2023-06-15T10:15:45",
+    "type": "设备状态",
+    "message": "泵P-301启动，开始产品输送",
+    "severity": "info"
+  },
+  {
+    "id": "LOG013",
+    "timestamp": "2023-06-15T10:30:22",
+    "type": "物料转移",
+    "message": "产品从反应釜R-101转移至储罐T-301",
+    "severity": "info"
+  },
+  {
+    "id": "LOG014",
+    "timestamp": "2023-06-15T10:45:18",
+    "type": "质量检测",
+    "message": "产品批次B-1023质量检测合格",
+    "severity": "info"
+  },
+  {
+    "id": "LOG015",
+    "timestamp": "2023-06-15T11:00:33",
+    "type": "设备状态",
+    "message": "反应釜R-101清洗程序启动",
+    "severity": "info"
+  },
+  {
+    "id": "LOG016",
+    "timestamp": "2023-06-15T11:15:40",
+    "type": "警告",
+    "message": "废水处理系统pH值异常，需要调整",
+    "severity": "warning"
+  },
+  {
+    "id": "LOG017",
+    "timestamp": "2023-06-15T11:30:05",
+    "type": "系统响应",
+    "message": "自动添加中和剂至废水处理系统",
+    "severity": "info"
+  },
+  {
+    "id": "LOG018",
+    "timestamp": "2023-06-15T11:45:22",
+    "type": "参数变化",
+    "message": "废水处理系统pH值恢复正常",
+    "severity": "info"
+  },
+  {
+    "id": "LOG019",
+    "timestamp": "2023-06-15T12:00:15",
+    "type": "班次变更",
+    "message": "操作班次交接，早班至中班",
+    "severity": "info"
+  },
+  {
+    "id": "LOG020",
+    "timestamp": "2023-06-15T12:15:30",
+    "type": "设备状态",
+    "message": "压缩机C-401定期维护开始",
+    "severity": "info"
+  },
+  {
+    "id": "LOG021",
+    "timestamp": "2023-06-15T12:30:45",
+    "type": "紧急事件",
+    "message": "储罐区烟雾报警器触发，安全人员已派出",
+    "severity": "danger"
+  },
+  {
+    "id": "LOG022",
+    "timestamp": "2023-06-15T12:35:10",
+    "type": "系统响应",
+    "message": "自动喷淋系统已启动，区域隔离完成",
+    "severity": "warning"
+  },
+  {
+    "id": "LOG023",
+    "timestamp": "2023-06-15T12:40:33",
+    "type": "紧急事件",
+    "message": "确认为误报，烟雾报警器故障",
+    "severity": "info"
+  },
+  {
+    "id": "LOG024",
+    "timestamp": "2023-06-15T12:50:18",
+    "type": "设备状态",
+    "message": "烟雾报警器更换完成，系统恢复正常",
+    "severity": "info"
+  },
+  {
+    "id": "LOG025",
+    "timestamp": "2023-06-15T13:05:22",
+    "type": "物料添加",
+    "message": "向反应釜R-102添加原料B 300kg",
+    "severity": "info"
+  },
+  {
+    "id": "LOG026",
+    "timestamp": "2023-06-15T13:20:40",
+    "type": "参数变化",
+    "message": "反应釜R-102温度达到设定值65°C",
+    "severity": "info"
+  },
+  {
+    "id": "LOG027",
+    "timestamp": "2023-06-15T13:35:15",
+    "type": "物料添加",
+    "message": "向反应釜R-102添加催化剂C-02 30kg",
+    "severity": "info"
+  },
+  {
+    "id": "LOG028",
+    "timestamp": "2023-06-15T13:50:33",
+    "type": "警告",
+    "message": "反应釜R-102搅拌器振动异常，需检查",
+    "severity": "warning"
+  },
+  {
+    "id": "LOG029",
+    "timestamp": "2023-06-15T14:05:10",
+    "type": "维护操作",
+    "message": "技术人员到达，开始检查反应釜R-102搅拌器",
+    "severity": "info"
+  },
+  {
+    "id": "LOG030",
+    "timestamp": "2023-06-15T14:20:45",
+    "type": "设备状态",
+    "message": "反应釜R-102搅拌器轴承更换完成，恢复正常运行",
+    "severity": "info"
+  }
+] 

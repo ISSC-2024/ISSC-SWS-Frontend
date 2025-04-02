@@ -1,0 +1,69 @@
+/* 全局变量 */
+:root {
+  --primary-color: #4a90e2;
+  --primary-dark: #3a7bc8;
+  --background-color: #f5f7fa;
+  --panel-background: #ffffff;
+  --border-color: #e0e6ed;
+  --text-color: #333333;
+  --text-color-secondary: #8c9bab;
+  --error-color: #f5222d;
+  --header-height: 60px;
+  --panel-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --accent-color: #4a90e2;
+}
+
+/* 基础样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Source Sans Pro', 'Arial', sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+#app {
+  width: 100%;
+  height: 100vh;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e6eef5 100%);
+}
+
+.main-content {
+  flex: 1;
+  overflow: hidden;
+  padding: 5px 0;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f4f9;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c0d0e7;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0b5d8;
+} 

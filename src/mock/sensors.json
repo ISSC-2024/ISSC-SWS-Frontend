@@ -1,0 +1,602 @@
+[
+  {
+    "id": "SN001",
+    "temperature": 45.2,
+    "pressure": 102.3,
+    "status": "safe"
+  },
+  {
+    "id": "SN002",
+    "temperature": 62.7,
+    "pressure": 108.1,
+    "status": "warning"
+  },
+  {
+    "id": "SN003",
+    "temperature": 39.8,
+    "pressure": 98.5,
+    "status": "safe"
+  },
+  {
+    "id": "SN004",
+    "temperature": 85.3,
+    "pressure": 131.2,
+    "status": "danger"
+  },
+  {
+    "id": "SN005",
+    "temperature": 55.6,
+    "pressure": 112.8,
+    "status": "warning"
+  },
+  {
+    "id": "SN006",
+    "temperature": 42.1,
+    "pressure": 97.6,
+    "status": "safe"
+  },
+  {
+    "id": "SN007",
+    "temperature": 52.4,
+    "pressure": 104.9,
+    "status": "safe"
+  },
+  {
+    "id": "SN008",
+    "temperature": 73.9,
+    "pressure": 121.5,
+    "status": "danger"
+  },
+  {
+    "id": "SN009",
+    "temperature": 44.8,
+    "pressure": 101.2,
+    "status": "safe"
+  },
+  {
+    "id": "SN010",
+    "temperature": 58.3,
+    "pressure": 110.6,
+    "status": "warning"
+  },
+  {
+    "id": "SN011",
+    "temperature": 40.5,
+    "pressure": 99.7,
+    "status": "safe"
+  },
+  {
+    "id": "SN012",
+    "temperature": 47.2,
+    "pressure": 103.1,
+    "status": "safe"
+  },
+  {
+    "id": "SN013",
+    "temperature": 79.4,
+    "pressure": 125.8,
+    "status": "danger"
+  },
+  {
+    "id": "SN014",
+    "temperature": 51.7,
+    "pressure": 105.9,
+    "status": "safe"
+  },
+  {
+    "id": "SN015",
+    "temperature": 64.3,
+    "pressure": 115.2,
+    "status": "warning"
+  },
+  {
+    "id": "SN016",
+    "temperature": 43.9,
+    "pressure": 100.4,
+    "status": "safe"
+  },
+  {
+    "id": "SN017",
+    "temperature": 68.1,
+    "pressure": 118.7,
+    "status": "warning"
+  },
+  {
+    "id": "SN018",
+    "temperature": 41.6,
+    "pressure": 97.2,
+    "status": "safe"
+  },
+  {
+    "id": "SN019",
+    "temperature": 82.7,
+    "pressure": 128.9,
+    "status": "danger"
+  },
+  {
+    "id": "SN020",
+    "temperature": 49.5,
+    "pressure": 104.3,
+    "status": "safe"
+  },
+  {
+    "id": "SN021",
+    "temperature": 46.8,
+    "pressure": 103.5,
+    "status": "safe"
+  },
+  {
+    "id": "SN022",
+    "temperature": 63.4,
+    "pressure": 110.2,
+    "status": "warning"
+  },
+  {
+    "id": "SN023",
+    "temperature": 42.7,
+    "pressure": 99.3,
+    "status": "safe"
+  },
+  {
+    "id": "SN024",
+    "temperature": 78.9,
+    "pressure": 127.1,
+    "status": "danger"
+  },
+  {
+    "id": "SN025",
+    "temperature": 54.2,
+    "pressure": 109.8,
+    "status": "warning"
+  },
+  {
+    "id": "SN026",
+    "temperature": 44.5,
+    "pressure": 98.2,
+    "status": "safe"
+  },
+  {
+    "id": "SN027",
+    "temperature": 50.1,
+    "pressure": 105.3,
+    "status": "safe"
+  },
+  {
+    "id": "SN028",
+    "temperature": 72.6,
+    "pressure": 123.4,
+    "status": "danger"
+  },
+  {
+    "id": "SN029",
+    "temperature": 45.9,
+    "pressure": 102.7,
+    "status": "safe"
+  },
+  {
+    "id": "SN030",
+    "temperature": 59.7,
+    "pressure": 113.1,
+    "status": "warning"
+  },
+  {
+    "id": "SN031",
+    "temperature": 43.5,
+    "pressure": 100.9,
+    "status": "safe"
+  },
+  {
+    "id": "SN032",
+    "temperature": 48.3,
+    "pressure": 104.7,
+    "status": "safe"
+  },
+  {
+    "id": "SN033",
+    "temperature": 81.2,
+    "pressure": 126.3,
+    "status": "danger"
+  },
+  {
+    "id": "SN034",
+    "temperature": 53.6,
+    "pressure": 107.4,
+    "status": "safe"
+  },
+  {
+    "id": "SN035",
+    "temperature": 67.8,
+    "pressure": 116.9,
+    "status": "warning"
+  },
+  {
+    "id": "SN036",
+    "temperature": 42.3,
+    "pressure": 99.8,
+    "status": "safe"
+  },
+  {
+    "id": "SN037",
+    "temperature": 65.7,
+    "pressure": 117.2,
+    "status": "warning"
+  },
+  {
+    "id": "SN038",
+    "temperature": 40.9,
+    "pressure": 98.1,
+    "status": "safe"
+  },
+  {
+    "id": "SN039",
+    "temperature": 83.5,
+    "pressure": 129.4,
+    "status": "danger"
+  },
+  {
+    "id": "SN040",
+    "temperature": 47.6,
+    "pressure": 103.8,
+    "status": "safe"
+  },
+  {
+    "id": "SN041",
+    "temperature": 44.3,
+    "pressure": 101.5,
+    "status": "safe"
+  },
+  {
+    "id": "SN042",
+    "temperature": 60.8,
+    "pressure": 109.6,
+    "status": "warning"
+  },
+  {
+    "id": "SN043",
+    "temperature": 41.2,
+    "pressure": 97.8,
+    "status": "safe"
+  },
+  {
+    "id": "SN044",
+    "temperature": 76.1,
+    "pressure": 124.7,
+    "status": "danger"
+  },
+  {
+    "id": "SN045",
+    "temperature": 56.9,
+    "pressure": 111.3,
+    "status": "warning"
+  },
+  {
+    "id": "SN046",
+    "temperature": 43.7,
+    "pressure": 98.9,
+    "status": "safe"
+  },
+  {
+    "id": "SN047",
+    "temperature": 51.3,
+    "pressure": 106.2,
+    "status": "safe"
+  },
+  {
+    "id": "SN048",
+    "temperature": 75.2,
+    "pressure": 122.1,
+    "status": "danger"
+  },
+  {
+    "id": "SN049",
+    "temperature": 46.4,
+    "pressure": 103.2,
+    "status": "safe"
+  },
+  {
+    "id": "SN050",
+    "temperature": 61.9,
+    "pressure": 114.5,
+    "status": "warning"
+  },
+  {
+    "id": "SN051",
+    "temperature": 42.8,
+    "pressure": 101.1,
+    "status": "safe"
+  },
+  {
+    "id": "SN052",
+    "temperature": 49.2,
+    "pressure": 104.1,
+    "status": "safe"
+  },
+  {
+    "id": "SN053",
+    "temperature": 84.7,
+    "pressure": 130.6,
+    "status": "danger"
+  },
+  {
+    "id": "SN054",
+    "temperature": 50.5,
+    "pressure": 105.8,
+    "status": "safe"
+  },
+  {
+    "id": "SN055",
+    "temperature": 66.2,
+    "pressure": 118.3,
+    "status": "warning"
+  },
+  {
+    "id": "SN056",
+    "temperature": 41.4,
+    "pressure": 99.1,
+    "status": "safe"
+  },
+  {
+    "id": "SN057",
+    "temperature": 69.3,
+    "pressure": 119.4,
+    "status": "warning"
+  },
+  {
+    "id": "SN058",
+    "temperature": 40.1,
+    "pressure": 96.7,
+    "status": "safe"
+  },
+  {
+    "id": "SN059",
+    "temperature": 80.6,
+    "pressure": 127.9,
+    "status": "danger"
+  },
+  {
+    "id": "SN060",
+    "temperature": 48.9,
+    "pressure": 104.5,
+    "status": "safe"
+  },
+  {
+    "id": "SN061",
+    "temperature": 45.3,
+    "pressure": 102.1,
+    "status": "safe"
+  },
+  {
+    "id": "SN062",
+    "temperature": 63.8,
+    "pressure": 113.7,
+    "status": "warning"
+  },
+  {
+    "id": "SN063",
+    "temperature": 39.5,
+    "pressure": 98.3,
+    "status": "safe"
+  },
+  {
+    "id": "SN064",
+    "temperature": 77.4,
+    "pressure": 126.1,
+    "status": "danger"
+  },
+  {
+    "id": "SN065",
+    "temperature": 57.2,
+    "pressure": 112.4,
+    "status": "warning"
+  },
+  {
+    "id": "SN066",
+    "temperature": 43.1,
+    "pressure": 97.9,
+    "status": "safe"
+  },
+  {
+    "id": "SN067",
+    "temperature": 52.8,
+    "pressure": 106.7,
+    "status": "safe"
+  },
+  {
+    "id": "SN068",
+    "temperature": 74.5,
+    "pressure": 123.8,
+    "status": "danger"
+  },
+  {
+    "id": "SN069",
+    "temperature": 45.7,
+    "pressure": 101.8,
+    "status": "safe"
+  },
+  {
+    "id": "SN070",
+    "temperature": 58.9,
+    "pressure": 111.7,
+    "status": "warning"
+  },
+  {
+    "id": "SN071",
+    "temperature": 44.2,
+    "pressure": 100.3,
+    "status": "safe"
+  },
+  {
+    "id": "SN072",
+    "temperature": 47.8,
+    "pressure": 103.6,
+    "status": "safe"
+  },
+  {
+    "id": "SN073",
+    "temperature": 86.4,
+    "pressure": 132.3,
+    "status": "danger"
+  },
+  {
+    "id": "SN074",
+    "temperature": 51.5,
+    "pressure": 106.4,
+    "status": "safe"
+  },
+  {
+    "id": "SN075",
+    "temperature": 65.1,
+    "pressure": 116.5,
+    "status": "warning"
+  },
+  {
+    "id": "SN076",
+    "temperature": 42.6,
+    "pressure": 98.7,
+    "status": "safe"
+  },
+  {
+    "id": "SN077",
+    "temperature": 67.4,
+    "pressure": 117.8,
+    "status": "warning"
+  },
+  {
+    "id": "SN078",
+    "temperature": 40.7,
+    "pressure": 96.9,
+    "status": "safe"
+  },
+  {
+    "id": "SN079",
+    "temperature": 85.1,
+    "pressure": 130.9,
+    "status": "danger"
+  },
+  {
+    "id": "SN080",
+    "temperature": 49.8,
+    "pressure": 105.1,
+    "status": "safe"
+  },
+  {
+    "id": "SN081",
+    "temperature": 46.1,
+    "pressure": 102.5,
+    "status": "safe"
+  },
+  {
+    "id": "SN082",
+    "temperature": 61.3,
+    "pressure": 110.8,
+    "status": "warning"
+  },
+  {
+    "id": "SN083",
+    "temperature": 38.7,
+    "pressure": 97.3,
+    "status": "safe"
+  },
+  {
+    "id": "SN084",
+    "temperature": 83.2,
+    "pressure": 129.1,
+    "status": "danger"
+  },
+  {
+    "id": "SN085",
+    "temperature": 54.8,
+    "pressure": 109.2,
+    "status": "warning"
+  },
+  {
+    "id": "SN086",
+    "temperature": 41.9,
+    "pressure": 99.4,
+    "status": "safe"
+  },
+  {
+    "id": "SN087",
+    "temperature": 53.1,
+    "pressure": 107.2,
+    "status": "safe"
+  },
+  {
+    "id": "SN088",
+    "temperature": 71.7,
+    "pressure": 120.4,
+    "status": "danger"
+  },
+  {
+    "id": "SN089",
+    "temperature": 44.1,
+    "pressure": 101.6,
+    "status": "safe"
+  },
+  {
+    "id": "SN090",
+    "temperature": 59.2,
+    "pressure": 112.1,
+    "status": "warning"
+  },
+  {
+    "id": "SN091",
+    "temperature": 43.4,
+    "pressure": 100.8,
+    "status": "safe"
+  },
+  {
+    "id": "SN092",
+    "temperature": 48.6,
+    "pressure": 104.2,
+    "status": "safe"
+  },
+  {
+    "id": "SN093",
+    "temperature": 82.9,
+    "pressure": 128.4,
+    "status": "danger"
+  },
+  {
+    "id": "SN094",
+    "temperature": 50.3,
+    "pressure": 106.1,
+    "status": "safe"
+  },
+  {
+    "id": "SN095",
+    "temperature": 66.8,
+    "pressure": 117.3,
+    "status": "warning"
+  },
+  {
+    "id": "SN096",
+    "temperature": 41.3,
+    "pressure": 98.1,
+    "status": "safe"
+  },
+  {
+    "id": "SN097",
+    "temperature": 68.7,
+    "pressure": 118.9,
+    "status": "warning"
+  },
+  {
+    "id": "SN098",
+    "temperature": 39.2,
+    "pressure": 96.4,
+    "status": "safe"
+  },
+  {
+    "id": "SN099",
+    "temperature": 84.1,
+    "pressure": 130.1,
+    "status": "danger"
+  },
+  {
+    "id": "SN100",
+    "temperature": 48.1,
+    "pressure": 103.9,
+    "status": "safe"
+  }
+] 

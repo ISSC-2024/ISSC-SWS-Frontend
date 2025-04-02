@@ -1,0 +1,32 @@
+{
+  "personnel": {
+    "title": "人员分配",
+    "data": [
+      { "name": "合成车间", "value": 120, "color": "#4CAF50" },
+      { "name": "精制车间", "value": 85, "color": "#2196F3" },
+      { "name": "包装车间", "value": 65, "color": "#FFC107" },
+      { "name": "质检车间", "value": 45, "color": "#9C27B0" },
+      { "name": "仓储车间", "value": 35, "color": "#FF5722" }
+    ]
+  },
+  "materials": {
+    "title": "物料分配",
+    "data": [
+      { "name": "合成车间", "value": 350, "color": "#4CAF50" },
+      { "name": "精制车间", "value": 280, "color": "#2196F3" },
+      { "name": "包装车间", "value": 120, "color": "#FFC107" },
+      { "name": "质检车间", "value": 50, "color": "#9C27B0" },
+      { "name": "仓储车间", "value": 200, "color": "#FF5722" }
+    ]
+  },
+  "electricity": {
+    "title": "电力分配",
+    "data": [
+      { "name": "合成车间", "value": 450, "color": "#4CAF50" },
+      { "name": "精制车间", "value": 380, "color": "#2196F3" },
+      { "name": "包装车间", "value": 150, "color": "#FFC107" },
+      { "name": "质检车间", "value": 100, "color": "#9C27B0" },
+      { "name": "仓储车间", "value": 120, "color": "#FF5722" }
+    ]
+  }
+} 

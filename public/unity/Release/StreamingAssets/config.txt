@@ -1,0 +1,2 @@
+wspath = ws://localhost:8083/websocket
+shuxing2 = sadasd
