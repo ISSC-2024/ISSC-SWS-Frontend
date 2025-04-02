@@ -4,6 +4,8 @@
  * 目前使用环境变量验证，未来可替换为API请求
  */
 
+import { useAuthStore } from '../stores/authStore';
+
 interface LoginCredentials {
   username: string;
   password: string;
@@ -12,13 +14,18 @@ interface LoginCredentials {
 interface AuthResponse {
   success: boolean;
   message: string;
-  userData?: Record<string, any>;
+  userData?: {
+    username: string;
+    role: string;
+  };
 }
 
 /**
  * 用户认证服务
  */
 export class AuthService {
+  private static userTypes = ['ADMIN', 'USER1', 'USER2', 'USER3', 'USER4'];
+
   /**
    * 登录验证
    * @param credentials 用户凭证
@@ -26,37 +33,25 @@ export class AuthService {
    */
   static async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      // 当前从环境变量获取用户名和密码
-      // 未来可替换为API请求
-      const validUsername = import.meta.env.VITE_APP_USERNAME;
-      const validPassword = import.meta.env.VITE_APP_PASSWORD;
+      // 遍历检查用户名和密码是否与环境变量匹配
+      const validUser = this.userTypes.find(type =>
+        credentials.username === import.meta.env[`VITE_${type}_USERNAME`] &&
+        credentials.password === import.meta.env[`VITE_${type}_PASSWORD`]
+      );
 
-      // 验证用户名和密码
-      if (credentials.username === validUsername && credentials.password === validPassword) {
-        // 设置登录状态
-        localStorage.setItem('isLoggedIn', 'true');
-
-        // 返回成功响应
-        return {
-          success: true,
-          message: '登录成功',
-          userData: {
-            username: credentials.username,
-            // 可以添加更多用户数据
-          }
-        };
-      } else {
-        return {
-          success: false,
-          message: '用户名或密码错误'
-        };
+      if (validUser) {
+        const authStore = useAuthStore();
+        // 登录成功，保存用户信息到 Pinia authStore
+        authStore.loginSuccess({
+          username: credentials.username,
+          role: validUser.toLowerCase()
+        });
+        return { success: true, message: '登录成功' };
       }
+      return { success: false, message: '用户名或密码错误' };
     } catch (error) {
-      console.error('登录验证失败:', error);
-      return {
-        success: false,
-        message: '登录过程发生错误'
-      };
+      console.error(' 登录错误:', error);
+      return { success: false, message: '系统错误' };
     }
   }
 
@@ -79,16 +74,15 @@ export class AuthService {
         return false;
       }
     }
-
-    return localStorage.getItem('isLoggedIn') === 'true';
+    return useAuthStore().isLoggedIn;
   }
 
   /**
    * 退出登录
    */
   static logout(): void {
-    localStorage.removeItem('isLoggedIn');
+    useAuthStore().logout();
   }
 }
 
-export default AuthService; 
+export default AuthService;
