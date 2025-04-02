@@ -1,104 +1,127 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from "vue";
+import { useAuthStore } from "../../../stores/authStore";
 
 /**
  * SceneSwitcher.vue - 场景切换组件
- * 
+ *
  * 该组件负责行业、场景和应用的选择与提交功能
  * 从主控制组件中拆分出来，使代码结构更加清晰
  */
 
 // 定义组件向外发出的事件
-const emit = defineEmits(['close', 'show-tip', 'submit']);
+const emit = defineEmits(["close", "show-tip", "submit"]);
 
 // 场景切换相关数据
-const industries = [
-  { id: 'chemical', name: '化工' },
-  { id: 'steel', name: '钢铁' },
-  { id: 'newEnergy', name: '新能源' },
-  { id: 'medicine', name: '医药' }
-];
+const authStore = useAuthStore();
+
+// 行业选项根据权限过滤
+const industries = computed(() => {
+  const allIndustries = [
+    { id: "chemical", name: "化工" },
+    { id: "steel", name: "钢铁" },
+    { id: "newEnergy", name: "新能源" },
+    { id: "medicine", name: "医药" },
+  ];
+
+  // 管理员显示全部
+  if (authStore.role === "admin") return allIndustries;
+
+  // 普通用户过滤对应行业
+  const userIndustryMap = {
+    user1: "chemical",
+    user2: "steel",
+    user3: "newEnergy",
+    user4: "medicine",
+  };
+
+  return allIndustries.filter(
+    (industry) =>
+      industry.id ===
+      userIndustryMap[authStore.role as keyof typeof userIndustryMap]
+  );
+});
 
 const scenes = [
-  { id: 'intelligentDecision', name: '智能决策场景' },
-  { id: 'leanManufacturing', name: '精益制造场景' },
-  { id: 'precisionService', name: '精准服务场景' }
+  { id: "intelligentDecision", name: "智能决策场景" },
+  { id: "leanManufacturing", name: "精益制造场景" },
+  { id: "precisionService", name: "精准服务场景" },
 ];
 
 // 应用选项，根据行业和场景组合生成
 const applications = {
   chemical: {
     intelligentDecision: [
-      { id: 'safetyRisk', name: '安全风险智能预警决策' },
-      { id: 'environmentalControl', name: '环保管控决策支持' }
+      { id: "safetyRisk", name: "安全风险智能预警决策" },
+      { id: "environmentalControl", name: "环保管控决策支持" },
     ],
     leanManufacturing: [
-      { id: 'placeholder1', name: '化工-精益制造场景-应用-1' },
-      { id: 'placeholder2', name: '化工-精益制造场景-应用-2' }
+      { id: "placeholder1", name: "化工-精益制造场景-应用-1" },
+      { id: "placeholder2", name: "化工-精益制造场景-应用-2" },
     ],
     precisionService: [
-      { id: 'placeholder1', name: '化工-精准服务场景-应用-1' },
-      { id: 'placeholder2', name: '化工-精准服务场景-应用-2' }
-    ]
+      { id: "placeholder1", name: "化工-精准服务场景-应用-1" },
+      { id: "placeholder2", name: "化工-精准服务场景-应用-2" },
+    ],
   },
   steel: {
     intelligentDecision: [
-      { id: 'placeholder1', name: '钢铁-智能决策场景-应用-1' },
-      { id: 'placeholder2', name: '钢铁-智能决策场景-应用-2' }
+      { id: "placeholder1", name: "钢铁-智能决策场景-应用-1" },
+      { id: "placeholder2", name: "钢铁-智能决策场景-应用-2" },
     ],
     leanManufacturing: [
-      { id: 'placeholder1', name: '钢铁-精益制造场景-应用-1' },
-      { id: 'placeholder2', name: '钢铁-精益制造场景-应用-2' }
+      { id: "placeholder1", name: "钢铁-精益制造场景-应用-1" },
+      { id: "placeholder2", name: "钢铁-精益制造场景-应用-2" },
     ],
     precisionService: [
-      { id: 'placeholder1', name: '钢铁-精准服务场景-应用-1' },
-      { id: 'placeholder2', name: '钢铁-精准服务场景-应用-2' }
-    ]
+      { id: "placeholder1", name: "钢铁-精准服务场景-应用-1" },
+      { id: "placeholder2", name: "钢铁-精准服务场景-应用-2" },
+    ],
   },
   newEnergy: {
     intelligentDecision: [
-      { id: 'placeholder1', name: '新能源-智能决策场景-应用-1' },
-      { id: 'placeholder2', name: '新能源-智能决策场景-应用-2' }
+      { id: "placeholder1", name: "新能源-智能决策场景-应用-1" },
+      { id: "placeholder2", name: "新能源-智能决策场景-应用-2" },
     ],
     leanManufacturing: [
-      { id: 'placeholder1', name: '新能源-精益制造场景-应用-1' },
-      { id: 'placeholder2', name: '新能源-精益制造场景-应用-2' }
+      { id: "placeholder1", name: "新能源-精益制造场景-应用-1" },
+      { id: "placeholder2", name: "新能源-精益制造场景-应用-2" },
     ],
     precisionService: [
-      { id: 'placeholder1', name: '新能源-精准服务场景-应用-1' },
-      { id: 'placeholder2', name: '新能源-精准服务场景-应用-2' }
-    ]
+      { id: "placeholder1", name: "新能源-精准服务场景-应用-1" },
+      { id: "placeholder2", name: "新能源-精准服务场景-应用-2" },
+    ],
   },
   medicine: {
     intelligentDecision: [
-      { id: 'placeholder1', name: '医药-智能决策场景-应用-1' },
-      { id: 'placeholder2', name: '医药-智能决策场景-应用-2' }
+      { id: "placeholder1", name: "医药-智能决策场景-应用-1" },
+      { id: "placeholder2", name: "医药-智能决策场景-应用-2" },
     ],
     leanManufacturing: [
-      { id: 'placeholder1', name: '医药-精益制造场景-应用-1' },
-      { id: 'placeholder2', name: '医药-精益制造场景-应用-2' }
+      { id: "placeholder1", name: "医药-精益制造场景-应用-1" },
+      { id: "placeholder2", name: "医药-精益制造场景-应用-2" },
     ],
     precisionService: [
-      { id: 'placeholder1', name: '医药-精准服务场景-应用-1' },
-      { id: 'placeholder2', name: '医药-精准服务场景-应用-2' }
-    ]
-  }
+      { id: "placeholder1", name: "医药-精准服务场景-应用-1" },
+      { id: "placeholder2", name: "医药-精准服务场景-应用-2" },
+    ],
+  },
 };
 
 // 表单数据
-const selectedIndustry = ref('');
-const selectedScene = ref('');
-const selectedApplication = ref('');
+const selectedIndustry = ref("");
+const selectedScene = ref("");
+const selectedApplication = ref("");
 
 // 监听行业变化，重置场景和应用选择
 watch(selectedIndustry, () => {
-  selectedScene.value = '';
-  selectedApplication.value = '';
+  selectedScene.value = "";
+  selectedApplication.value = "";
 });
 
 // 监听场景变化，重置应用选择
 watch(selectedScene, () => {
-  selectedApplication.value = '';
+  selectedApplication.value = "";
 });
 
 /**
@@ -107,7 +130,11 @@ watch(selectedScene, () => {
  */
 const getApplications = () => {
   if (!selectedIndustry.value || !selectedScene.value) return [];
-  return applications[selectedIndustry.value as keyof typeof applications]?.[selectedScene.value as keyof typeof applications.chemical] || [];
+  return (
+    applications[selectedIndustry.value as keyof typeof applications]?.[
+      selectedScene.value as keyof typeof applications.chemical
+    ] || []
+  );
 };
 
 /**
@@ -115,9 +142,9 @@ const getApplications = () => {
  * 清空所有选择项
  */
 const resetForm = () => {
-  selectedIndustry.value = '';
-  selectedScene.value = '';
-  selectedApplication.value = '';
+  selectedIndustry.value = "";
+  selectedScene.value = "";
+  selectedApplication.value = "";
 };
 
 /**
@@ -126,20 +153,24 @@ const resetForm = () => {
  */
 const submitForm = () => {
   // 验证表单是否完整填写
-  if (!selectedIndustry.value || !selectedScene.value || !selectedApplication.value) {
-    emit('show-tip', '请完整填写表单');
+  if (
+    !selectedIndustry.value ||
+    !selectedScene.value ||
+    !selectedApplication.value
+  ) {
+    emit("show-tip", "请完整填写表单");
     return;
   }
-  
+
   // 准备提交数据
   const formData = {
     行业: selectedIndustry.value,
     场景: selectedScene.value,
-    应用: selectedApplication.value
+    应用: selectedApplication.value,
   };
-  
+
   // 向父组件发送提交事件和数据
-  emit('submit', formData);
+  emit("submit", formData);
 };
 
 /**
@@ -147,7 +178,7 @@ const submitForm = () => {
  * 调用父组件的关闭方法
  */
 const close = () => {
-  emit('close');
+  emit("close");
 };
 </script>
 
@@ -157,46 +188,66 @@ const close = () => {
     <div class="overlay" @click="close">
       <div class="floating-window" @click.stop>
         <button class="close-btn" @click="close">×</button>
-        
+
         <div class="window-content">
           <!-- 场景切换内容 -->
           <div class="scene-window">
             <h2 class="window-title">场景切换</h2>
-            
+
             <div class="form-container">
               <!-- 行业选择 -->
               <div class="form-group">
                 <label class="form-label">请选择行业</label>
                 <select v-model="selectedIndustry" class="form-select">
                   <option value="">请选择</option>
-                  <option v-for="industry in industries" :key="industry.id" :value="industry.id">
+                  <option
+                    v-for="industry in industries"
+                    :key="industry.id"
+                    :value="industry.id"
+                  >
                     {{ industry.name }}
                   </option>
                 </select>
               </div>
-              
+
               <!-- 场景选择 -->
               <div class="form-group">
                 <label class="form-label">请选择场景</label>
-                <select v-model="selectedScene" class="form-select" :disabled="!selectedIndustry">
+                <select
+                  v-model="selectedScene"
+                  class="form-select"
+                  :disabled="!selectedIndustry"
+                >
                   <option value="">请选择</option>
-                  <option v-for="scene in scenes" :key="scene.id" :value="scene.id">
+                  <option
+                    v-for="scene in scenes"
+                    :key="scene.id"
+                    :value="scene.id"
+                  >
                     {{ scene.name }}
                   </option>
                 </select>
               </div>
-              
+
               <!-- 应用选择 -->
               <div class="form-group">
                 <label class="form-label">请选择应用</label>
-                <select v-model="selectedApplication" class="form-select" :disabled="!selectedScene">
+                <select
+                  v-model="selectedApplication"
+                  class="form-select"
+                  :disabled="!selectedScene"
+                >
                   <option value="">请选择</option>
-                  <option v-for="app in getApplications()" :key="app.id" :value="app.id">
+                  <option
+                    v-for="app in getApplications()"
+                    :key="app.id"
+                    :value="app.id"
+                  >
                     {{ app.name }}
                   </option>
                 </select>
               </div>
-              
+
               <!-- 按钮组 -->
               <div class="button-group">
                 <button class="submit-btn" @click="submitForm">提交</button>
@@ -362,4 +413,4 @@ const close = () => {
 .fade-leave-to .floating-window {
   transform: scale(0.95);
 }
-</style> 
+</style>
