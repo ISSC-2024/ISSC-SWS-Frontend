@@ -22,30 +22,30 @@ export default {
             }
         },
         async mergeLatestMaster() {
-            //与远程master保持同步
+            //与远程main保持同步
             const { currentBranch } = pushState
             try {
-                //切换到master分支
-                await asyncExec('git checkout master')
+                //切换到main分支
+                await asyncExec('git checkout main')
             } catch (error) {
-                log(chalk.red('git checkout master失败,请检查工作区和暂存区是否有文件没有commit'))
+                log(chalk.red('git checkout main失败,请检查工作区和暂存区是否有文件没有commit'))
                 log(chalk.red(error))
                 process.exit(1)
             }
 
             try {
-                //拉取远程的master分支
-                await asyncExec('git pull origin master')
+                //拉取远程的main分支
+                await asyncExec('git pull origin main')
             } catch (error) {
                 log(error)
                 log(
                     chalk.red(
-                        'git pull origin master，原因可能为网络不稳定或者远程master与本地master存在冲突等, 现切换回原开发分支, 随后应手动切换master分支并拉取远程更新',
+                        'git pull origin main，原因可能为网络不稳定或者远程main与本地main存在冲突等, 现切换回原开发分支, 随后应手动切换main分支并拉取远程更新',
                         error,
                     ),
                 )
                 try {
-                    //切换回原先分支, git checkout -f会抛弃从远程master拉取的更新
+                    //切换回原先分支, git checkout -f会抛弃从远程main拉取的更新
                     await asyncExec(`git checkout -f ${currentBranch}`)
                     process.exit(1)
                 } catch (error) {
@@ -59,17 +59,17 @@ export default {
                 //切换至原分支
                 await asyncExec(`git checkout ${currentBranch}`)
             } catch (error) {
-                log(chalk.red(`git checkout ${pushState.currentBranch}切换回原先开发分支失,目前处在master分支`))
+                log(chalk.red(`git checkout ${pushState.currentBranch}切换回原先开发分支失败,目前处在main分支`))
                 log(chalk.red(error))
                 process.exit(1)
             }
 
             try {
-                //合并最新master
-                await asyncExec(`git merge master`)
-                log(chalk.blue('成功合并master分支, 当前开发分支已和远程master同步'))
+                //合并最新main
+                await asyncExec(`git merge main`)
+                log(chalk.blue('成功合并main分支, 当前开发分支已和远程main同步'))
             } catch (error) {
-                chalk.red(`git merge master执行失败, 原因可能是存在冲突, 请在vscode左侧的git栏中手动解决冲突再执行yarn push`),
+                chalk.red(`git merge main执行失败, 原因可能是存在冲突, 请在vscode左侧的git栏中手动解决冲突再执行yarn push`),
                     log(chalk.red(error))
                 process.exit(1)
             }
