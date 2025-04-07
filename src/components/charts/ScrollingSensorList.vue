@@ -19,21 +19,17 @@
       <div class="header-item">安全预警</div>
     </div>
     <div class="scrolling-list-body" ref="listBody">
-      <div 
-        v-for="sensor in isExpanded ? allSensors : visibleSensors" 
-        :key="sensor.id" 
-        class="list-row"
-      >
+      <div v-for="sensor in isExpanded ? allSensors : visibleSensors" :key="sensor.id" class="list-row">
         <div class="list-item">{{ sensor.id }}</div>
         <div class="list-item">{{ sensor.temperature.toFixed(1) }}°C</div>
         <div class="list-item">{{ sensor.pressure.toFixed(1) }} kPa</div>
         <div class="list-item">
-          <div 
-            class="status-indicator" 
+          <div
+            class="status-indicator"
             :class="{
               'status-safe': sensor.status === 'safe',
               'status-warning': sensor.status === 'warning',
-              'status-danger': sensor.status === 'danger'
+              'status-danger': sensor.status === 'danger',
             }"
           >
             {{ getStatusText(sensor.status) }}
@@ -45,89 +41,92 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, inject, watch, onUnmounted } from 'vue';
-import sensorData from '@/mock/sensors.json';
+import { ref, onMounted, computed, inject, watch, onUnmounted } from 'vue'
+import sensorData from '@/mock/sensors.json'
 
 interface Sensor {
-  id: string;
-  temperature: number;
-  pressure: number;
-  status: 'safe' | 'warning' | 'danger';
+  id: string
+  temperature: number
+  pressure: number
+  status: 'safe' | 'warning' | 'danger'
 }
 
 // 从ChartContainer注入的扩展状态
-const isExpanded = inject('isChartExpanded', ref(false));
+const isExpanded = inject('isChartExpanded', ref(false))
 
-const sensors = ref<Sensor[]>([]);
-const startIndex = ref(0);
-const visibleCount = 10; // 一次显示的行数
-let scrollTimer: number | null = null;
+const sensors = ref<Sensor[]>([])
+const startIndex = ref(0)
+const visibleCount = 10 // 一次显示的行数
+let scrollTimer: number | null = null
 
 // 所有传感器数据
-const allSensors = computed(() => sensors.value);
+const allSensors = computed(() => sensors.value)
 
 // 计算当前可见的传感器数据（用于非扩展状态）
 const visibleSensors = computed(() => {
-  const all = [...sensors.value];
+  const all = [...sensors.value]
   // 循环显示数据
-  return [...all.slice(startIndex.value), ...all.slice(0, startIndex.value)]
-    .slice(0, visibleCount);
-});
+  return [...all.slice(startIndex.value), ...all.slice(0, startIndex.value)].slice(0, visibleCount)
+})
 
 // 获取状态文本
 const getStatusText = (status: string): string => {
   switch (status) {
-    case 'safe': return '安全';
-    case 'warning': return '警告';
-    case 'danger': return '危险';
-    default: return '未知';
+    case 'safe':
+      return '安全'
+    case 'warning':
+      return '警告'
+    case 'danger':
+      return '危险'
+    default:
+      return '未知'
   }
-};
+}
 
 // 滚动列表的函数
 const scrollList = () => {
   if (!isExpanded.value) {
-    startIndex.value = (startIndex.value + 1) % sensors.value.length;
+    startIndex.value = (startIndex.value + 1) % sensors.value.length
   }
-};
+}
 
 // 启动或停止滚动
 const toggleScrolling = (expanded: boolean) => {
   if (expanded) {
     // 扩展模式下停止滚动
     if (scrollTimer) {
-      clearInterval(scrollTimer);
-      scrollTimer = null;
+      clearInterval(scrollTimer)
+      scrollTimer = null
     }
   } else {
     // 非扩展模式下启动滚动
     if (!scrollTimer) {
-      scrollTimer = setInterval(scrollList, 2000) as unknown as number;
+      scrollTimer = setInterval(scrollList, 2000) as unknown as number
     }
   }
-};
+}
 
 // 监听扩展状态变化
 watch(isExpanded, (newValue) => {
-  toggleScrolling(newValue);
-});
+  toggleScrolling(newValue)
+})
 
 onMounted(() => {
   // 加载模拟数据
-  sensors.value = sensorData as Sensor[];
-  
+  sensors.value = sensorData as Sensor[]
+
   // 设置定时器，每2秒滚动一次（仅在非扩展模式下）
   if (!isExpanded.value) {
-    scrollTimer = setInterval(scrollList, 2000) as unknown as number;
+    scrollTimer = setInterval(scrollList, 2000) as unknown as number
   }
-});
+})
 
 onUnmounted(() => {
   // 清除定时器
   if (scrollTimer) {
-    clearInterval(scrollTimer);
+    clearInterval(scrollTimer)
   }
-});
+})
 </script>
 
 <style scoped>
@@ -206,4 +205,4 @@ onUnmounted(() => {
   background-color: #f5222d;
   color: white;
 }
-</style> 
+</style>

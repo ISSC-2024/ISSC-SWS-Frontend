@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @description 图表容器组件
- * 
+ *
  * 该组件为图表提供统一的容器，实现以下功能：
  * 1. 提供展开/收起功能，允许用户放大查看图表详情
  * 2. 通过provide/inject向子组件提供展开状态
@@ -9,22 +9,22 @@
  * 4. 自适应布局，确保图表在各种状态下正确显示
  * 5. 美观的动画效果和统一的视觉风格
  */
-import { ref, provide } from 'vue';
-import { ExpandOutlined, CloseOutlined } from '@ant-design/icons-vue';
+import { ref, provide } from 'vue'
+import { ExpandOutlined, CloseOutlined } from '@ant-design/icons-vue'
 
 // 图表容器组件
-const isExpanded = ref(false);
+const isExpanded = ref(false)
 
 // 提供给子组件的状态
-provide('isChartExpanded', isExpanded);
+provide('isChartExpanded', isExpanded)
 
 const toggleExpand = () => {
-  isExpanded.value = !isExpanded.value;
-};
+  isExpanded.value = !isExpanded.value
+}
 
 const closeExpand = () => {
-  isExpanded.value = false;
-};
+  isExpanded.value = false
+}
 </script>
 
 <template>
@@ -173,4 +173,4 @@ const closeExpand = () => {
   display: flex;
   flex-direction: column;
 }
-</style> 
+</style>

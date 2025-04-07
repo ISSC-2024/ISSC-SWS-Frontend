@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @description 主布局组件
- * 
+ *
  * 该组件实现应用的三列式主布局结构，包含以下功能：
  * 1. 左侧列：用于显示多个图表组件
  * 2. 中间列：主要包含WebGL内容区、控制按钮区和资源展示区
@@ -18,7 +18,7 @@
     <div class="left-column">
       <slot name="left-column"></slot>
     </div>
-    
+
     <!-- 中间列 -->
     <div class="middle-column">
       <div class="webgl-container">
@@ -31,7 +31,7 @@
         <slot name="resources"></slot>
       </div>
     </div>
-    
+
     <!-- 右侧列 -->
     <div class="right-column">
       <slot name="right-column"></slot>
@@ -47,7 +47,8 @@
   overflow: hidden;
 }
 
-.left-column, .right-column {
+.left-column,
+.right-column {
   width: 20%;
   height: 100%;
   padding: 10px;
@@ -114,4 +115,4 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #a0b5d8;
 }
-</style> 
+</style>

@@ -1,21 +1,21 @@
 <script setup lang="ts">
 /**
  * AIInterface.vue - 人机接口组件
- * 
+ *
  * 该组件负责嵌入第三方AI聊天服务
  * 从主控制组件中拆分出来，使代码结构更加清晰
  */
 
 // 定义组件向外发出的事件
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close'])
 
 /**
  * 关闭窗口
  * 调用父组件的关闭方法
  */
 const close = () => {
-  emit('close');
-};
+  emit('close')
+}
 </script>
 
 <template>
@@ -24,14 +24,14 @@ const close = () => {
     <div class="overlay" @click="close">
       <div class="floating-window interface-floating-window" @click.stop>
         <button class="close-btn" @click="close">×</button>
-        
+
         <div class="window-content">
           <!-- 人机接口内容 -->
           <div class="interface-window">
             <iframe
               src="https://share.fastgpt.in/chat/share?shareId=czky0t6cloyw6l5ck80pnbgq"
-              style="width: 100%; height: 95%;"
-              frameborder="0" 
+              style="width: 100%; height: 95%"
+              frameborder="0"
               allow="*"
             ></iframe>
           </div>
@@ -106,7 +106,9 @@ const close = () => {
 /* 过渡动画 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
 }
 
 .fade-enter-from,
@@ -118,4 +120,4 @@ const close = () => {
 .fade-leave-to .floating-window {
   transform: scale(0.95);
 }
-</style> 
+</style>

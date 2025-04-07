@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @description 资源展示面板组件
- * 
+ *
  * 该组件显示应用中的资源信息列表，包含以下功能：
  * 1. 显示三类资源：人力资源、物料资源和业务信息
  * 2. 统一的布局和样式设计
@@ -13,19 +13,19 @@ const humanResources = [
   { id: 1, name: '工程师', description: '化工工艺专家 (12人)', icon: '👨‍🔬' },
   { id: 2, name: '操作员', description: '设备操作人员 (28人)', icon: '👨‍🏭' },
   { id: 3, name: '安全员', description: '安全监督人员 (8人)', icon: '🛡️' },
-];
+]
 
 const materialResources = [
   { id: 1, name: '原料库存', description: '乙烯 (85吨)', icon: '🧪' },
   { id: 2, name: '催化剂', description: '钯碳催化剂 (12kg)', icon: '⚗️' },
   { id: 3, name: '储罐容量', description: '液化气储罐 (65%)', icon: '🔋' },
-];
+]
 
 const businessInfo = [
   { id: 1, name: '生产计划', description: '聚合物生产 (92%)', icon: '📊' },
   { id: 2, name: '订单状态', description: '待处理订单 (7个)', icon: '📋' },
   { id: 3, name: '质检报告', description: '合格率 (98.5%)', icon: '✅' },
-];
+]
 </script>
 
 <template>
@@ -46,7 +46,7 @@ const businessInfo = [
           </div>
         </div>
       </div>
-      
+
       <!-- 物料资源列 -->
       <div class="resource-column">
         <div class="column-title">物料资源</div>
@@ -62,7 +62,7 @@ const businessInfo = [
           </div>
         </div>
       </div>
-      
+
       <!-- 业务信息列 -->
       <div class="resource-column">
         <div class="column-title">业务信息</div>
@@ -134,7 +134,9 @@ const businessInfo = [
   padding: 6px 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
   height: 42px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .resource-item:hover {

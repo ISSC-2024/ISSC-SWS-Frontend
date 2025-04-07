@@ -1,64 +1,64 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 /**
  * ModelSelector.vue - 模型选择组件
- * 
+ *
  * 该组件负责模型选择和参数配置功能
  * 从主控制组件中拆分出来，使代码结构更加清晰
  */
 
 // 定义组件向外发出的事件
-const emit = defineEmits(['close', 'show-tip', 'submit']);
+const emit = defineEmits(['close', 'show-tip', 'submit'])
 
 // 模型选择相关数据
-const selectedModel = ref('');
+const selectedModel = ref('')
 const modelParams = ref<Record<string, string>>({
   param1: '',
   param2: '',
-  param3: ''
-});
+  param3: '',
+})
 
 // 模型列表
 const models = [
   { id: 'model1', name: '模型1' },
   { id: 'model2', name: '模型2' },
   { id: 'model3', name: '模型3' },
-  { id: 'model4', name: '模型4' }
-];
+  { id: 'model4', name: '模型4' },
+]
 
 // 模型参数配置
 const modelParamsConfig = {
   model1: [
     { id: 'param1', name: '参数1', options: ['选项1', '选项2', '选项3'] },
     { id: 'param2', name: '参数2', options: ['选项A', '选项B', '选项C'] },
-    { id: 'param3', name: '参数3', options: ['选项X', '选项Y', '选项Z'] }
+    { id: 'param3', name: '参数3', options: ['选项X', '选项Y', '选项Z'] },
   ],
   model2: [
     { id: 'param1', name: '阈值', options: ['0.1', '0.2', '0.3', '0.4'] },
     { id: 'param2', name: '精度', options: ['高', '中', '低'] },
-    { id: 'param3', name: '迭代次数', options: ['100', '200', '500', '1000'] }
+    { id: 'param3', name: '迭代次数', options: ['100', '200', '500', '1000'] },
   ],
   model3: [
     { id: 'param1', name: '学习率', options: ['0.001', '0.01', '0.1'] },
     { id: 'param2', name: '优化器', options: ['Adam', 'SGD', 'RMSprop'] },
-    { id: 'param3', name: '批次大小', options: ['32', '64', '128', '256'] }
+    { id: 'param3', name: '批次大小', options: ['32', '64', '128', '256'] },
   ],
   model4: [
     { id: 'param1', name: '模式', options: ['快速', '标准', '精确'] },
     { id: 'param2', name: '并行度', options: ['低', '中', '高'] },
-    { id: 'param3', name: '预处理', options: ['是', '否'] }
-  ]
-};
+    { id: 'param3', name: '预处理', options: ['是', '否'] },
+  ],
+}
 
 /**
  * 获取当前模型的参数配置
  * 根据选择的模型，返回对应的参数配置
  */
 const getCurrentModelParams = () => {
-  if (!selectedModel.value) return [];
-  return modelParamsConfig[selectedModel.value as keyof typeof modelParamsConfig] || [];
-};
+  if (!selectedModel.value) return []
+  return modelParamsConfig[selectedModel.value as keyof typeof modelParamsConfig] || []
+}
 
 /**
  * 选择模型
@@ -66,53 +66,53 @@ const getCurrentModelParams = () => {
  * @param modelId 模型ID
  */
 const selectModel = (modelId: string) => {
-  selectedModel.value = modelId;
+  selectedModel.value = modelId
   // 重置参数
-  resetModelParams();
-};
+  resetModelParams()
+}
 
 /**
  * 重置模型参数
  * 清空当前模型的所有参数选择
  */
 const resetModelParams = () => {
-  const currentParams = getCurrentModelParams();
-  currentParams.forEach(param => {
-    modelParams.value[param.id] = '';
-  });
-};
+  const currentParams = getCurrentModelParams()
+  currentParams.forEach((param) => {
+    modelParams.value[param.id] = ''
+  })
+}
 
 /**
  * 提交模型选择
  * 验证是否完整选择模型和参数，然后提交数据
  */
 const submitModelSelection = () => {
-  const currentParams = getCurrentModelParams();
-  const isComplete = currentParams.every(param => modelParams.value[param.id]);
+  const currentParams = getCurrentModelParams()
+  const isComplete = currentParams.every((param) => modelParams.value[param.id])
 
   // 验证是否完整填写
   if (!selectedModel.value || !isComplete) {
-    emit('show-tip', '请完整填写表单');
-    return;
+    emit('show-tip', '请完整填写表单')
+    return
   }
-  
+
   // 准备提交数据
   const submitData = {
     模型: selectedModel.value,
-    参数: { ...modelParams.value }
-  };
-  
+    参数: { ...modelParams.value },
+  }
+
   // 向父组件发送提交事件和数据
-  emit('submit', submitData);
-};
+  emit('submit', submitData)
+}
 
 /**
  * 关闭窗口
  * 调用父组件的关闭方法
  */
 const close = () => {
-  emit('close');
-};
+  emit('close')
+}
 </script>
 
 <template>
@@ -121,28 +121,28 @@ const close = () => {
     <div class="overlay" @click="close">
       <div class="floating-window" @click.stop>
         <button class="close-btn" @click="close">×</button>
-        
+
         <div class="window-content">
           <!-- 模型选择内容 -->
           <div class="model-window">
             <h2 class="window-title">模型选择</h2>
-            
+
             <div class="model-container">
               <div class="model-sidebar">
                 <!-- 模型选择按钮组 -->
                 <div class="model-buttons">
-                  <button 
-                    v-for="model in models" 
-                    :key="model.id" 
-                    class="model-btn" 
-                    :class="{ 'active': selectedModel === model.id }"
+                  <button
+                    v-for="model in models"
+                    :key="model.id"
+                    class="model-btn"
+                    :class="{ active: selectedModel === model.id }"
                     @click="selectModel(model.id)"
                   >
                     {{ model.name }}
                   </button>
                 </div>
               </div>
-              
+
               <div class="model-content">
                 <div class="model-params">
                   <!-- 模型参数表单 -->
@@ -157,13 +157,11 @@ const close = () => {
                       </select>
                     </div>
                   </div>
-                  <div v-else class="no-model-selected">
-                    请先选择左侧的模型
-                  </div>
+                  <div v-else class="no-model-selected">请先选择左侧的模型</div>
                 </div>
               </div>
             </div>
-            
+
             <!-- 按钮组 -->
             <div class="button-group">
               <button class="submit-btn" @click="submitModelSelection">提交</button>
@@ -371,7 +369,9 @@ const close = () => {
 /* 过渡动画 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
 }
 
 .fade-enter-from,
@@ -383,4 +383,4 @@ const close = () => {
 .fade-leave-to .floating-window {
   transform: scale(0.95);
 }
-</style> 
+</style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @description 应用头部组件
- * 
+ *
  * 该组件显示应用的顶部标题栏，包含以下功能：
  * 1. 显示应用名称"安全风险智能预警决策"
  * 2. 实时显示当前系统时间，每秒更新一次
@@ -9,11 +9,11 @@
  * 4. 响应式布局设计
  * 5. 提供Unity通信测试按钮
  */
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue'
 // import UnityService from '../../services/UnityService';
 
 // 时间显示逻辑
-const currentTime = ref(new Date().toLocaleTimeString());
+const currentTime = ref(new Date().toLocaleTimeString())
 
 // // Unity事件回调处理函数
 // const handleUnityMessage = (data: any) => {
@@ -23,17 +23,17 @@ const currentTime = ref(new Date().toLocaleTimeString());
 onMounted(() => {
   // 设置时间更新
   setInterval(() => {
-    currentTime.value = new Date().toLocaleTimeString();
-  }, 1000);
-  
+    currentTime.value = new Date().toLocaleTimeString()
+  }, 1000)
+
   // 添加Unity消息监听
   // UnityService.addUnityEventListener('frontend_unity', handleUnityMessage);
-});
+})
 
 onUnmounted(() => {
   // 移除Unity消息监听
   // UnityService.removeUnityEventListener('frontend_unity', handleUnityMessage);
-});
+})
 
 // // 发送消息到Unity
 // const sendTimeToUnity = () => {
@@ -113,4 +113,4 @@ onUnmounted(() => {
 .unity-test-btn:hover {
   background-color: #357ab8;
 }
-</style> 
+</style>

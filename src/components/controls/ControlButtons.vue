@@ -1,49 +1,49 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 /**
  * ControlButtons.vue - 控制按钮主组件
- * 
+ *
  * 该组件是应用的主控制面板，负责显示三个功能按钮
  * 并根据用户选择显示对应的功能窗口
  */
 
 // 导入三个功能子组件
-import SceneSwitcher from './windows/SceneSwitcher.vue';
-import ModelSelector from './windows/ModelSelector.vue';
-import AIInterface from './windows/AIInterface.vue';
+import SceneSwitcher from './windows/SceneSwitcher.vue'
+import ModelSelector from './windows/ModelSelector.vue'
+import AIInterface from './windows/AIInterface.vue'
 
 // 控制当前显示的浮窗
-const activeWindow = ref<string | null>(null);
+const activeWindow = ref<string | null>(null)
 
 // 切换浮窗显示状态
 const toggleWindow = (window: string) => {
-  activeWindow.value = activeWindow.value === window ? null : window;
-};
+  activeWindow.value = activeWindow.value === window ? null : window
+}
 
 // 关闭浮窗
 const closeWindow = () => {
-  activeWindow.value = null;
-};
+  activeWindow.value = null
+}
 
 // 消息提示
-const message = ref('');
-const showMessage = ref(false);
+const message = ref('')
+const showMessage = ref(false)
 
 // 显示消息提示
 const showTip = (msg: string) => {
-  message.value = msg;
-  showMessage.value = true;
+  message.value = msg
+  showMessage.value = true
   setTimeout(() => {
-    showMessage.value = false;
-  }, 3000);
-};
+    showMessage.value = false
+  }, 3000)
+}
 
 // 处理子组件的表单提交
 const handleFormSubmit = (data: any) => {
-  console.log('提交表单:', data);
-  closeWindow();
-};
+  console.log('提交表单:', data)
+  closeWindow()
+}
 </script>
 
 <template>
@@ -60,26 +60,23 @@ const handleFormSubmit = (data: any) => {
     </transition>
 
     <!-- 场景切换浮窗 -->
-    <SceneSwitcher 
-      v-if="activeWindow === 'scene'" 
-      @close="closeWindow" 
+    <SceneSwitcher
+      v-if="activeWindow === 'scene'"
+      @close="closeWindow"
       @show-tip="showTip"
       @submit="handleFormSubmit"
     />
 
     <!-- 模型选择浮窗 -->
-    <ModelSelector 
-      v-if="activeWindow === 'model'" 
-      @close="closeWindow" 
+    <ModelSelector
+      v-if="activeWindow === 'model'"
+      @close="closeWindow"
       @show-tip="showTip"
       @submit="handleFormSubmit"
     />
 
     <!-- 人机接口浮窗 -->
-    <AIInterface 
-      v-if="activeWindow === 'interface'" 
-      @close="closeWindow"
-    />
+    <AIInterface v-if="activeWindow === 'interface'" @close="closeWindow" />
   </div>
 </template>
 
@@ -176,7 +173,9 @@ const handleFormSubmit = (data: any) => {
 /* 提示动画 */
 .tip-enter-active,
 .tip-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
 }
 
 .tip-enter-from,
@@ -385,7 +384,9 @@ const handleFormSubmit = (data: any) => {
 /* 过渡动画 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
 }
 
 .fade-enter-from,

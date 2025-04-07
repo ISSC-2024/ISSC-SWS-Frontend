@@ -10,27 +10,26 @@
  * 4. 简洁的渐变背景和虚线边框样式
  *
  */
-import { inject, computed, ref } from "vue";
-import type { Ref } from "vue";
-import { defineConfig } from "vite";
+import { inject, computed, ref } from 'vue'
+import type { Ref } from 'vue'
 
 defineProps<{
-  chartClass?: string;
-}>();
+  chartClass?: string
+}>()
 
 // 注入展开状态，默认为false
-const isExpanded = inject<Ref<boolean>>("isChartExpanded", ref(false));
+const isExpanded = inject<Ref<boolean>>('isChartExpanded', ref(false))
 
 // 根据展开状态计算样式
 const chartStyle = computed(() => {
   if (isExpanded.value) {
     return {
-      height: "100%",
-      fontSize: "24px",
-    };
+      height: '100%',
+      fontSize: '24px',
+    }
   }
-  return {};
-});
+  return {}
+})
 </script>
 
 <template>
@@ -55,7 +54,7 @@ const chartStyle = computed(() => {
 }
 
 .placeholder-chart::after {
-  content: "图表占位区域";
+  content: '图表占位区域';
   position: absolute;
   font-size: 16px;
   font-weight: bold;
