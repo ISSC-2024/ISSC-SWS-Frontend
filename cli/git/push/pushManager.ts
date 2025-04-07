@@ -69,7 +69,7 @@ export default {
                 await asyncExec(`git merge main`)
                 log(chalk.blue('成功合并main分支, 当前开发分支已和远程main同步'))
             } catch (error) {
-                chalk.red(`git merge main执行失败, 原因可能是存在冲突, 请在vscode左侧的git栏中手动解决冲突再执行yarn push`),
+                chalk.red(`git merge main执行失败, 原因可能是存在冲突, 请手动解决冲突再执行npm run push`),
                     log(chalk.red(error))
                 process.exit(1)
             }
@@ -84,7 +84,7 @@ export default {
                 log(chalk.yellow('代码提交成功'))
                 log(
                     chalk.yellow(
-                        `当前分支对应的远程仓库地址(ctrl+鼠标点击下方链接可直接在浏览器打开):\n https://github.com/mld-njupt/approval-system/tree/${currentBranch}`,
+                        `当前分支对应的远程仓库地址(ctrl+鼠标点击下方链接可直接在浏览器打开):\n https://github.com/ISSC-2024/ISSC-SWS-Frontend/tree/${currentBranch}`,
                     ),
                 )
             } catch (error) {
