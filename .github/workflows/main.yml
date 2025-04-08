@@ -1,13 +1,8 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: CICD
 
 on:
   push:
     branches: ['main']
-  pull_request:
-    branches: ['*']
 
 jobs:
   build:
@@ -16,7 +11,6 @@ jobs:
     strategy:
       matrix:
         node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
       - name: Checkout repo
@@ -33,3 +27,24 @@ jobs:
 
       - name: Run build task
         run: npm run build --if-present
+
+      - name: Generating tarball
+        run: cd dist && tar -czf ../artifact.tar.gz .
+
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          SOURCE: artifact.tar.gz
+          TARGET: /usr/local/issc/temp
+          SCRIPT_AFTER: |
+            cd /usr/local/issc/temp
+            tar -xf artifact.tar.gz
+            rm artifact.tar.gz
+            cd ../
+            rm -rf ./backup/*
+            mv ./dist/* ./backup/
+            rm -rf ./dist/*
+            mv ./temp/* ./dist/
