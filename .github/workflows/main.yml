@@ -29,7 +29,7 @@ jobs:
         run: npm run build --if-present
 
       - name: Generating tarball
-        run: cd dist && tar -czf ../artifact.tar.gz .
+        run: cd dist && tar -jcf ../artifact.tar.bz2 .
 
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
@@ -37,12 +37,12 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          SOURCE: artifact.tar.gz
+          SOURCE: artifact.tar.bz2
           TARGET: /usr/local/issc/temp
           SCRIPT_AFTER: |
             cd /usr/local/issc/temp
-            tar -xf artifact.tar.gz
-            rm artifact.tar.gz
+            tar -jxf artifact.tar.bz2
+            rm artifact.tar.bz2
             cd ../
             rm -rf ./backup/*
             mv ./dist/* ./backup/
