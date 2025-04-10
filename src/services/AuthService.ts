@@ -24,34 +24,51 @@ interface AuthResponse {
  * 用户认证服务
  */
 export class AuthService {
-  private static userTypes = ['ADMIN', 'USER1', 'USER2', 'USER3', 'USER4']
+  // 企业用户类型
+  private static userTypes = ['USER1', 'USER2', 'USER3', 'USER4']
 
   /**
    * 登录验证
    * @param credentials 用户凭证
+   * @param loginType 登录类型 'admin' 或 'user'
    * @returns 认证结果
    */
-  static async login(credentials: LoginCredentials): Promise<AuthResponse> {
+  static async login(credentials: LoginCredentials, loginType: string): Promise<AuthResponse> {
     try {
-      // 遍历检查用户名和密码是否与环境变量匹配
-      const validUser = this.userTypes.find(
-        (type) =>
-          credentials.username === import.meta.env[`VITE_${type}_USERNAME`] &&
-          credentials.password === import.meta.env[`VITE_${type}_PASSWORD`],
-      )
+      if (loginType === 'admin') {
+        // 只验证管理员账户
+        if (
+          credentials.username === import.meta.env.VITE_ADMIN_USERNAME &&
+          credentials.password === import.meta.env.VITE_ADMIN_PASSWORD
+        ) {
+          const authStore = useAuthStore()
+          authStore.loginSuccess({
+            username: credentials.username,
+            role: 'admin',
+          })
+          return { success: true, message: '管理员登录成功' }
+        }
+        return { success: false, message: '管理员账号或密码错误' }
+      } else {
+        // 验证企业用户账户 (USER1-USER4)
+        const validUser = this.userTypes.find(
+          (type) =>
+            credentials.username === import.meta.env[`VITE_${type}_USERNAME`] &&
+            credentials.password === import.meta.env[`VITE_${type}_PASSWORD`],
+        )
 
-      if (validUser) {
-        const authStore = useAuthStore()
-        // 登录成功，保存用户信息到 Pinia authStore
-        authStore.loginSuccess({
-          username: credentials.username,
-          role: validUser.toLowerCase(),
-        })
-        return { success: true, message: '登录成功' }
+        if (validUser) {
+          const authStore = useAuthStore()
+          authStore.loginSuccess({
+            username: credentials.username,
+            role: validUser.toLowerCase(),
+          })
+          return { success: true, message: '用户登录成功' }
+        }
+        return { success: false, message: '用户名或密码错误' }
       }
-      return { success: false, message: '用户名或密码错误' }
     } catch (error) {
-      console.error(' 登录错误:', error)
+      console.error('登录错误:', error)
       return { success: false, message: '系统错误' }
     }
   }
@@ -80,9 +97,16 @@ export class AuthService {
 
   /**
    * 退出登录
+   * @returns Promise
    */
-  static logout(): void {
-    useAuthStore().logout()
+  static logout(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      useAuthStore().logout()
+      // 确保异步操作完成
+      setTimeout(() => {
+        resolve()
+      }, 10)
+    })
   }
 }
 
