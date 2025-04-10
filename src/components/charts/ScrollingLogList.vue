@@ -14,7 +14,7 @@
   <div class="scrolling-log-container">
     <div class="scrolling-log-body" ref="logBody">
       <div
-        v-for="log in isExpanded ? allLogs : visibleLogs"
+        v-for="log in visibleLogs"
         :key="log.timestamp + log.region"
         class="log-row"
         :class="{
@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, inject, watch, onUnmounted, type InjectionKey, type Ref } from 'vue'
+import { ref, onMounted, computed, inject, onUnmounted, type InjectionKey, type Ref } from 'vue'
 import newPlantLogData from '../../mock/regionRiskSummary.json'
 import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
@@ -56,23 +56,30 @@ const visibleCount = 100 // 一次显示的行数
 let scrollTimer: ReturnType<typeof setInterval> | null = null
 
 // 性能优化参数
-const CHUNK_SIZE = 500 // 每次处理2000条
+const CHUNK_SIZE = 500 // 每次处理500条
 const MAX_LOG_ITEMS = 1000 // 内存最大保留1k条
 let processingIndex = 0
 
-// 所有日志数据
-const allLogs = computed(() => logs.value)
-
-// 计算当前可见的日志数据（用于非扩展状态）
+// 计算当前可见的日志数据
 const visibleLogs = computed(() => {
-  const total = logs.value.length
-  if (total === 0) return []
+  if (logs.value.length === 0) return []
 
-  const start = startIndex.value % total
-  const end = Math.min(start + visibleCount, total)
+  if (isExpanded.value) {
+    // 展开状态下，显示部分数据，以滚动更新
+    const total = logs.value.length
+    const start = startIndex.value % total
+    const end = Math.min(start + visibleCount, total)
 
-  // 双段拼接保证视觉连续性
-  return [...logs.value.slice(start, end), ...logs.value.slice(0, Math.max(0, visibleCount - (total - start)))]
+    // 双段拼接保证视觉连续性
+    return [...logs.value.slice(start, end), ...logs.value.slice(0, Math.max(0, visibleCount - (total - start)))]
+  } else {
+    // 非展开状态下，显示部分数据并滚动
+    const total = logs.value.length
+    const start = startIndex.value % total
+
+    // 双段拼接保证视觉连续性
+    return [...logs.value.slice(start), ...logs.value.slice(0, start)].slice(0, visibleCount)
+  }
 })
 
 // 点击日志行时的处理函数
@@ -121,50 +128,29 @@ const formatTime = (timestamp: string): string => {
   return `${hours}:${minutes}:${seconds}`
 }
 
-// 滚动列表的函数
+// 滚动列表的函数 - 简化为与ScrollingRegionList一致
 const scrollList = () => {
-  if (!isExpanded.value && logs.value.length > 0) {
-    requestAnimationFrame(() => {
-      startIndex.value = (startIndex.value + 1) % logs.value.length
-    })
+  if (logs.value.length > 0) {
+    startIndex.value = (startIndex.value + 1) % logs.value.length
   }
 }
 
-// 启动或停止滚动
-const toggleScrolling = (expanded: boolean) => {
-  if (expanded) {
-    // 扩展模式下停止滚动
-    if (scrollTimer) {
-      clearInterval(scrollTimer)
-      scrollTimer = null
-    }
-  } else {
-    // 非扩展模式下启动滚动
-    if (!scrollTimer) {
-      scrollTimer = setInterval(scrollList, 2000)
-    }
-  }
-}
-
-// 监听扩展状态变化
-watch(isExpanded, (newValue) => {
-  toggleScrolling(newValue)
-})
+// 移除toggleScrolling函数，不再需要根据展开状态切换滚动行为
+// 移除watch(isExpanded)，不再需要监听扩展状态变化
 
 onMounted(() => {
   // 加载模拟数据
   loadDataInChunks()
 
-  // 设置定时器，每2秒滚动一次（仅在非扩展模式下）
-  if (!isExpanded.value) {
-    scrollTimer = setInterval(scrollList, 2000)
-  }
+  // 设置定时器，每2秒滚动一次（与ScrollingRegionList保持一致）
+  scrollTimer = setInterval(scrollList, 2000)
 })
 
 onUnmounted(() => {
   // 清除定时器
   if (scrollTimer) {
     clearInterval(scrollTimer)
+    scrollTimer = null
   }
 })
 </script>
@@ -198,7 +184,7 @@ onUnmounted(() => {
   border-bottom: 1px solid #e8e8e8;
   transition: background-color 0.3s;
   align-items: center;
-  cursor: pointer; /* 添加鼠标指针样式，表明可点击 */
+  cursor: pointer;
 }
 
 .log-row:hover {
