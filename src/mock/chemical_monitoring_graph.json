@@ -1,0 +1,2989 @@
+{
+  "nodes": [
+    {
+      "id": "area_PRO",
+      "name": "成品储存区",
+      "symbolSize": 50,
+      "category": 0,
+      "x": 0,
+      "y": -200,
+      "z": 0
+    },
+    {
+      "id": "area_REA",
+      "name": "反应器区",
+      "symbolSize": 50,
+      "category": 0,
+      "x": 0,
+      "y": -200,
+      "z": 100
+    },
+    {
+      "id": "area_RMS",
+      "name": "原料储存区",
+      "symbolSize": 50,
+      "category": 0,
+      "x": 0,
+      "y": -200,
+      "z": 200
+    },
+    {
+      "id": "area_SEP",
+      "name": "分离提纯区",
+      "symbolSize": 50,
+      "category": 0,
+      "x": 0,
+      "y": -200,
+      "z": 300
+    },
+    {
+      "id": "area_UTL",
+      "name": "公用工程区",
+      "symbolSize": 50,
+      "category": 0,
+      "x": 0,
+      "y": -200,
+      "z": 400
+    },
+    {
+      "id": "state_safe",
+      "name": "安全",
+      "symbolSize": 100.97780409825577,
+      "category": 2,
+      "x": 200,
+      "y": 200,
+      "z": -100
+    },
+    {
+      "id": "state_warning",
+      "name": "警告",
+      "symbolSize": 79.73205210737865,
+      "category": 2,
+      "x": 200,
+      "y": 200,
+      "z": 0
+    },
+    {
+      "id": "state_danger",
+      "name": "危险",
+      "symbolSize": 59.0221959017442,
+      "category": 2,
+      "x": 200,
+      "y": 200,
+      "z": 100
+    },
+    {
+      "id": "sensor_PRO001",
+      "name": "PRO001",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "id": "sensor_PRO002",
+      "name": "PRO002",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 5
+    },
+    {
+      "id": "sensor_PRO003",
+      "name": "PRO003",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 10
+    },
+    {
+      "id": "sensor_PRO004",
+      "name": "PRO004",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 15
+    },
+    {
+      "id": "sensor_PRO005",
+      "name": "PRO005",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 20
+    },
+    {
+      "id": "sensor_PRO006",
+      "name": "PRO006",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 25
+    },
+    {
+      "id": "sensor_PRO007",
+      "name": "PRO007",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 30
+    },
+    {
+      "id": "sensor_PRO008",
+      "name": "PRO008",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 35
+    },
+    {
+      "id": "sensor_PRO009",
+      "name": "PRO009",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 40
+    },
+    {
+      "id": "sensor_PRO010",
+      "name": "PRO010",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 45
+    },
+    {
+      "id": "sensor_PRO011",
+      "name": "PRO011",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 50
+    },
+    {
+      "id": "sensor_PRO012",
+      "name": "PRO012",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 55
+    },
+    {
+      "id": "sensor_PRO013",
+      "name": "PRO013",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 60
+    },
+    {
+      "id": "sensor_PRO014",
+      "name": "PRO014",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 65
+    },
+    {
+      "id": "sensor_PRO015",
+      "name": "PRO015",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 70
+    },
+    {
+      "id": "sensor_REA001",
+      "name": "REA001",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 75
+    },
+    {
+      "id": "sensor_REA002",
+      "name": "REA002",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 80
+    },
+    {
+      "id": "sensor_REA003",
+      "name": "REA003",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 85
+    },
+    {
+      "id": "sensor_REA004",
+      "name": "REA004",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 90
+    },
+    {
+      "id": "sensor_REA005",
+      "name": "REA005",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 95
+    },
+    {
+      "id": "sensor_REA006",
+      "name": "REA006",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 100
+    },
+    {
+      "id": "sensor_REA007",
+      "name": "REA007",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 105
+    },
+    {
+      "id": "sensor_REA008",
+      "name": "REA008",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 110
+    },
+    {
+      "id": "sensor_REA009",
+      "name": "REA009",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 115
+    },
+    {
+      "id": "sensor_REA010",
+      "name": "REA010",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 120
+    },
+    {
+      "id": "sensor_REA011",
+      "name": "REA011",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 125
+    },
+    {
+      "id": "sensor_REA012",
+      "name": "REA012",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 130
+    },
+    {
+      "id": "sensor_REA013",
+      "name": "REA013",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 135
+    },
+    {
+      "id": "sensor_REA014",
+      "name": "REA014",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 140
+    },
+    {
+      "id": "sensor_REA015",
+      "name": "REA015",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 145
+    },
+    {
+      "id": "sensor_REA016",
+      "name": "REA016",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 150
+    },
+    {
+      "id": "sensor_REA017",
+      "name": "REA017",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 155
+    },
+    {
+      "id": "sensor_REA018",
+      "name": "REA018",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 160
+    },
+    {
+      "id": "sensor_REA019",
+      "name": "REA019",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 165
+    },
+    {
+      "id": "sensor_REA020",
+      "name": "REA020",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 170
+    },
+    {
+      "id": "sensor_REA021",
+      "name": "REA021",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 175
+    },
+    {
+      "id": "sensor_REA022",
+      "name": "REA022",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 180
+    },
+    {
+      "id": "sensor_REA023",
+      "name": "REA023",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 185
+    },
+    {
+      "id": "sensor_REA024",
+      "name": "REA024",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 190
+    },
+    {
+      "id": "sensor_REA025",
+      "name": "REA025",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 195
+    },
+    {
+      "id": "sensor_RMS001",
+      "name": "RMS001",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 200
+    },
+    {
+      "id": "sensor_RMS002",
+      "name": "RMS002",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 205
+    },
+    {
+      "id": "sensor_RMS003",
+      "name": "RMS003",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 210
+    },
+    {
+      "id": "sensor_RMS004",
+      "name": "RMS004",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 215
+    },
+    {
+      "id": "sensor_RMS005",
+      "name": "RMS005",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 220
+    },
+    {
+      "id": "sensor_RMS006",
+      "name": "RMS006",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 225
+    },
+    {
+      "id": "sensor_RMS007",
+      "name": "RMS007",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 230
+    },
+    {
+      "id": "sensor_RMS008",
+      "name": "RMS008",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 235
+    },
+    {
+      "id": "sensor_RMS009",
+      "name": "RMS009",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 240
+    },
+    {
+      "id": "sensor_RMS010",
+      "name": "RMS010",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 245
+    },
+    {
+      "id": "sensor_RMS011",
+      "name": "RMS011",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 250
+    },
+    {
+      "id": "sensor_RMS012",
+      "name": "RMS012",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 255
+    },
+    {
+      "id": "sensor_RMS013",
+      "name": "RMS013",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 260
+    },
+    {
+      "id": "sensor_RMS014",
+      "name": "RMS014",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 265
+    },
+    {
+      "id": "sensor_RMS015",
+      "name": "RMS015",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 270
+    },
+    {
+      "id": "sensor_RMS016",
+      "name": "RMS016",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 275
+    },
+    {
+      "id": "sensor_RMS017",
+      "name": "RMS017",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 280
+    },
+    {
+      "id": "sensor_RMS018",
+      "name": "RMS018",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 285
+    },
+    {
+      "id": "sensor_RMS019",
+      "name": "RMS019",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 290
+    },
+    {
+      "id": "sensor_RMS020",
+      "name": "RMS020",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 295
+    },
+    {
+      "id": "sensor_SEP001",
+      "name": "SEP001",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 300
+    },
+    {
+      "id": "sensor_SEP002",
+      "name": "SEP002",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 305
+    },
+    {
+      "id": "sensor_SEP003",
+      "name": "SEP003",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 310
+    },
+    {
+      "id": "sensor_SEP004",
+      "name": "SEP004",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 315
+    },
+    {
+      "id": "sensor_SEP005",
+      "name": "SEP005",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 320
+    },
+    {
+      "id": "sensor_SEP006",
+      "name": "SEP006",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 325
+    },
+    {
+      "id": "sensor_SEP007",
+      "name": "SEP007",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 330
+    },
+    {
+      "id": "sensor_SEP008",
+      "name": "SEP008",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 335
+    },
+    {
+      "id": "sensor_SEP009",
+      "name": "SEP009",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 340
+    },
+    {
+      "id": "sensor_SEP010",
+      "name": "SEP010",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 345
+    },
+    {
+      "id": "sensor_SEP011",
+      "name": "SEP011",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 350
+    },
+    {
+      "id": "sensor_SEP012",
+      "name": "SEP012",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 355
+    },
+    {
+      "id": "sensor_SEP013",
+      "name": "SEP013",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 360
+    },
+    {
+      "id": "sensor_SEP014",
+      "name": "SEP014",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 365
+    },
+    {
+      "id": "sensor_SEP015",
+      "name": "SEP015",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 370
+    },
+    {
+      "id": "sensor_SEP016",
+      "name": "SEP016",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 375
+    },
+    {
+      "id": "sensor_SEP017",
+      "name": "SEP017",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 380
+    },
+    {
+      "id": "sensor_SEP018",
+      "name": "SEP018",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 385
+    },
+    {
+      "id": "sensor_SEP019",
+      "name": "SEP019",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 390
+    },
+    {
+      "id": "sensor_SEP020",
+      "name": "SEP020",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 395
+    },
+    {
+      "id": "sensor_UTL001",
+      "name": "UTL001",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 400
+    },
+    {
+      "id": "sensor_UTL002",
+      "name": "UTL002",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 405
+    },
+    {
+      "id": "sensor_UTL003",
+      "name": "UTL003",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 410
+    },
+    {
+      "id": "sensor_UTL004",
+      "name": "UTL004",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 415
+    },
+    {
+      "id": "sensor_UTL005",
+      "name": "UTL005",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 420
+    },
+    {
+      "id": "sensor_UTL006",
+      "name": "UTL006",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 425
+    },
+    {
+      "id": "sensor_UTL007",
+      "name": "UTL007",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 430
+    },
+    {
+      "id": "sensor_UTL008",
+      "name": "UTL008",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 435
+    },
+    {
+      "id": "sensor_UTL009",
+      "name": "UTL009",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 440
+    },
+    {
+      "id": "sensor_UTL010",
+      "name": "UTL010",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 445
+    },
+    {
+      "id": "sensor_UTL011",
+      "name": "UTL011",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 450
+    },
+    {
+      "id": "sensor_UTL012",
+      "name": "UTL012",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 455
+    },
+    {
+      "id": "sensor_UTL013",
+      "name": "UTL013",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 460
+    },
+    {
+      "id": "sensor_UTL014",
+      "name": "UTL014",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 465
+    },
+    {
+      "id": "sensor_UTL015",
+      "name": "UTL015",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 470
+    },
+    {
+      "id": "sensor_UTL016",
+      "name": "UTL016",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 475
+    },
+    {
+      "id": "sensor_UTL017",
+      "name": "UTL017",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 480
+    },
+    {
+      "id": "sensor_UTL018",
+      "name": "UTL018",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 485
+    },
+    {
+      "id": "sensor_UTL019",
+      "name": "UTL019",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 490
+    },
+    {
+      "id": "sensor_UTL020",
+      "name": "UTL020",
+      "symbolSize": 20,
+      "category": 1,
+      "x": 0,
+      "y": 0,
+      "z": 495
+    }
+  ],
+  "links": [
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO001",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO001",
+      "target": "state_safe",
+      "value": 0.6549519784020907
+    },
+    {
+      "source": "sensor_PRO001",
+      "target": "state_warning",
+      "value": 0.6900960431958184
+    },
+    {
+      "source": "sensor_PRO001",
+      "target": "state_danger",
+      "value": 0.3450480215979092
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO002",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO002",
+      "target": "state_safe",
+      "value": 0.7541041197207192
+    },
+    {
+      "source": "sensor_PRO002",
+      "target": "state_warning",
+      "value": 0.49179176055856155
+    },
+    {
+      "source": "sensor_PRO002",
+      "target": "state_danger",
+      "value": 0.2458958802792808
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO003",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO003",
+      "target": "state_safe",
+      "value": 0.8096363396621817
+    },
+    {
+      "source": "sensor_PRO003",
+      "target": "state_warning",
+      "value": 0.3807273206756365
+    },
+    {
+      "source": "sensor_PRO003",
+      "target": "state_danger",
+      "value": 0.1903636603378183
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO004",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO004",
+      "target": "state_safe",
+      "value": 0.6983683284710123
+    },
+    {
+      "source": "sensor_PRO004",
+      "target": "state_warning",
+      "value": 0.6032633430579754
+    },
+    {
+      "source": "sensor_PRO004",
+      "target": "state_danger",
+      "value": 0.3016316715289877
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO005",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO005",
+      "target": "state_safe",
+      "value": 0.769255511067881
+    },
+    {
+      "source": "sensor_PRO005",
+      "target": "state_warning",
+      "value": 0.4614889778642379
+    },
+    {
+      "source": "sensor_PRO005",
+      "target": "state_danger",
+      "value": 0.230744488932119
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO006",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO006",
+      "target": "state_safe",
+      "value": 0.8071679426959705
+    },
+    {
+      "source": "sensor_PRO006",
+      "target": "state_warning",
+      "value": 0.38566411460805905
+    },
+    {
+      "source": "sensor_PRO006",
+      "target": "state_danger",
+      "value": 0.1928320573040295
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO007",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO007",
+      "target": "state_safe",
+      "value": 0.8200003014128336
+    },
+    {
+      "source": "sensor_PRO007",
+      "target": "state_warning",
+      "value": 0.3599993971743326
+    },
+    {
+      "source": "sensor_PRO007",
+      "target": "state_danger",
+      "value": 0.1799996985871663
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO008",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO008",
+      "target": "state_safe",
+      "value": 0.6785802073192249
+    },
+    {
+      "source": "sensor_PRO008",
+      "target": "state_warning",
+      "value": 0.6428395853615504
+    },
+    {
+      "source": "sensor_PRO008",
+      "target": "state_danger",
+      "value": 0.3214197926807752
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO009",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO009",
+      "target": "state_safe",
+      "value": 0.1
+    },
+    {
+      "source": "sensor_PRO009",
+      "target": "state_warning",
+      "value": 0.14562613692119686
+    },
+    {
+      "source": "sensor_PRO009",
+      "target": "state_danger",
+      "value": 0.9271869315394016
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO010",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO010",
+      "target": "state_safe",
+      "value": 0.7213225773655509
+    },
+    {
+      "source": "sensor_PRO010",
+      "target": "state_warning",
+      "value": 0.557354845268898
+    },
+    {
+      "source": "sensor_PRO010",
+      "target": "state_danger",
+      "value": 0.278677422634449
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO011",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO011",
+      "target": "state_safe",
+      "value": 0.8183332651362899
+    },
+    {
+      "source": "sensor_PRO011",
+      "target": "state_warning",
+      "value": 0.3633334697274202
+    },
+    {
+      "source": "sensor_PRO011",
+      "target": "state_danger",
+      "value": 0.1816667348637101
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO012",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO012",
+      "target": "state_safe",
+      "value": 0.8046983306593178
+    },
+    {
+      "source": "sensor_PRO012",
+      "target": "state_warning",
+      "value": 0.3906033386813643
+    },
+    {
+      "source": "sensor_PRO012",
+      "target": "state_danger",
+      "value": 0.1953016693406822
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO013",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO013",
+      "target": "state_safe",
+      "value": 0.8614904019563812
+    },
+    {
+      "source": "sensor_PRO013",
+      "target": "state_warning",
+      "value": 0.2770191960872376
+    },
+    {
+      "source": "sensor_PRO013",
+      "target": "state_danger",
+      "value": 0.1385095980436188
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO014",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO014",
+      "target": "state_safe",
+      "value": 0.6099492638181879
+    },
+    {
+      "source": "sensor_PRO014",
+      "target": "state_warning",
+      "value": 0.7801014723636241
+    },
+    {
+      "source": "sensor_PRO014",
+      "target": "state_danger",
+      "value": 0.3900507361818121
+    },
+    {
+      "source": "area_PRO",
+      "target": "sensor_PRO015",
+      "value": 1
+    },
+    {
+      "source": "sensor_PRO015",
+      "target": "state_safe",
+      "value": 0.8528905802480816
+    },
+    {
+      "source": "sensor_PRO015",
+      "target": "state_warning",
+      "value": 0.29421883950383676
+    },
+    {
+      "source": "sensor_PRO015",
+      "target": "state_danger",
+      "value": 0.1471094197519184
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA001",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA001",
+      "target": "state_safe",
+      "value": 0.7431133756395437
+    },
+    {
+      "source": "sensor_REA001",
+      "target": "state_warning",
+      "value": 0.5137732487209126
+    },
+    {
+      "source": "sensor_REA001",
+      "target": "state_danger",
+      "value": 0.2568866243604563
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA002",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA002",
+      "target": "state_safe",
+      "value": 0.7333012535988549
+    },
+    {
+      "source": "sensor_REA002",
+      "target": "state_warning",
+      "value": 0.5333974928022902
+    },
+    {
+      "source": "sensor_REA002",
+      "target": "state_danger",
+      "value": 0.2666987464011451
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA003",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA003",
+      "target": "state_safe",
+      "value": 0.5652721537874289
+    },
+    {
+      "source": "sensor_REA003",
+      "target": "state_warning",
+      "value": 0.8694556924251422
+    },
+    {
+      "source": "sensor_REA003",
+      "target": "state_danger",
+      "value": 0.4347278462125711
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA004",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA004",
+      "target": "state_safe",
+      "value": 0.6973771947968038
+    },
+    {
+      "source": "sensor_REA004",
+      "target": "state_warning",
+      "value": 0.6052456104063924
+    },
+    {
+      "source": "sensor_REA004",
+      "target": "state_danger",
+      "value": 0.3026228052031962
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA005",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA005",
+      "target": "state_safe",
+      "value": 0.7611635453539526
+    },
+    {
+      "source": "sensor_REA005",
+      "target": "state_warning",
+      "value": 0.4776729092920948
+    },
+    {
+      "source": "sensor_REA005",
+      "target": "state_danger",
+      "value": 0.2388364546460474
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA006",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA006",
+      "target": "state_safe",
+      "value": 0.6940823391938069
+    },
+    {
+      "source": "sensor_REA006",
+      "target": "state_warning",
+      "value": 0.6118353216123862
+    },
+    {
+      "source": "sensor_REA006",
+      "target": "state_danger",
+      "value": 0.3059176608061931
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA007",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA007",
+      "target": "state_safe",
+      "value": 0.5831855454463573
+    },
+    {
+      "source": "sensor_REA007",
+      "target": "state_warning",
+      "value": 0.8336289091072856
+    },
+    {
+      "source": "sensor_REA007",
+      "target": "state_danger",
+      "value": 0.4168144545536428
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA008",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA008",
+      "target": "state_safe",
+      "value": 0.8815513862342338
+    },
+    {
+      "source": "sensor_REA008",
+      "target": "state_warning",
+      "value": 0.23689722753153242
+    },
+    {
+      "source": "sensor_REA008",
+      "target": "state_danger",
+      "value": 0.1184486137657662
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA009",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA009",
+      "target": "state_safe",
+      "value": 0.7677645168030172
+    },
+    {
+      "source": "sensor_REA009",
+      "target": "state_warning",
+      "value": 0.4644709663939657
+    },
+    {
+      "source": "sensor_REA009",
+      "target": "state_danger",
+      "value": 0.2322354831969828
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA010",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA010",
+      "target": "state_safe",
+      "value": 0.750026523641909
+    },
+    {
+      "source": "sensor_REA010",
+      "target": "state_warning",
+      "value": 0.49994695271618195
+    },
+    {
+      "source": "sensor_REA010",
+      "target": "state_danger",
+      "value": 0.249973476358091
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA011",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA011",
+      "target": "state_safe",
+      "value": 0.8117241517453662
+    },
+    {
+      "source": "sensor_REA011",
+      "target": "state_warning",
+      "value": 0.3765516965092678
+    },
+    {
+      "source": "sensor_REA011",
+      "target": "state_danger",
+      "value": 0.1882758482546339
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA012",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA012",
+      "target": "state_safe",
+      "value": 0.682978673983822
+    },
+    {
+      "source": "sensor_REA012",
+      "target": "state_warning",
+      "value": 0.6340426520323562
+    },
+    {
+      "source": "sensor_REA012",
+      "target": "state_danger",
+      "value": 0.3170213260161781
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA013",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA013",
+      "target": "state_safe",
+      "value": 0.7628044425355422
+    },
+    {
+      "source": "sensor_REA013",
+      "target": "state_warning",
+      "value": 0.4743911149289154
+    },
+    {
+      "source": "sensor_REA013",
+      "target": "state_danger",
+      "value": 0.2371955574644577
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA014",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA014",
+      "target": "state_safe",
+      "value": 0.7215388549594971
+    },
+    {
+      "source": "sensor_REA014",
+      "target": "state_warning",
+      "value": 0.5569222900810058
+    },
+    {
+      "source": "sensor_REA014",
+      "target": "state_danger",
+      "value": 0.2784611450405029
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA015",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA015",
+      "target": "state_safe",
+      "value": 0.655090976988939
+    },
+    {
+      "source": "sensor_REA015",
+      "target": "state_warning",
+      "value": 0.6898180460221218
+    },
+    {
+      "source": "sensor_REA015",
+      "target": "state_danger",
+      "value": 0.3449090230110609
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA016",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA016",
+      "target": "state_safe",
+      "value": 0.6625920742565957
+    },
+    {
+      "source": "sensor_REA016",
+      "target": "state_warning",
+      "value": 0.6748158514868086
+    },
+    {
+      "source": "sensor_REA016",
+      "target": "state_danger",
+      "value": 0.3374079257434043
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA017",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA017",
+      "target": "state_safe",
+      "value": 0.6678256231302748
+    },
+    {
+      "source": "sensor_REA017",
+      "target": "state_warning",
+      "value": 0.6643487537394503
+    },
+    {
+      "source": "sensor_REA017",
+      "target": "state_danger",
+      "value": 0.3321743768697252
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA018",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA018",
+      "target": "state_safe",
+      "value": 0.7908827579253802
+    },
+    {
+      "source": "sensor_REA018",
+      "target": "state_warning",
+      "value": 0.4182344841492396
+    },
+    {
+      "source": "sensor_REA018",
+      "target": "state_danger",
+      "value": 0.2091172420746198
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA019",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA019",
+      "target": "state_safe",
+      "value": 0.7973359960320932
+    },
+    {
+      "source": "sensor_REA019",
+      "target": "state_warning",
+      "value": 0.4053280079358136
+    },
+    {
+      "source": "sensor_REA019",
+      "target": "state_danger",
+      "value": 0.2026640039679068
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA020",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA020",
+      "target": "state_safe",
+      "value": 0.7404626438528235
+    },
+    {
+      "source": "sensor_REA020",
+      "target": "state_warning",
+      "value": 0.519074712294353
+    },
+    {
+      "source": "sensor_REA020",
+      "target": "state_danger",
+      "value": 0.2595373561471765
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA021",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA021",
+      "target": "state_safe",
+      "value": 0.8466793777273534
+    },
+    {
+      "source": "sensor_REA021",
+      "target": "state_warning",
+      "value": 0.3066412445452932
+    },
+    {
+      "source": "sensor_REA021",
+      "target": "state_danger",
+      "value": 0.1533206222726466
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA022",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA022",
+      "target": "state_safe",
+      "value": 0.741453520025168
+    },
+    {
+      "source": "sensor_REA022",
+      "target": "state_warning",
+      "value": 0.517092959949664
+    },
+    {
+      "source": "sensor_REA022",
+      "target": "state_danger",
+      "value": 0.258546479974832
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA023",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA023",
+      "target": "state_safe",
+      "value": 0.7161559747074859
+    },
+    {
+      "source": "sensor_REA023",
+      "target": "state_warning",
+      "value": 0.567688050585028
+    },
+    {
+      "source": "sensor_REA023",
+      "target": "state_danger",
+      "value": 0.283844025292514
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA024",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA024",
+      "target": "state_safe",
+      "value": 0.2169403930587963
+    },
+    {
+      "source": "sensor_REA024",
+      "target": "state_warning",
+      "value": 0.4338807861175926
+    },
+    {
+      "source": "sensor_REA024",
+      "target": "state_danger",
+      "value": 0.7830596069412037
+    },
+    {
+      "source": "area_REA",
+      "target": "sensor_REA025",
+      "value": 1
+    },
+    {
+      "source": "sensor_REA025",
+      "target": "state_safe",
+      "value": 0.6726816762976011
+    },
+    {
+      "source": "sensor_REA025",
+      "target": "state_warning",
+      "value": 0.6546366474047978
+    },
+    {
+      "source": "sensor_REA025",
+      "target": "state_danger",
+      "value": 0.3273183237023989
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS001",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS001",
+      "target": "state_safe",
+      "value": 0.1
+    },
+    {
+      "source": "sensor_RMS001",
+      "target": "state_warning",
+      "value": 0.1
+    },
+    {
+      "source": "sensor_RMS001",
+      "target": "state_danger",
+      "value": 0.9736812085968636
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS002",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS002",
+      "target": "state_safe",
+      "value": 0.7260875154758085
+    },
+    {
+      "source": "sensor_RMS002",
+      "target": "state_warning",
+      "value": 0.547824969048383
+    },
+    {
+      "source": "sensor_RMS002",
+      "target": "state_danger",
+      "value": 0.2739124845241915
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS003",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS003",
+      "target": "state_safe",
+      "value": 0.6539906385034191
+    },
+    {
+      "source": "sensor_RMS003",
+      "target": "state_warning",
+      "value": 0.6920187229931618
+    },
+    {
+      "source": "sensor_RMS003",
+      "target": "state_danger",
+      "value": 0.3460093614965809
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS004",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS004",
+      "target": "state_safe",
+      "value": 0.8976706315700445
+    },
+    {
+      "source": "sensor_RMS004",
+      "target": "state_warning",
+      "value": 0.20465873685991098
+    },
+    {
+      "source": "sensor_RMS004",
+      "target": "state_danger",
+      "value": 0.1023293684299555
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS005",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS005",
+      "target": "state_safe",
+      "value": 0.7310471392877246
+    },
+    {
+      "source": "sensor_RMS005",
+      "target": "state_warning",
+      "value": 0.5379057214245508
+    },
+    {
+      "source": "sensor_RMS005",
+      "target": "state_danger",
+      "value": 0.2689528607122754
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS006",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS006",
+      "target": "state_safe",
+      "value": 0.6355292604928513
+    },
+    {
+      "source": "sensor_RMS006",
+      "target": "state_warning",
+      "value": 0.7289414790142974
+    },
+    {
+      "source": "sensor_RMS006",
+      "target": "state_danger",
+      "value": 0.3644707395071487
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS007",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS007",
+      "target": "state_safe",
+      "value": 0.7373801770611597
+    },
+    {
+      "source": "sensor_RMS007",
+      "target": "state_warning",
+      "value": 0.5252396458776808
+    },
+    {
+      "source": "sensor_RMS007",
+      "target": "state_danger",
+      "value": 0.2626198229388404
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS008",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS008",
+      "target": "state_safe",
+      "value": 0.6350595593632278
+    },
+    {
+      "source": "sensor_RMS008",
+      "target": "state_warning",
+      "value": 0.7298808812735446
+    },
+    {
+      "source": "sensor_RMS008",
+      "target": "state_danger",
+      "value": 0.3649404406367723
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS009",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS009",
+      "target": "state_safe",
+      "value": 0.8230125647725061
+    },
+    {
+      "source": "sensor_RMS009",
+      "target": "state_warning",
+      "value": 0.3539748704549879
+    },
+    {
+      "source": "sensor_RMS009",
+      "target": "state_danger",
+      "value": 0.1769874352274939
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS010",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS010",
+      "target": "state_safe",
+      "value": 0.7258738746506608
+    },
+    {
+      "source": "sensor_RMS010",
+      "target": "state_warning",
+      "value": 0.5482522506986786
+    },
+    {
+      "source": "sensor_RMS010",
+      "target": "state_danger",
+      "value": 0.2741261253493393
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS011",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS011",
+      "target": "state_safe",
+      "value": 0.636561803169436
+    },
+    {
+      "source": "sensor_RMS011",
+      "target": "state_warning",
+      "value": 0.726876393661128
+    },
+    {
+      "source": "sensor_RMS011",
+      "target": "state_danger",
+      "value": 0.363438196830564
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS012",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS012",
+      "target": "state_safe",
+      "value": 0.1
+    },
+    {
+      "source": "sensor_RMS012",
+      "target": "state_warning",
+      "value": 0.1589512857914952
+    },
+    {
+      "source": "sensor_RMS012",
+      "target": "state_danger",
+      "value": 0.9205243571042524
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS013",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS013",
+      "target": "state_safe",
+      "value": 0.6813710972115109
+    },
+    {
+      "source": "sensor_RMS013",
+      "target": "state_warning",
+      "value": 0.6372578055769782
+    },
+    {
+      "source": "sensor_RMS013",
+      "target": "state_danger",
+      "value": 0.3186289027884891
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS014",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS014",
+      "target": "state_safe",
+      "value": 0.7397586890885324
+    },
+    {
+      "source": "sensor_RMS014",
+      "target": "state_warning",
+      "value": 0.5204826218229353
+    },
+    {
+      "source": "sensor_RMS014",
+      "target": "state_danger",
+      "value": 0.2602413109114676
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS015",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS015",
+      "target": "state_safe",
+      "value": 0.758350513996578
+    },
+    {
+      "source": "sensor_RMS015",
+      "target": "state_warning",
+      "value": 0.483298972006844
+    },
+    {
+      "source": "sensor_RMS015",
+      "target": "state_danger",
+      "value": 0.241649486003422
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS016",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS016",
+      "target": "state_safe",
+      "value": 0.8448002409797707
+    },
+    {
+      "source": "sensor_RMS016",
+      "target": "state_warning",
+      "value": 0.3103995180404586
+    },
+    {
+      "source": "sensor_RMS016",
+      "target": "state_danger",
+      "value": 0.1551997590202293
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS017",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS017",
+      "target": "state_safe",
+      "value": 0.8725934990813338
+    },
+    {
+      "source": "sensor_RMS017",
+      "target": "state_warning",
+      "value": 0.25481300183733246
+    },
+    {
+      "source": "sensor_RMS017",
+      "target": "state_danger",
+      "value": 0.1274065009186662
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS018",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS018",
+      "target": "state_safe",
+      "value": 0.6499893570037062
+    },
+    {
+      "source": "sensor_RMS018",
+      "target": "state_warning",
+      "value": 0.7000212859925876
+    },
+    {
+      "source": "sensor_RMS018",
+      "target": "state_danger",
+      "value": 0.3500106429962938
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS019",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS019",
+      "target": "state_safe",
+      "value": 0.1
+    },
+    {
+      "source": "sensor_RMS019",
+      "target": "state_warning",
+      "value": 0.1
+    },
+    {
+      "source": "sensor_RMS019",
+      "target": "state_danger",
+      "value": 0.9736328198457151
+    },
+    {
+      "source": "area_RMS",
+      "target": "sensor_RMS020",
+      "value": 1
+    },
+    {
+      "source": "sensor_RMS020",
+      "target": "state_safe",
+      "value": 0.8393710940122875
+    },
+    {
+      "source": "sensor_RMS020",
+      "target": "state_warning",
+      "value": 0.321257811975425
+    },
+    {
+      "source": "sensor_RMS020",
+      "target": "state_danger",
+      "value": 0.1606289059877125
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP001",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP001",
+      "target": "state_safe",
+      "value": 0.7615376788042153
+    },
+    {
+      "source": "sensor_SEP001",
+      "target": "state_warning",
+      "value": 0.4769246423915694
+    },
+    {
+      "source": "sensor_SEP001",
+      "target": "state_danger",
+      "value": 0.2384623211957847
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP002",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP002",
+      "target": "state_safe",
+      "value": 0.8519664863447021
+    },
+    {
+      "source": "sensor_SEP002",
+      "target": "state_warning",
+      "value": 0.296067027310596
+    },
+    {
+      "source": "sensor_SEP002",
+      "target": "state_danger",
+      "value": 0.148033513655298
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP003",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP003",
+      "target": "state_safe",
+      "value": 0.8139000265847678
+    },
+    {
+      "source": "sensor_SEP003",
+      "target": "state_warning",
+      "value": 0.3721999468304644
+    },
+    {
+      "source": "sensor_SEP003",
+      "target": "state_danger",
+      "value": 0.1860999734152322
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP004",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP004",
+      "target": "state_safe",
+      "value": 0.8691369997663052
+    },
+    {
+      "source": "sensor_SEP004",
+      "target": "state_warning",
+      "value": 0.2617260004673896
+    },
+    {
+      "source": "sensor_SEP004",
+      "target": "state_danger",
+      "value": 0.1308630002336948
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP005",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP005",
+      "target": "state_safe",
+      "value": 0.8036785243763405
+    },
+    {
+      "source": "sensor_SEP005",
+      "target": "state_warning",
+      "value": 0.3926429512473192
+    },
+    {
+      "source": "sensor_SEP005",
+      "target": "state_danger",
+      "value": 0.1963214756236596
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP006",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP006",
+      "target": "state_safe",
+      "value": 0.6835906466504291
+    },
+    {
+      "source": "sensor_SEP006",
+      "target": "state_warning",
+      "value": 0.6328187066991418
+    },
+    {
+      "source": "sensor_SEP006",
+      "target": "state_danger",
+      "value": 0.3164093533495709
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP007",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP007",
+      "target": "state_safe",
+      "value": 0.744150628488363
+    },
+    {
+      "source": "sensor_SEP007",
+      "target": "state_warning",
+      "value": 0.511698743023274
+    },
+    {
+      "source": "sensor_SEP007",
+      "target": "state_danger",
+      "value": 0.255849371511637
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP008",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP008",
+      "target": "state_safe",
+      "value": 0.9073110768517619
+    },
+    {
+      "source": "sensor_SEP008",
+      "target": "state_warning",
+      "value": 0.18537784629647613
+    },
+    {
+      "source": "sensor_SEP008",
+      "target": "state_danger",
+      "value": 0.1
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP009",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP009",
+      "target": "state_safe",
+      "value": 0.704399457069047
+    },
+    {
+      "source": "sensor_SEP009",
+      "target": "state_warning",
+      "value": 0.5912010858619058
+    },
+    {
+      "source": "sensor_SEP009",
+      "target": "state_danger",
+      "value": 0.2956005429309529
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP010",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP010",
+      "target": "state_safe",
+      "value": 0.7784057357890334
+    },
+    {
+      "source": "sensor_SEP010",
+      "target": "state_warning",
+      "value": 0.44318852842193324
+    },
+    {
+      "source": "sensor_SEP010",
+      "target": "state_danger",
+      "value": 0.2215942642109666
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP011",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP011",
+      "target": "state_safe",
+      "value": 0.7729693819730046
+    },
+    {
+      "source": "sensor_SEP011",
+      "target": "state_warning",
+      "value": 0.45406123605399085
+    },
+    {
+      "source": "sensor_SEP011",
+      "target": "state_danger",
+      "value": 0.2270306180269954
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP012",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP012",
+      "target": "state_safe",
+      "value": 0.818889521137516
+    },
+    {
+      "source": "sensor_SEP012",
+      "target": "state_warning",
+      "value": 0.362220957724968
+    },
+    {
+      "source": "sensor_SEP012",
+      "target": "state_danger",
+      "value": 0.181110478862484
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP013",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP013",
+      "target": "state_safe",
+      "value": 0.7042641498742008
+    },
+    {
+      "source": "sensor_SEP013",
+      "target": "state_warning",
+      "value": 0.5914717002515982
+    },
+    {
+      "source": "sensor_SEP013",
+      "target": "state_danger",
+      "value": 0.2957358501257991
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP014",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP014",
+      "target": "state_safe",
+      "value": 0.8627338680390383
+    },
+    {
+      "source": "sensor_SEP014",
+      "target": "state_warning",
+      "value": 0.2745322639219234
+    },
+    {
+      "source": "sensor_SEP014",
+      "target": "state_danger",
+      "value": 0.1372661319609617
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP015",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP015",
+      "target": "state_safe",
+      "value": 0.8652184505623921
+    },
+    {
+      "source": "sensor_SEP015",
+      "target": "state_warning",
+      "value": 0.2695630988752158
+    },
+    {
+      "source": "sensor_SEP015",
+      "target": "state_danger",
+      "value": 0.1347815494376079
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP016",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP016",
+      "target": "state_safe",
+      "value": 0.8309653104925805
+    },
+    {
+      "source": "sensor_SEP016",
+      "target": "state_warning",
+      "value": 0.338069379014839
+    },
+    {
+      "source": "sensor_SEP016",
+      "target": "state_danger",
+      "value": 0.1690346895074195
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP017",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP017",
+      "target": "state_safe",
+      "value": 0.7035655152944378
+    },
+    {
+      "source": "sensor_SEP017",
+      "target": "state_warning",
+      "value": 0.5928689694111245
+    },
+    {
+      "source": "sensor_SEP017",
+      "target": "state_danger",
+      "value": 0.2964344847055623
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP018",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP018",
+      "target": "state_safe",
+      "value": 0.8478438656291192
+    },
+    {
+      "source": "sensor_SEP018",
+      "target": "state_warning",
+      "value": 0.30431226874176165
+    },
+    {
+      "source": "sensor_SEP018",
+      "target": "state_danger",
+      "value": 0.1521561343708808
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP019",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP019",
+      "target": "state_safe",
+      "value": 0.7074833915646339
+    },
+    {
+      "source": "sensor_SEP019",
+      "target": "state_warning",
+      "value": 0.5850332168707322
+    },
+    {
+      "source": "sensor_SEP019",
+      "target": "state_danger",
+      "value": 0.2925166084353661
+    },
+    {
+      "source": "area_SEP",
+      "target": "sensor_SEP020",
+      "value": 1
+    },
+    {
+      "source": "sensor_SEP020",
+      "target": "state_safe",
+      "value": 0.8630687839153848
+    },
+    {
+      "source": "sensor_SEP020",
+      "target": "state_warning",
+      "value": 0.27386243216923045
+    },
+    {
+      "source": "sensor_SEP020",
+      "target": "state_danger",
+      "value": 0.1369312160846152
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL001",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL001",
+      "target": "state_safe",
+      "value": 0.7501684319180137
+    },
+    {
+      "source": "sensor_UTL001",
+      "target": "state_warning",
+      "value": 0.4996631361639724
+    },
+    {
+      "source": "sensor_UTL001",
+      "target": "state_danger",
+      "value": 0.2498315680819862
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL002",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL002",
+      "target": "state_safe",
+      "value": 0.8469415083508522
+    },
+    {
+      "source": "sensor_UTL002",
+      "target": "state_warning",
+      "value": 0.3061169832982956
+    },
+    {
+      "source": "sensor_UTL002",
+      "target": "state_danger",
+      "value": 0.1530584916491478
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL003",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL003",
+      "target": "state_safe",
+      "value": 0.6193602959286768
+    },
+    {
+      "source": "sensor_UTL003",
+      "target": "state_warning",
+      "value": 0.7612794081426464
+    },
+    {
+      "source": "sensor_UTL003",
+      "target": "state_danger",
+      "value": 0.3806397040713232
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL004",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL004",
+      "target": "state_safe",
+      "value": 0.6744994390723105
+    },
+    {
+      "source": "sensor_UTL004",
+      "target": "state_warning",
+      "value": 0.6510011218553792
+    },
+    {
+      "source": "sensor_UTL004",
+      "target": "state_danger",
+      "value": 0.3255005609276896
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL005",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL005",
+      "target": "state_safe",
+      "value": 0.6480291090748997
+    },
+    {
+      "source": "sensor_UTL005",
+      "target": "state_warning",
+      "value": 0.7039417818502004
+    },
+    {
+      "source": "sensor_UTL005",
+      "target": "state_danger",
+      "value": 0.3519708909251002
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL006",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL006",
+      "target": "state_safe",
+      "value": 0.6874092776103805
+    },
+    {
+      "source": "sensor_UTL006",
+      "target": "state_warning",
+      "value": 0.625181444779239
+    },
+    {
+      "source": "sensor_UTL006",
+      "target": "state_danger",
+      "value": 0.3125907223896195
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL007",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL007",
+      "target": "state_safe",
+      "value": 0.6988547390687373
+    },
+    {
+      "source": "sensor_UTL007",
+      "target": "state_warning",
+      "value": 0.6022905218625254
+    },
+    {
+      "source": "sensor_UTL007",
+      "target": "state_danger",
+      "value": 0.3011452609312627
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL008",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL008",
+      "target": "state_safe",
+      "value": 0.628409892844991
+    },
+    {
+      "source": "sensor_UTL008",
+      "target": "state_warning",
+      "value": 0.7431802143100178
+    },
+    {
+      "source": "sensor_UTL008",
+      "target": "state_danger",
+      "value": 0.3715901071550089
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL009",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL009",
+      "target": "state_safe",
+      "value": 0.696245732435848
+    },
+    {
+      "source": "sensor_UTL009",
+      "target": "state_warning",
+      "value": 0.6075085351283042
+    },
+    {
+      "source": "sensor_UTL009",
+      "target": "state_danger",
+      "value": 0.3037542675641521
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL010",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL010",
+      "target": "state_safe",
+      "value": 0.6391617674653463
+    },
+    {
+      "source": "sensor_UTL010",
+      "target": "state_warning",
+      "value": 0.7216764650693074
+    },
+    {
+      "source": "sensor_UTL010",
+      "target": "state_danger",
+      "value": 0.3608382325346537
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL011",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL011",
+      "target": "state_safe",
+      "value": 0.6606436222537496
+    },
+    {
+      "source": "sensor_UTL011",
+      "target": "state_warning",
+      "value": 0.6787127554925008
+    },
+    {
+      "source": "sensor_UTL011",
+      "target": "state_danger",
+      "value": 0.3393563777462504
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL012",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL012",
+      "target": "state_safe",
+      "value": 0.6898672501420196
+    },
+    {
+      "source": "sensor_UTL012",
+      "target": "state_warning",
+      "value": 0.6202654997159608
+    },
+    {
+      "source": "sensor_UTL012",
+      "target": "state_danger",
+      "value": 0.3101327498579804
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL013",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL013",
+      "target": "state_safe",
+      "value": 0.725201562589529
+    },
+    {
+      "source": "sensor_UTL013",
+      "target": "state_warning",
+      "value": 0.5495968748209422
+    },
+    {
+      "source": "sensor_UTL013",
+      "target": "state_danger",
+      "value": 0.2747984374104711
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL014",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL014",
+      "target": "state_safe",
+      "value": 0.6582688890224377
+    },
+    {
+      "source": "sensor_UTL014",
+      "target": "state_warning",
+      "value": 0.6834622219551246
+    },
+    {
+      "source": "sensor_UTL014",
+      "target": "state_danger",
+      "value": 0.3417311109775623
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL015",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL015",
+      "target": "state_safe",
+      "value": 0.7068397415716343
+    },
+    {
+      "source": "sensor_UTL015",
+      "target": "state_warning",
+      "value": 0.5863205168567314
+    },
+    {
+      "source": "sensor_UTL015",
+      "target": "state_danger",
+      "value": 0.2931602584283657
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL016",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL016",
+      "target": "state_safe",
+      "value": 0.6411927568494638
+    },
+    {
+      "source": "sensor_UTL016",
+      "target": "state_warning",
+      "value": 0.7176144863010726
+    },
+    {
+      "source": "sensor_UTL016",
+      "target": "state_danger",
+      "value": 0.3588072431505363
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL017",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL017",
+      "target": "state_safe",
+      "value": 0.7601738567234889
+    },
+    {
+      "source": "sensor_UTL017",
+      "target": "state_warning",
+      "value": 0.47965228655302217
+    },
+    {
+      "source": "sensor_UTL017",
+      "target": "state_danger",
+      "value": 0.2398261432765111
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL018",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL018",
+      "target": "state_safe",
+      "value": 0.680630777102867
+    },
+    {
+      "source": "sensor_UTL018",
+      "target": "state_warning",
+      "value": 0.638738445794266
+    },
+    {
+      "source": "sensor_UTL018",
+      "target": "state_danger",
+      "value": 0.319369222897133
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL019",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL019",
+      "target": "state_safe",
+      "value": 0.8176481102854687
+    },
+    {
+      "source": "sensor_UTL019",
+      "target": "state_warning",
+      "value": 0.3647037794290626
+    },
+    {
+      "source": "sensor_UTL019",
+      "target": "state_danger",
+      "value": 0.1823518897145313
+    },
+    {
+      "source": "area_UTL",
+      "target": "sensor_UTL020",
+      "value": 1
+    },
+    {
+      "source": "sensor_UTL020",
+      "target": "state_safe",
+      "value": 0.7350213804451204
+    },
+    {
+      "source": "sensor_UTL020",
+      "target": "state_warning",
+      "value": 0.5299572391097592
+    },
+    {
+      "source": "sensor_UTL020",
+      "target": "state_danger",
+      "value": 0.2649786195548796
+    }
+  ],
+  "categories": [
+    {
+      "name": "区域"
+    },
+    {
+      "name": "传感器"
+    },
+    {
+      "name": "安全状态"
+    }
+  ]
+}
