@@ -2,28 +2,30 @@
   <!-- 
    * @description 化工厂日志滚动列表组件
    * 
-   * 该组件显示化工厂的实时日志列表，包括日志类型、时间戳、消息内容和严重程度。
+   * 该组件显示化工厂的实时日志列表，包括区域、时间戳、消息内容和风险等级。
    * 包含以下功能：
    * 1. 非展开状态下自动滚动显示日志数据
    * 2. 展开状态下显示全部日志数据，可滚动查看
-   * 3. 根据严重程度自动显示不同颜色的状态指示器（信息/警告/危险）
+   * 3. 根据风险等级自动显示不同颜色的状态指示器（信息/警告/危险）
    * 4. 响应式布局设计，适应不同显示状态
+   * 5. 点击日志行可以将信息发送至Unity进行区域高亮
    * 
    -->
   <div class="scrolling-log-container">
     <div class="scrolling-log-body" ref="logBody">
       <div
         v-for="log in isExpanded ? allLogs : visibleLogs"
-        :key="log.id"
+        :key="log.timestamp + log.region"
         class="log-row"
         :class="{
-          'log-info': log.severity === 'info',
-          'log-warning': log.severity === 'warning',
-          'log-danger': log.severity === 'danger',
+          'log-info': log.risk_level === 'safe',
+          'log-warning': log.risk_level === 'warning',
+          'log-danger': log.risk_level === 'danger',
         }"
+        @click="handleLogClick(log)"
       >
         <div class="log-time">{{ formatTime(log.timestamp) }}</div>
-        <div class="log-type">{{ log.type }}</div>
+        <div class="log-type">{{ log.region }}</div>
         <div class="log-message">{{ log.message }}</div>
       </div>
     </div>
@@ -32,97 +34,31 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, inject, watch, onUnmounted, type InjectionKey, type Ref } from 'vue'
-import newPlantLogData from '../../mock/newPlantLogs.json'
+import newPlantLogData from '../../mock/RegionRiskSummary.json'
+import unityService from '../../services/UnityService'
+import { message } from 'ant-design-vue'
 
-interface NewLogEntry {
+// 定义新的日志数据结构接口
+interface LogEntry {
   timestamp: string
-  point_id: string
-  gas_type: string
-  risk_level: 'safe' | 'warning' | 'danger' // 假设新数据已规范字段值
-}
-
-interface ConvertedLog {
-  id: string
-  timestamp: string
-  type: string
+  region: string
+  risk_level: 'safe' | 'warning' | 'danger'
   message: string
-  severity: 'info' | 'warning' | 'danger'
-}
-
-// 数据转换器
-const logAdapter = (raw: NewLogEntry): ConvertedLog | null => {
-  // 安全类型映射策略
-  const severityMap: Record<NewLogEntry['risk_level'], ConvertedLog['severity'] | null> = {
-    safe: 'info', // 将safe改为info
-    warning: 'warning',
-    danger: 'danger',
-  }
-
-  // 过滤无效risk_level
-  const targetSeverity = severityMap[raw.risk_level]
-  if (!targetSeverity) return null
-
-  // 添加信息级日志过滤条件（不显示safe信息）
-  if (raw.risk_level === 'safe') return null
-
-  return {
-    id: `LOG_${raw.point_id}_${raw.timestamp.replace(/[:.]/g, '')}`,
-    timestamp: new Date().toISOString(),
-    type: raw.gas_type,
-    message: generateLogMessage(raw),
-    severity: raw.risk_level,
-  }
-}
-
-// 消息生成器（独立函数）
-const generateLogMessage = (raw: NewLogEntry): string => {
-  const messages = [
-    `${raw.gas_type} 浓度异常：${raw.point_id} 设备告警`,
-    `流量波动：${raw.point_id} 当前值超阈值`,
-    `压力异常：${raw.point_id} 设备需检修`,
-  ]
-  return messages[Math.floor(Math.random() * messages.length)]
-}
-
-// 性能优化
-const CHUNK_SIZE = 2000 // 每次处理2000条
-const MAX_LOG_ITEMS = 10000 // 内存最大保留1w条
-let processingIndex = 0
-
-const loadDataInChunks = () => {
-  requestIdleCallback(
-    () => {
-      const rawData = newPlantLogData as unknown as NewLogEntry[]
-      const chunk = rawData.slice(processingIndex, processingIndex + CHUNK_SIZE)
-      const validLogs = chunk
-        .map((item: NewLogEntry) => logAdapter(item as NewLogEntry))
-        .filter(Boolean) as ConvertedLog[]
-
-      // 内存清理策略（保留最新数据）
-      if (logs.value.length + validLogs.length > MAX_LOG_ITEMS) {
-        logs.value.splice(0, validLogs.length)
-      }
-      logs.value.push(...validLogs)
-
-      processingIndex += CHUNK_SIZE
-      if (processingIndex < rawData.length) {
-        loadDataInChunks()
-      }
-    },
-    // 超时保障
-    { timeout: 1000 },
-  )
 }
 
 // 从ChartContainer注入的扩展状态
 const isChartExpandedKey = Symbol() as InjectionKey<Ref<boolean>>
 const isExpanded = inject(isChartExpandedKey, ref(false))
 
-const logs = ref<ConvertedLog[]>([])
+const logs = ref<LogEntry[]>([])
 const startIndex = ref(0)
 const visibleCount = 100 // 一次显示的行数
-// 修改为ReturnType<typeof setInterval>, 适配Node.js环境（SSR），防止内存泄漏
 let scrollTimer: ReturnType<typeof setInterval> | null = null
+
+// 性能优化参数
+const CHUNK_SIZE = 500 // 每次处理2000条
+const MAX_LOG_ITEMS = 1000 // 内存最大保留1k条
+let processingIndex = 0
 
 // 所有日志数据
 const allLogs = computed(() => logs.value)
@@ -138,6 +74,43 @@ const visibleLogs = computed(() => {
   // 双段拼接保证视觉连续性
   return [...logs.value.slice(start, end), ...logs.value.slice(0, Math.max(0, visibleCount - (total - start)))]
 })
+
+// 点击日志行时的处理函数
+const handleLogClick = (log: LogEntry) => {
+  // 检查Unity是否已加载
+  if (unityService.isUnityLoaded()) {
+    const logDataString = JSON.stringify(log)
+
+    // 调用Unity的方法传递数据
+    unityService.sendMessageToUnity('Sensor', 'HighlightRegion', logDataString)
+  } else {
+    // 如果Unity未加载，发出提示
+    message.warning('Unity尚未加载完成，无法发送日志')
+  }
+}
+
+// 批量加载数据，优化性能
+const loadDataInChunks = () => {
+  requestIdleCallback(
+    () => {
+      const rawData = newPlantLogData as unknown as LogEntry[]
+      const chunk = rawData.slice(processingIndex, processingIndex + CHUNK_SIZE)
+
+      // 内存清理策略（保留最新数据）
+      if (logs.value.length + chunk.length > MAX_LOG_ITEMS) {
+        logs.value.splice(0, chunk.length)
+      }
+      logs.value.push(...chunk)
+
+      processingIndex += CHUNK_SIZE
+      if (processingIndex < rawData.length) {
+        loadDataInChunks()
+      }
+    },
+    // 超时保障
+    { timeout: 1000 },
+  )
+}
 
 // 格式化时间戳
 const formatTime = (timestamp: string): string => {
@@ -225,6 +198,7 @@ onUnmounted(() => {
   border-bottom: 1px solid #e8e8e8;
   transition: background-color 0.3s;
   align-items: center;
+  cursor: pointer; /* 添加鼠标指针样式，表明可点击 */
 }
 
 .log-row:hover {
