@@ -6,10 +6,10 @@ import ScrollingLogList from '../components/charts/ScrollingLogList.vue'
 import UnityContainer from '../components/display/UnityContainer.vue'
 import ControlButtons from '../components/controls/ControlButtons.vue'
 import ResourcesPanel from '../components/display/ResourcesPanel.vue'
-import ResourceAllocationChart from '../components/charts/ResourceAllocationChart.vue'
 import StaffDistributionChart from '../components/charts/StaffDistributionChart.vue'
 import EventResponseRadarChart from '../components/charts/EventResponseRadarChart.vue'
 import ChemicalKnowledgeGraph from '../components/charts/ChemicalKnowledgeGraph.vue'
+import ScrollingRegionList from '../components/charts/ScrollingRegionList.vue'
 </script>
 
 <template>
@@ -47,7 +47,7 @@ import ChemicalKnowledgeGraph from '../components/charts/ChemicalKnowledgeGraph.
     <!-- 右侧列内容 - 三个图表 -->
     <template #right-column>
       <ChartContainer>
-        <ResourceAllocationChart />
+        <ScrollingRegionList />
       </ChartContainer>
 
       <ChartContainer>
