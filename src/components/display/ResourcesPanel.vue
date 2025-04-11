@@ -8,17 +8,22 @@
  * 3. 简洁的视觉呈现，便于用户快速了解资源信息
  */
 
+// 导入 Unity 服务
+import unityService from '../../services/UnityService' // 请确保路径正确
+
 // 定义三类资源数据
 const humanResources = [
-  { id: 1, name: '工程师', description: '化工工艺专家 (12人)', icon: '👨‍🔬' },
-  { id: 2, name: '操作员', description: '设备操作人员 (28人)', icon: '👨‍🏭' },
-  { id: 3, name: '安全员', description: '安全监督人员 (8人)', icon: '🛡️' },
+  { id: 1, name: '技术员', description: '技术员 (90人)', icon: '👨‍🔬' },
+  { id: 2, name: '管理员', description: '管理员 (45人)', icon: '👨‍💼' },
+  { id: 3, name: '维修员', description: '维修员 (65人)', icon: '🔧' },
+  { id: 4, name: '操作员', description: '操作员 (110人)', icon: '👨‍🏭' },
+  { id: 5, name: '安全员', description: '安全员 (30人)', icon: '🛡️' },
 ]
 
 const materialResources = [
-  { id: 1, name: '原料库存', description: '乙烯 (85吨)', icon: '🧪' },
-  { id: 2, name: '催化剂', description: '钯碳催化剂 (12kg)', icon: '⚗️' },
-  { id: 3, name: '储罐容量', description: '液化气储罐 (65%)', icon: '🔋' },
+  { id: 1, name: '原料库存', description: '乙烯 (900吨)', icon: '🧪' },
+  { id: 2, name: '催化剂', description: '钯碳催化剂 (400kg)', icon: '⚗️' },
+  { id: 3, name: '储罐容量', description: '液化气储罐 (400吨)', icon: '🔋' },
 ]
 
 const businessInfo = [
@@ -26,6 +31,34 @@ const businessInfo = [
   { id: 2, name: '订单状态', description: '待处理订单 (7个)', icon: '📋' },
   { id: 3, name: '质检报告', description: '合格率 (98.5%)', icon: '✅' },
 ]
+
+// 处理鼠标悬停事件
+const handleMouseEnter = (resourceType: string, itemName: string) => {
+  const dataJson = {
+    type: resourceType,
+    name: itemName,
+    highlight: true,
+  }
+  const dataJsonString = JSON.stringify(dataJson)
+  console.log('发送数据到Unity:', dataJsonString)
+
+  // 发送消息到Unity
+  unityService.sendMessageToUnity('Sensor', 'KnowledgeHighlight', JSON.stringify(dataJsonString))
+}
+
+// 处理鼠标离开事件
+const handleMouseLeave = (resourceType: string, itemName: string) => {
+  const dataJson = {
+    type: resourceType,
+    name: itemName,
+    highlight: false,
+  }
+  const dataJsonString = JSON.stringify(dataJson)
+  console.log('发送数据到Unity:', dataJsonString)
+
+  // 发送消息到Unity
+  unityService.sendMessageToUnity('Sensor', 'KnowledgeHighlight', JSON.stringify(dataJsonString))
+}
 </script>
 
 <template>
@@ -35,7 +68,13 @@ const businessInfo = [
       <div class="resource-column">
         <div class="column-title">人力资源</div>
         <div class="column-items">
-          <div class="resource-item" v-for="item in humanResources" :key="item.id">
+          <div
+            class="resource-item"
+            v-for="item in humanResources"
+            :key="item.id"
+            @mouseenter="handleMouseEnter('hr', item.name)"
+            @mouseleave="handleMouseLeave('hr', item.name)"
+          >
             <div class="resource-icon">
               <div class="icon-container">{{ item.icon }}</div>
             </div>
@@ -51,7 +90,13 @@ const businessInfo = [
       <div class="resource-column">
         <div class="column-title">物料资源</div>
         <div class="column-items">
-          <div class="resource-item" v-for="item in materialResources" :key="item.id">
+          <div
+            class="resource-item"
+            v-for="item in materialResources"
+            :key="item.id"
+            @mouseenter="handleMouseEnter('mr', item.name)"
+            @mouseleave="handleMouseLeave('mr', item.name)"
+          >
             <div class="resource-icon">
               <div class="icon-container">{{ item.icon }}</div>
             </div>
@@ -67,7 +112,13 @@ const businessInfo = [
       <div class="resource-column">
         <div class="column-title">业务信息</div>
         <div class="column-items">
-          <div class="resource-item" v-for="item in businessInfo" :key="item.id">
+          <div
+            class="resource-item"
+            v-for="item in businessInfo"
+            :key="item.id"
+            @mouseenter="handleMouseEnter('bi', item.name)"
+            @mouseleave="handleMouseLeave('bi', item.name)"
+          >
             <div class="resource-icon">
               <div class="icon-container">{{ item.icon }}</div>
             </div>
@@ -137,6 +188,7 @@ const businessInfo = [
   transition:
     transform 0.2s,
     box-shadow 0.2s;
+  cursor: pointer;
 }
 
 .resource-item:hover {

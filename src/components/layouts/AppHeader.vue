@@ -10,6 +10,7 @@
  * 5. 提供Unity通信测试按钮
  */
 import { ref, onMounted, onUnmounted } from 'vue'
+import AuthService from '../../services/AuthService'
 // import UnityService from '../../services/UnityService';
 
 // 时间显示逻辑
@@ -19,6 +20,18 @@ const currentTime = ref(new Date().toLocaleTimeString())
 // const handleUnityMessage = (data: any) => {
 //   alert(`收到Unity消息: ${data.detail}`);
 // };
+
+// 登出函数
+const handleLogout = async () => {
+  try {
+    // 等待登出操作完成
+    await AuthService.logout()
+    // 登出完成后跳转
+    window.location.href = '/login'
+  } catch (error) {
+    console.error('登出失败:', error)
+  }
+}
 
 onMounted(() => {
   // 设置时间更新
@@ -55,6 +68,8 @@ onUnmounted(() => {
       >
         Unity测试
       </button> -->
+
+      <button @click="handleLogout" class="logout-btn" title="退出登录">退出登录</button>
       <span class="time">{{ currentTime }}</span>
     </div>
   </header>
@@ -91,6 +106,21 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 15px;
+}
+
+.logout-btn {
+  padding: 6px 12px;
+  background-color: #f56c6c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #e74c3c;
 }
 
 .time {

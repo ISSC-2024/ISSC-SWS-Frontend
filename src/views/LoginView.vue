@@ -9,6 +9,16 @@ import AuthService from '../services/AuthService'
 const router = useRouter()
 const formRef = ref()
 const loading = ref(false)
+// 登录类型
+const loginType = ref('user') // 默认为用户登录
+
+// 切换登录类型
+const switchLoginType = (type: string) => {
+  loginType.value = type
+  // 清空表单
+  formState.username = ''
+  formState.password = ''
+}
 
 // 表单状态
 const formState = reactive({
@@ -28,11 +38,14 @@ const handleLogin = async () => {
     await formRef.value.validate()
     loading.value = true
 
-    // 使用认证服务进行登录验证
-    const authResult = await AuthService.login({
-      username: formState.username,
-      password: formState.password,
-    })
+    // 使用认证服务进行登录验证，传递登录类型
+    const authResult = await AuthService.login(
+      {
+        username: formState.username,
+        password: formState.password,
+      },
+      loginType.value,
+    ) // 传递登录类型
 
     if (authResult.success) {
       // 显示成功消息
@@ -48,7 +61,7 @@ const handleLogin = async () => {
       message.error(authResult.message)
       loading.value = false
     }
-  } catch (error: any) {
+  } catch (error) {
     console.log('表单验证失败:', error)
     loading.value = false
   }
@@ -59,6 +72,25 @@ const handleLogin = async () => {
   <div class="login-container">
     <div class="login-card">
       <h1 class="login-title">安全风险智能预警决策</h1>
+
+      <!-- 添加切换按钮 -->
+      <div class="login-type-switch">
+        <Button
+          :type="loginType === 'admin' ? 'primary' : 'default'"
+          @click="switchLoginType('admin')"
+          class="switch-btn"
+        >
+          管理员登录
+        </Button>
+        <Button
+          :type="loginType === 'user' ? 'primary' : 'default'"
+          @click="switchLoginType('user')"
+          class="switch-btn"
+        >
+          企业登录
+        </Button>
+      </div>
+
       <Form layout="vertical" :model="formState" :rules="rules" ref="formRef" class="login-form">
         <Form.Item name="username">
           <Input v-model:value="formState.username" size="large" placeholder="用户名">
@@ -110,5 +142,15 @@ const handleLogin = async () => {
 
 .login-form {
   width: 100%;
+}
+
+.login-type-switch {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.switch-btn {
+  margin: 0 5px;
 }
 </style>
