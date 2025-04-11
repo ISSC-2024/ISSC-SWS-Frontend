@@ -10,8 +10,10 @@
 import { ref, onMounted, onUnmounted, inject, watch } from 'vue'
 import * as echarts from 'echarts'
 import graphData from '../../mock/monitoringKnowledgeGraph.json'
-//! 引入Pinia状态管理和类型定义
+// 引入Pinia状态管理和类型定义
 import { useGraphStore, type NodeData, type LinkData } from '../../stores/graphStore'
+// 引入Unity通信服务
+import unityService from '../../services/UnityService'
 
 // 获取图表容器展开状态
 const isChartExpanded = inject('isChartExpanded', ref(false))
@@ -47,6 +49,38 @@ const linkColors = {
   sensorToSafe: '#4FB553', // 传感器到安全节点的连接 - 深绿色
   sensorToWarning: '#D69D2A', // 传感器到警告节点的连接 - 深黄色
   sensorToDanger: '#D64541', // 传感器到危险节点的连接 - 深红色
+}
+
+// 发送高亮信息到Unity
+const sendHighlightToUnity = (areaCode: string | null, highlight: boolean): void => {
+  if (!areaCode && highlight) return // 如果要高亮但没有区域代码，则直接返回
+
+  // 构建基本消息结构
+  const message: { highlight: boolean; area: string; nodes: Record<string, number> } = {
+    highlight: highlight,
+    area: areaCode || '',
+    nodes: {},
+  }
+
+  // 如果是高亮操作，添加传感器数据
+  if (highlight && areaCode) {
+    // 查找该区域下的所有传感器
+    const areaSensors = originalNodes.value.filter(
+      (node: NodeData) => node.category === 1 && node.area_code === areaCode,
+    )
+
+    // 为每个传感器添加权重信息
+    areaSensors.forEach((sensor: NodeData) => {
+      if (sensor.id && sensor.weight !== undefined) {
+        message.nodes[sensor.id.replace(`${areaCode}_`, '')] = Math.round(sensor.weight * 1000) / 1000
+      }
+    })
+  }
+
+  // 发送消息到Unity
+  const messageJson = JSON.stringify(message)
+  console.log('向Unity发送消息:', messageJson)
+  unityService.sendMessageToUnity('Sensor', 'KnowledgeHighlight', messageJson)
 }
 
 // 初始化图表
@@ -358,6 +392,9 @@ const initChart = () => {
         focusedArea.value = areaCode
         console.log('双击区域节点，聚焦更新为:', graphStore.focusedArea)
 
+        // 向Unity发送高亮信息
+        sendHighlightToUnity(areaCode, true)
+
         // 过滤出需要显示的节点和连接
         focusOnArea(areaCode)
       } else {
@@ -403,6 +440,11 @@ const initChart = () => {
   chart.on('legendselectchanged', (params: any) => {
     console.log('图例选择变化:', params.name, params.selected)
   })
+
+  // 如果有聚焦区域，确保Unity高亮状态同步
+  // if (graphStore.focusedArea) {
+  //   sendHighlightToUnity(graphStore.focusedArea, true)
+  // }
 }
 
 // 获取过滤后的节点和连接数据
@@ -544,6 +586,9 @@ const restoreFullGraph = (): void => {
   if (!chart || !originalNodes.value.length || !originalLinks.value.length) return
 
   console.log('恢复完整图表')
+
+  // 向Unity发送取消高亮信息
+  sendHighlightToUnity(graphStore.focusedArea, false)
 
   // 清除聚焦状态（更新Pinia状态）
   graphStore.setFocusedArea(null)
