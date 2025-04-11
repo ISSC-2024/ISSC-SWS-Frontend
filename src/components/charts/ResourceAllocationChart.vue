@@ -14,7 +14,7 @@
 import { ref, onMounted, inject, computed, watch, onBeforeUnmount } from 'vue'
 import type { Ref } from 'vue'
 import * as echarts from 'echarts'
-import resourceData from '../../mock/resourceAllocation.json'
+import optimizationReport from '../../mock/optimization_report.json'
 
 // 注入展开状态
 const isExpanded = inject<Ref<boolean>>('isChartExpanded', ref(false))
@@ -51,7 +51,32 @@ interface ResourceAllocationData {
 }
 
 // 类型断言
-const typedResourceData = resourceData as ResourceAllocationData
+const typedResourceData = {
+  personnel: {
+    title: optimizationReport.resource_allocation.personnel.title,
+    data: optimizationReport.resource_allocation.personnel.data.map((item) => ({
+      name: item.name,
+      value: item.value,
+      color: item.color,
+    })),
+  },
+  materials: {
+    title: optimizationReport.resource_allocation.materials.title,
+    data: optimizationReport.resource_allocation.materials.data.map((item) => ({
+      name: item.name,
+      value: item.value,
+      color: item.color,
+    })),
+  },
+  electricity: {
+    title: optimizationReport.resource_allocation.electricity.title,
+    data: optimizationReport.resource_allocation.electricity.data.map((item) => ({
+      name: item.name,
+      value: item.value,
+      color: item.color,
+    })),
+  },
+} as ResourceAllocationData
 
 // 根据当前索引获取数据
 const currentData = computed(() => {

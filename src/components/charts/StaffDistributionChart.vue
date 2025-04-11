@@ -14,7 +14,55 @@
 import { ref, onMounted, inject, computed, watch, onBeforeUnmount } from 'vue'
 import type { Ref } from 'vue'
 import * as echarts from 'echarts'
-import staffData from '../../mock/staffDistribution.json'
+import optimizationReport from '../../mock/optimization_report.json'
+
+// 准备人力资源分配数据
+const staffData = {
+  staff: {
+    合成车间: {
+      技术人员: optimizationReport.resource_allocation.personnel.subtypes.technician.data[0].value,
+      管理人员: optimizationReport.resource_allocation.personnel.subtypes.manager.data[0].value,
+      维修人员: optimizationReport.resource_allocation.personnel.subtypes.maintenance.data[0].value,
+      安全人员: optimizationReport.resource_allocation.personnel.subtypes.safety.data[0].value,
+      操作人员: optimizationReport.resource_allocation.personnel.subtypes.operator.data[0].value,
+    },
+    精制车间: {
+      技术人员: optimizationReport.resource_allocation.personnel.subtypes.technician.data[1].value,
+      管理人员: optimizationReport.resource_allocation.personnel.subtypes.manager.data[1].value,
+      维修人员: optimizationReport.resource_allocation.personnel.subtypes.maintenance.data[1].value,
+      安全人员: optimizationReport.resource_allocation.personnel.subtypes.safety.data[1].value,
+      操作人员: optimizationReport.resource_allocation.personnel.subtypes.operator.data[1].value,
+    },
+    包装车间: {
+      技术人员: optimizationReport.resource_allocation.personnel.subtypes.technician.data[2].value,
+      管理人员: optimizationReport.resource_allocation.personnel.subtypes.manager.data[2].value,
+      维修人员: optimizationReport.resource_allocation.personnel.subtypes.maintenance.data[2].value,
+      安全人员: optimizationReport.resource_allocation.personnel.subtypes.safety.data[2].value,
+      操作人员: optimizationReport.resource_allocation.personnel.subtypes.operator.data[2].value,
+    },
+    质检车间: {
+      技术人员: optimizationReport.resource_allocation.personnel.subtypes.technician.data[3].value,
+      管理人员: optimizationReport.resource_allocation.personnel.subtypes.manager.data[3].value,
+      维修人员: optimizationReport.resource_allocation.personnel.subtypes.maintenance.data[3].value,
+      安全人员: optimizationReport.resource_allocation.personnel.subtypes.safety.data[3].value,
+      操作人员: optimizationReport.resource_allocation.personnel.subtypes.operator.data[3].value,
+    },
+    仓储车间: {
+      技术人员: optimizationReport.resource_allocation.personnel.subtypes.technician.data[4].value,
+      管理人员: optimizationReport.resource_allocation.personnel.subtypes.manager.data[4].value,
+      维修人员: optimizationReport.resource_allocation.personnel.subtypes.maintenance.data[4].value,
+      安全人员: optimizationReport.resource_allocation.personnel.subtypes.safety.data[4].value,
+      操作人员: optimizationReport.resource_allocation.personnel.subtypes.operator.data[4].value,
+    },
+  },
+  colors: {
+    技术人员: '#5470C6',
+    管理人员: '#91CC75',
+    维修人员: '#FAC858',
+    安全人员: '#EE6666',
+    操作人员: '#73C0DE',
+  },
+}
 
 // 注入展开状态
 const isExpanded = inject<Ref<boolean>>('isChartExpanded', ref(false))

@@ -6,7 +6,7 @@ import ScrollingLogList from '../components/charts/ScrollingLogList.vue'
 import UnityContainer from '../components/display/UnityContainer.vue'
 import ControlButtons from '../components/controls/ControlButtons.vue'
 import ResourcesPanel from '../components/display/ResourcesPanel.vue'
-import StaffDistributionChart from '../components/charts/StaffDistributionChart.vue'
+import ChartCarousel from '../components/layouts/ChartCarousel.vue'
 import EventResponseRadarChart from '../components/charts/EventResponseRadarChart.vue'
 import ChemicalKnowledgeGraph from '../components/charts/ChemicalKnowledgeGraph.vue'
 import ScrollingRegionList from '../components/charts/ScrollingRegionList.vue'
@@ -51,7 +51,7 @@ import ScrollingRegionList from '../components/charts/ScrollingRegionList.vue'
       </ChartContainer>
 
       <ChartContainer>
-        <StaffDistributionChart />
+        <ChartCarousel />
       </ChartContainer>
 
       <ChartContainer>
