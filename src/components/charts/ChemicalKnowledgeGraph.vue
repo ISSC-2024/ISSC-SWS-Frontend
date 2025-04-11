@@ -9,8 +9,9 @@
  */
 import { ref, onMounted, onUnmounted, inject, watch } from 'vue'
 import * as echarts from 'echarts'
-// 注意：需要将Python脚本生成的JSON文件放在正确的位置
 import graphData from '../../mock/monitoringKnowledgeGraph.json'
+//! 引入Pinia状态管理和类型定义
+import { useGraphStore, type NodeData, type LinkData } from '../../stores/graphStore'
 
 // 获取图表容器展开状态
 const isChartExpanded = inject('isChartExpanded', ref(false))
@@ -20,39 +21,15 @@ const chartRef = ref<HTMLElement | null>(null)
 let chart: echarts.ECharts | null = null
 
 // 记录原始节点和连接，用于恢复显示
-const originalNodes = ref<any[]>([])
-const originalLinks = ref<any[]>([])
+const originalNodes = ref<NodeData[]>([])
+const originalLinks = ref<LinkData[]>([])
 // 当前聚焦的区域
 const focusedArea = ref<string | null>(null)
 // 控制标签显示状态
 const showAllLabels = ref(false)
 
-// 自定义节点数据类型
-interface NodeData {
-  id: string
-  name: string
-  symbolSize: number
-  category: number
-  weight?: number
-  area_code?: string
-  value?: number
-  pred_risk?: string
-  sensor_id?: string
-  itemStyle?: {
-    color: string
-  }
-}
-
-// 接口类型
-interface LinkData {
-  source: string
-  target: string
-  value: number
-  lineStyle?: {
-    color: string
-    width?: number
-  }
-}
+// 使用Pinia存储全局状态
+const graphStore = useGraphStore()
 
 // 节点类别颜色映射
 const categoryColors = [
@@ -75,6 +52,9 @@ const linkColors = {
 // 初始化图表
 const initChart = () => {
   if (!chartRef.value) return
+
+  // 输出当前状态，便于调试
+  console.log('初始化图表，Pinia存储的聚焦区域:', graphStore.focusedArea)
 
   // 销毁已有实例
   if (chart) {
@@ -183,6 +163,30 @@ const initChart = () => {
   // 保存原始连接以便后续恢复
   originalLinks.value = JSON.parse(JSON.stringify(processedLinks))
 
+  let displayNodes: NodeData[], displayLinks: LinkData[], zoomLevel: number, shouldShowLabels: boolean
+
+  // 根据当前状态决定显示内容
+  if (graphStore.focusedArea) {
+    // 如果已聚焦，使用过滤后的数据
+    if (graphStore.filteredNodes.length === 0) {
+      // 如果没有过滤数据，重新过滤
+      console.log('重新生成过滤数据...')
+      const { nodes, links } = getFilteredNodesAndLinks(graphStore.focusedArea)
+      graphStore.setFilteredData(nodes, links)
+    }
+
+    displayNodes = graphStore.filteredNodes
+    displayLinks = graphStore.filteredLinks
+    zoomLevel = 0.4
+    shouldShowLabels = true // 聚焦时显示标签
+  } else {
+    // 未聚焦，显示全部数据
+    displayNodes = processedNodes
+    displayLinks = processedLinks
+    zoomLevel = 0.15
+    shouldShowLabels = graphStore.showLabels // 根据全局标签设置决定
+  }
+
   // 设置图表选项
   const option = {
     tooltip: {
@@ -224,7 +228,7 @@ const initChart = () => {
       },
     },
     legend: {
-      data: graphData.categories.map((a) => a.name),
+      data: graphData.categories.map((a: { name: string }) => a.name),
       orient: 'vertical',
       right: 10,
       top: 20,
@@ -253,25 +257,39 @@ const initChart = () => {
         name: '工厂监控点知识图谱',
         type: 'graph',
         layout: 'force',
-        // 使用处理后的节点数据和连接数据
-        data: processedNodes,
-        links: processedLinks,
-        categories: graphData.categories.map((category, index) => ({
+        // 使用当前状态下应显示的节点和连接
+        data: displayNodes,
+        links: displayLinks,
+        categories: graphData.categories.map((category: { name: string }, index: number) => ({
           ...category,
           itemStyle: {
             color: categoryColors[index],
           },
         })),
         roam: true, // 允许缩放和平移
-        // 固定初始缩放级别为15%
-        zoom: 0.15,
+        // 根据是否聚焦设置缩放级别
+        zoom: zoomLevel,
         // 居中显示
         center: ['50%', '50%'],
         label: {
-          show: showAllLabels.value, // 根据标签显示状态初始化
+          show: shouldShowLabels, // 根据当前状态决定是否显示标签
           position: 'right',
-          formatter: '{b}',
-          fontSize: 12,
+          formatter: (params: { data: NodeData }) => {
+            // 根据节点类型返回不同格式的标签
+            const node = params.data
+
+            if (node.category === 0) {
+              // 区域节点
+              return node.name
+            } else if (node.category === 1) {
+              // 传感器节点
+              return node.id
+            } else if ([2, 3, 4].includes(node.category)) {
+              // 安全等级节点
+              return node.name
+            }
+            return params.data.name
+          },
           color: '#333',
           backgroundColor: 'rgba(255,255,255,0.7)', // 添加标签背景色，提高可读性
           padding: [3, 5],
@@ -287,8 +305,8 @@ const initChart = () => {
         // 禁用系列级别的自动颜色分配
         color: categoryColors,
         force: {
-          repulsion: [800, 1500], // 增加节点间的斥力，尤其是区域节点
-          edgeLength: [100, 300], // 增加边的长度
+          repulsion: graphStore.focusedArea ? 1500 : [800, 1500], // 根据是否聚焦调整斥力
+          edgeLength: graphStore.focusedArea ? 200 : [100, 300], // 根据是否聚焦调整边长
           gravity: 0.05, // 降低重力，让节点分散得更开
           layoutAnimation: true,
           friction: 0.8, // 增加摩擦系数，使布局更稳定
@@ -316,24 +334,29 @@ const initChart = () => {
   // 应用选项
   chart.setOption(option as echarts.EChartsOption)
 
+  // 同步本地组件状态和Pinia状态
+  focusedArea.value = graphStore.focusedArea
+  showAllLabels.value = graphStore.showLabels
+
   // 添加双击事件 - 实现区域节点聚焦功能
-  chart.on('dblclick', (params) => {
+  chart.on('dblclick', (params: any) => {
     if (params.dataType === 'node') {
-      const nodeData = params.data as NodeData
+      const nodeData = params.data
 
       if (nodeData.category === 0) {
         // 如果双击的是区域节点
         const areaCode = nodeData.id
 
         // 判断是否已经聚焦在该区域，如果是则恢复全部显示
-        if (focusedArea.value === areaCode) {
+        if (graphStore.focusedArea === areaCode) {
           restoreFullGraph()
-          focusedArea.value = null
           return
         }
 
-        // 记录当前聚焦的区域
+        // 记录当前聚焦的区域（更新Pinia状态）
+        graphStore.setFocusedArea(areaCode)
         focusedArea.value = areaCode
+        console.log('双击区域节点，聚焦更新为:', graphStore.focusedArea)
 
         // 过滤出需要显示的节点和连接
         focusOnArea(areaCode)
@@ -357,9 +380,9 @@ const initChart = () => {
           ],
         })
 
-        // 3秒后隐藏标签，除非全局标签显示已开启
+        // 3秒后隐藏标签，除非全局标签显示已开启或有聚焦区域
         setTimeout(() => {
-          if (!showAllLabels.value) {
+          if (!graphStore.showLabels && !graphStore.focusedArea) {
             chart?.setOption({
               series: [
                 {
@@ -382,27 +405,11 @@ const initChart = () => {
   })
 }
 
-// 切换标签显示状态
-const toggleLabels = () => {
-  showAllLabels.value = !showAllLabels.value
-
-  if (chart) {
-    chart.setOption({
-      series: [
-        {
-          id: 'knowledge-graph',
-          label: {
-            show: showAllLabels.value,
-          },
-        },
-      ],
-    })
+// 获取过滤后的节点和连接数据
+const getFilteredNodesAndLinks = (areaCode: string): { nodes: NodeData[]; links: LinkData[] } => {
+  if (!originalNodes.value.length || !originalLinks.value.length) {
+    return { nodes: [], links: [] }
   }
-}
-
-// 聚焦到特定区域，并显示标签
-const focusOnArea = (areaCode: string) => {
-  if (!chart || !originalNodes.value.length || !originalLinks.value.length) return
 
   // 找出该区域下的所有传感器节点ID
   const areaSensors = originalNodes.value
@@ -436,20 +443,64 @@ const focusOnArea = (areaCode: string) => {
     (link: LinkData) => showNodeIds.has(link.source as string) && showNodeIds.has(link.target as string),
   )
 
-  // 更新图表数据，同时显示所有保留节点的标签
+  return { nodes: filteredNodes, links: filteredLinks }
+}
+
+// 切换标签显示状态
+const toggleLabels = (): void => {
+  // 如果当前有聚焦区域，不执行任何操作
+  if (graphStore.focusedArea) {
+    return
+  }
+
+  // 更新Pinia状态
+  graphStore.toggleLabels()
+
+  // 同步本地状态
+  showAllLabels.value = graphStore.showLabels
+
+  console.log('切换标签显示:', graphStore.showLabels)
+
+  if (chart) {
+    chart.setOption({
+      series: [
+        {
+          id: 'knowledge-graph',
+          label: {
+            show: graphStore.showLabels,
+          },
+        },
+      ],
+    })
+  }
+}
+
+// 聚焦到特定区域，并显示标签
+const focusOnArea = (areaCode: string): void => {
+  if (!chart || !originalNodes.value.length || !originalLinks.value.length) return
+
+  console.log('聚焦到区域:', areaCode)
+
+  // 获取过滤后的节点和连接
+  const { nodes, links } = getFilteredNodesAndLinks(areaCode)
+
+  // 保存过滤后的数据到Pinia状态
+  graphStore.setFilteredData(nodes, links)
+
+  // 更新图表数据，始终显示所有保留节点的标签
   chart.setOption({
     series: [
       {
         id: 'knowledge-graph',
-        data: filteredNodes,
-        links: filteredLinks,
-        zoom: 0.4,
+        data: nodes,
+        links: links,
+        zoom: 0.3,
         center: ['50%', '50%'],
-        // 显示保留节点的标签，忽略全局标签设置
+        // 聚焦模式下始终显示标签
         label: {
           show: true,
           position: 'right',
-          formatter: (params: any) => {
+          formatter: (params: { data: NodeData }) => {
             // 根据节点类型返回不同格式的标签
             const node = params.data
 
@@ -463,7 +514,7 @@ const focusOnArea = (areaCode: string) => {
               // 安全等级节点
               return node.name
             }
-            return params.name
+            return params.data.name
           },
           color: '#333',
           backgroundColor: 'rgba(255,255,255,0.7)',
@@ -489,8 +540,17 @@ const focusOnArea = (areaCode: string) => {
 }
 
 // 恢复显示完整图表，同时隐藏标签（除非全局标签显示已开启）
-const restoreFullGraph = () => {
+const restoreFullGraph = (): void => {
   if (!chart || !originalNodes.value.length || !originalLinks.value.length) return
+
+  console.log('恢复完整图表')
+
+  // 清除聚焦状态（更新Pinia状态）
+  graphStore.setFocusedArea(null)
+  focusedArea.value = null
+
+  // 清除过滤数据
+  graphStore.clearFilteredData()
 
   chart.setOption({
     series: [
@@ -502,7 +562,71 @@ const restoreFullGraph = () => {
         center: ['50%', '50%'],
         label: {
           // 根据全局标签状态决定是否显示标签
-          show: showAllLabels.value,
+          show: graphStore.showLabels,
+        },
+        force: {
+          repulsion: [800, 1500],
+          edgeLength: [100, 300],
+        },
+      },
+    ],
+  })
+}
+
+// 应用当前状态 - 恢复当前聚焦状态或全部显示
+const applyCurrentState = (): void => {
+  if (!chart) return
+
+  console.log('应用当前状态，聚焦区域:', graphStore.focusedArea)
+
+  // 如果有聚焦区域但没有过滤后的数据，重新获取
+  if (graphStore.focusedArea && (!graphStore.filteredNodes.length || !graphStore.filteredLinks.length)) {
+    const { nodes, links } = getFilteredNodesAndLinks(graphStore.focusedArea)
+    graphStore.setFilteredData(nodes, links)
+  }
+
+  // 根据当前状态决定显示内容
+  const displayNodes = graphStore.focusedArea ? graphStore.filteredNodes : originalNodes.value
+  const displayLinks = graphStore.focusedArea ? graphStore.filteredLinks : originalLinks.value
+
+  chart.setOption({
+    series: [
+      {
+        id: 'knowledge-graph',
+        // 使用当前状态下应显示的节点和连接
+        data: displayNodes,
+        links: displayLinks,
+        // 根据聚焦状态设置缩放级别
+        zoom: graphStore.focusedArea ? 0.4 : 0.15,
+        // 根据聚焦状态决定是否显示标签 - 聚焦时始终显示
+        label: {
+          show: graphStore.focusedArea ? true : graphStore.showLabels,
+          position: 'right',
+          formatter: (params: { data: NodeData }) => {
+            const node = params.data
+            if (!node) return ''
+
+            if (node.category === 0) {
+              // 区域节点
+              return node.name
+            } else if (node.category === 1) {
+              // 传感器节点
+              return node.id
+            } else if ([2, 3, 4].includes(node.category)) {
+              // 安全等级节点
+              return node.name
+            }
+            return params.data.name
+          },
+          color: '#333',
+          backgroundColor: 'rgba(255,255,255,0.7)',
+          padding: [3, 5],
+          borderRadius: 3,
+        },
+        // 根据聚焦状态设置力导向参数
+        force: {
+          repulsion: graphStore.focusedArea ? 1500 : [800, 1500],
+          edgeLength: graphStore.focusedArea ? 200 : [100, 300],
         },
       },
     ],
@@ -510,22 +634,45 @@ const restoreFullGraph = () => {
 }
 
 // 监听窗口大小变化
-const handleResize = () => {
+const handleResize = (): void => {
   if (chart) {
     chart.resize()
+
+    // 调整大小后重新应用当前状态
+    setTimeout(() => {
+      applyCurrentState()
+    }, 100)
   }
 }
 
-// 监听展开状态变化
-watch(isChartExpanded, () => {
+// 关键修复: 监听展开状态变化，保持当前状态
+watch(isChartExpanded, (newValue) => {
+  console.log('展开状态变化:', newValue, '聚焦区域:', graphStore.focusedArea)
+
+  // 同步本地状态和Pinia状态
+  focusedArea.value = graphStore.focusedArea
+  showAllLabels.value = graphStore.showLabels
+
   // 延迟执行以等待DOM更新
   setTimeout(() => {
-    handleResize()
+    // 如果图表实例不存在，初始化图表
+    if (!chart) {
+      initChart()
+      return
+    }
+
+    // 调整图表大小
+    chart.resize()
+
+    // 应用当前状态
+    applyCurrentState()
   }, 300)
 })
 
 // 生命周期钩子
 onMounted(() => {
+  console.log('组件挂载，Pinia存储的聚焦区域:', graphStore.focusedArea)
+
   // 初始化图表
   initChart()
   window.addEventListener('resize', handleResize)
@@ -543,11 +690,17 @@ onUnmounted(() => {
 <template>
   <div class="knowledge-graph-container">
     <div class="controls bottom-right">
-      <button class="toggle-labels-btn" @click="toggleLabels">
-        {{ showAllLabels ? '隐藏标签' : '显示标签' }}
+      <button
+        class="toggle-labels-btn"
+        @click="toggleLabels"
+        :disabled="!!graphStore.focusedArea"
+        :class="{ disabled: !!graphStore.focusedArea }"
+      >
+        {{ graphStore.focusedArea ? '标签已显示' : graphStore.showLabels ? '隐藏标签' : '显示标签' }}
       </button>
     </div>
     <div ref="chartRef" class="chart"></div>
+    <div v-if="graphStore.focusedArea" class="focus-indicator">已聚焦区域: {{ graphStore.focusedArea }}</div>
   </div>
 </template>
 
@@ -587,7 +740,25 @@ onUnmounted(() => {
   transition: background-color 0.3s;
 }
 
-.toggle-labels-btn:hover {
+.toggle-labels-btn:hover:not(.disabled) {
   background-color: #66b1ff;
+}
+
+.toggle-labels-btn.disabled {
+  background-color: #a0cfff;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.focus-indicator {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 10;
 }
 </style>
