@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, inject, onUnmounted, type InjectionKey, type Ref } from 'vue'
-import sensorData from '@/mock/regionRiskSummary.json'
+import sensorData from '../../mock/riskRegionSummary.json'
 
 interface Region {
   timestamp: string
