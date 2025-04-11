@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, inject, onUnmounted, type InjectionKey, type Ref } from 'vue'
-import newPlantLogData from '../../mock/RegionRiskSummary.json'
+import newPlantLogData from '../../mock/riskRegionSummary.json'
 import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
 
