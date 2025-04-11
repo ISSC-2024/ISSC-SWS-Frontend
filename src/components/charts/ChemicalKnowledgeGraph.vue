@@ -1,11 +1,16 @@
 <script setup lang="ts">
 /**
- * @description 化工安全监测3D知识图谱组件 - 层内力导向修复版
+ * @description 工厂监控点知识图谱组件
+ *
+ * 该组件使用ECharts实现工厂监控点的知识图谱可视化
+ * 展示区域、传感器和安全状态的关联关系
+ * 每个传感器连接到3个安全等级节点，节点大小基于传感器权重
+ * 各区域之间相互连接形成网络结构
  */
 import { ref, onMounted, onUnmounted, inject, watch } from 'vue'
 import * as echarts from 'echarts'
-import 'echarts-gl'
-import jsonData from '../../mock/monitoring_points_weights.csv?raw'
+// 注意：需要将Python脚本生成的JSON文件放在正确的位置
+import graphData from '../../mock/monitoringKnowledgeGraph.json'
 
 // 获取图表容器展开状态
 const isChartExpanded = inject('isChartExpanded', ref(false))
@@ -14,282 +19,57 @@ const isChartExpanded = inject('isChartExpanded', ref(false))
 const chartRef = ref<HTMLElement | null>(null)
 let chart: echarts.ECharts | null = null
 
-// 摄像机控制状态
-const isAutoRotate = ref(true)
-const currentView = ref<string>('正视图')
+// 记录原始节点和连接，用于恢复显示
+const originalNodes = ref<any[]>([])
+const originalLinks = ref<any[]>([])
+// 当前聚焦的区域
+const focusedArea = ref<string | null>(null)
+// 控制标签显示状态
+const showAllLabels = ref(false)
 
-// 解析CSV数据
-const parseCSV = (csvString: string) => {
-  const lines = csvString.split('\n')
-  const headers = lines[0]
-    .split(',')
-    .map((h) => h.trim().replace('// filepath: d:\\Work\\Code\\module2\\monitoring_points_weights.csv', ''))
-  const result = []
-
-  for (let i = 1; i < lines.length; i++) {
-    if (!lines[i].trim()) continue
-
-    const values = lines[i].split(',')
-    const entry: Record<string, any> = {}
-
-    headers.forEach((header, index) => {
-      if (header === 'weight') {
-        entry[header] = parseFloat(values[index])
-      } else {
-        entry[header] = values[index]
-      }
-    })
-
-    result.push(entry)
-  }
-
-  return result
-}
-
-// 处理数据为图谱格式 - 分层颜色优化版
-const processData = (data: any[]) => {
-  // 提取唯一区域
-  const areas = Array.from(new Set(data.map((item) => item.area_code))).map((code) => {
-    const areaItem = data.find((item) => item.area_code === code)
-    return {
-      code,
-      name: areaItem?.area_name || code,
-    }
-  })
-
-  // 创建节点列表和链接
-  const nodes: any[] = []
-  const links: any[] = []
-
-  // 颜色设置 - 使用更鲜明的颜色
-  const AREA_COLOR = '#9C27B0' // 紫色 (区域层)
-  const SENSOR_COLOR = '#1976D2' // 蓝色 (传感器层)
-  const SAFE_COLOR = '#4CAF50' // 绿色 (安全节点)
-  const WARNING_COLOR = '#FF9800' // 橙色 (警告节点)
-  const DANGER_COLOR = '#F44336' // 红色 (危险节点)
-
-  // 层高设置 - 激进增大层间距
-  const LAYER_HEIGHT = 2000 // 非常大的层间距，避免层间力的相互影响
-  const AREA_Y = LAYER_HEIGHT
-  const SENSOR_Y = 0
-  const STATE_Y = -LAYER_HEIGHT
-
-  // 设置布局参数 - 增大分布半径
-  const CIRCLE_RADIUS = 1500
-
-  // 设置分类
-  const categories = [
-    { name: '区域', itemStyle: { color: AREA_COLOR } },
-    { name: '传感器', itemStyle: { color: SENSOR_COLOR } },
-    { name: '安全节点', itemStyle: { color: SAFE_COLOR } },
-    { name: '警告节点', itemStyle: { color: WARNING_COLOR } },
-    { name: '危险节点', itemStyle: { color: DANGER_COLOR } },
-  ]
-
-  // 添加区域节点（顶层）
-  const areaAngleStep = (2 * Math.PI) / areas.length
-  areas.forEach((area, idx) => {
-    const angle = idx * areaAngleStep
-    const areaRadius = CIRCLE_RADIUS * 0.6
-
-    // 增大随机化位置范围
-    const jitter = 80 * Math.random() - 40
-
-    nodes.push({
-      id: `area_${area.code}`,
-      name: area.name,
-      symbolSize: 75,
-      category: 0,
-      x: Math.cos(angle) * (areaRadius + jitter),
-      y: AREA_Y,
-      z: Math.sin(angle) * (areaRadius + jitter),
-      // 关键：添加层标识，用于层内力导向分组
-      layerIndex: 0,
-      fixedY: AREA_Y, // 固定Y坐标
-      itemStyle: {
-        color: AREA_COLOR,
-        borderWidth: 3,
-        borderColor: '#fff',
-        shadowBlur: 20,
-        shadowColor: 'rgba(156, 39, 176, 0.6)',
-      },
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 30,
-          borderWidth: 4,
-        },
-      },
-    })
-  })
-
-  // 区域传感器映射
-  const sensorsByArea: Record<string, string[]> = {}
-  data.forEach((sensor) => {
-    if (!sensorsByArea[sensor.area_code]) {
-      sensorsByArea[sensor.area_code] = []
-    }
-    sensorsByArea[sensor.area_code].push(sensor.point_id)
-  })
-
-  // 添加传感器和安全状态节点
-  data.forEach((sensor, idx) => {
-    const areaCode = sensor.area_code
-    const sensorId = sensor.point_id
-    const weight = sensor.weight
-
-    // 找到对应的区域节点索引
-    const areaIdx = areas.findIndex((a) => a.code === areaCode)
-
-    // 在区域节点附近散布传感器 - 增大分散程度
-    const sensorsInArea = sensorsByArea[areaCode].length
-    const sensorAngleOffset = ((idx % sensorsInArea) / sensorsInArea) * Math.PI * 2
-    const angle = areaIdx * areaAngleStep + sensorAngleOffset
-
-    // 确定传感器位置 - 增大分散半径和随机性
-    const sensorRadius = CIRCLE_RADIUS * 0.7
-    const sensorX = Math.cos(angle) * sensorRadius * (0.8 + Math.random() * 0.4)
-    const sensorZ = Math.sin(angle) * sensorRadius * (0.8 + Math.random() * 0.4)
-
-    // 添加传感器节点 - 所有传感器使用统一蓝色
-    nodes.push({
-      id: `sensor_${sensorId}`,
-      name: sensorId,
-      symbolSize: 40 + weight * 25,
-      category: 1,
-      x: sensorX,
-      y: SENSOR_Y,
-      z: sensorZ,
-      // 关键：添加层标识，用于层内力导向分组
-      layerIndex: 1,
-      fixedY: SENSOR_Y, // 固定Y坐标
-      itemStyle: {
-        color: SENSOR_COLOR,
-        borderWidth: 2,
-        borderColor: '#fff',
-        shadowBlur: 12,
-        shadowColor: 'rgba(25, 118, 210, 0.6)',
-      },
-      emphasis: {
-        scale: 1.2,
-      },
-    })
-
-    // 添加区域到传感器的连线
-    links.push({
-      source: `area_${areaCode}`,
-      target: `sensor_${sensorId}`,
-      // 关键：标记跨层连接，这些连接不会产生力
-      isInterLayer: true,
-      lineStyle: {
-        width: 3,
-        color: AREA_COLOR,
-        opacity: 0.6,
-        curveness: 0.4,
-      },
-    })
-
-    // 为每个传感器创建三个安全状态节点
-    const safetyStates = [
-      { id: 'safe', name: '安全', category: 2, color: SAFE_COLOR, angle: 0 },
-      { id: 'warning', name: '警告', category: 3, color: WARNING_COLOR, angle: (2 * Math.PI) / 3 },
-      { id: 'danger', name: '危险', category: 4, color: DANGER_COLOR, angle: (4 * Math.PI) / 3 },
-    ]
-
-    // 安全节点分布在传感器周围形成三角形 - 增大分布半径
-    const stateRadius = 250
-
-    safetyStates.forEach((state) => {
-      // 计算节点大小 - 基于权重
-      let nodeSize
-      if (state.id === 'safe') {
-        // 安全节点: 权重越低(越安全)节点越大
-        nodeSize = 25 + (1 - weight) * 35
-      } else if (state.id === 'warning') {
-        // 警告节点: 权重越接近0.5节点越大
-        nodeSize = 25 + (1 - Math.abs(weight - 0.5) * 2) * 35
-      } else {
-        // 危险节点: 权重越高(越危险)节点越大
-        nodeSize = 25 + weight * 35
-      }
-
-      // 计算安全节点位置 - 增加随机性
-      const stateAngle = angle + state.angle + (Math.random() * 0.5 - 0.25)
-      const stateX = sensorX + Math.cos(stateAngle) * stateRadius * (0.8 + Math.random() * 0.4)
-      const stateZ = sensorZ + Math.sin(stateAngle) * stateRadius * (0.8 + Math.random() * 0.4)
-
-      // 添加安全状态节点
-      nodes.push({
-        id: `${sensorId}_${state.id}`,
-        name: state.name,
-        symbolSize: nodeSize,
-        category: state.id === 'safe' ? 2 : state.id === 'warning' ? 3 : 4,
-        x: stateX,
-        y: STATE_Y,
-        z: stateZ,
-        // 关键：添加层标识，用于层内力导向分组
-        layerIndex: 2,
-        fixedY: STATE_Y, // 固定Y坐标
-        itemStyle: {
-          color: state.color,
-          borderWidth: 2,
-          borderColor: '#fff',
-          shadowBlur: 12,
-          shadowColor: state.color,
-        },
-        emphasis: {
-          scale: 1.15,
-          itemStyle: {
-            shadowBlur: 20,
-          },
-        },
-      })
-
-      // 添加传感器到安全状态的连线
-      const linkWidth = (() => {
-        if (state.id === 'safe') return Math.max(1.5, (1 - weight) * 5)
-        if (state.id === 'warning') return Math.max(1.5, (1 - Math.abs(weight - 0.5) * 2) * 5)
-        return Math.max(1.5, weight * 5) // danger
-      })()
-
-      const linkOpacity = (() => {
-        if (state.id === 'safe') return 0.3 + (1 - weight) * 0.7
-        if (state.id === 'warning') return 0.3 + (1 - Math.abs(weight - 0.5) * 2) * 0.7
-        return 0.3 + weight * 0.7 // danger
-      })()
-
-      links.push({
-        source: `sensor_${sensorId}`,
-        target: `${sensorId}_${state.id}`,
-        // 关键：标记跨层连接，这些连接不会产生力
-        isInterLayer: true,
-        lineStyle: {
-          width: linkWidth,
-          color: state.color,
-          opacity: linkOpacity,
-          curveness: 0.3 + Math.random() * 0.2,
-        },
-      })
-    })
-  })
-
-  return {
-    nodes,
-    links,
-    categories,
+// 自定义节点数据类型
+interface NodeData {
+  id: string
+  name: string
+  symbolSize: number
+  category: number
+  weight?: number
+  area_code?: string
+  value?: number
+  pred_risk?: string
+  sensor_id?: string
+  itemStyle?: {
+    color: string
   }
 }
 
-// 力导向布局配置 - 定义在外部，确保始终可用
-const forceAtlasConfig = {
-  steps: 5,
-  stopThreshold: 0.01,
-  jitterTolerence: 0.1,
-  edgeWeight: [0.1, 1],
-  gravity: 0.15,
-  repulsion: 120,
-  repulsionByDegree: true,
-  barnesHutOptimize: true,
-  preventOverlap: true,
+// 接口类型
+interface LinkData {
+  source: string
+  target: string
+  value: number
+  lineStyle?: {
+    color: string
+    width?: number
+  }
+}
+
+// 节点类别颜色映射
+const categoryColors = [
+  '#5470c6', // 区域 - 蓝色
+  '#9a60b4', // 传感器 - 紫色
+  '#67C23A', // 安全 - 绿色
+  '#E6A23C', // 警告 - 黄色
+  '#F56C6C', // 危险 - 红色
+]
+
+// 连接线颜色映射
+const linkColors = {
+  areaToArea: '#6782B4', // 区域到区域的连接 - 深蓝色
+  areaToSensor: '#7D48A6', // 区域到传感器的连接 - 深紫色
+  sensorToSafe: '#4FB553', // 传感器到安全节点的连接 - 深绿色
+  sensorToWarning: '#D69D2A', // 传感器到警告节点的连接 - 深黄色
+  sensorToDanger: '#D64541', // 传感器到危险节点的连接 - 深红色
 }
 
 // 初始化图表
@@ -304,172 +84,230 @@ const initChart = () => {
   // 创建新实例
   chart = echarts.init(chartRef.value)
 
-  // 处理CSV数据
-  const monitoringData = parseCSV(jsonData)
-  const graphData = processData(monitoringData)
+  // 深拷贝节点数据和连接数据，确保不修改原始数据
+  const processedNodes = JSON.parse(JSON.stringify(graphData.nodes)).map((node: NodeData) => {
+    // 根据节点类别分配颜色
+    switch (node.category) {
+      case 0: // 区域节点
+        node.itemStyle = { color: categoryColors[0] }
+        // 增大区域节点的斥力值，使它们相互远离
+        node.value = 800
+        break
+      case 1: // 传感器节点
+        node.itemStyle = { color: categoryColors[1] }
+        break
+      case 2: // 安全节点
+        node.itemStyle = { color: categoryColors[2] }
+        break
+      case 3: // 警告节点
+        node.itemStyle = { color: categoryColors[3] }
+        break
+      case 4: // 危险节点
+        node.itemStyle = { color: categoryColors[4] }
+        break
+    }
+    return node
+  })
+
+  // 保存原始数据以便后续恢复
+  originalNodes.value = JSON.parse(JSON.stringify(processedNodes))
+
+  // 处理连接线，设置不同类型连接线的颜色和连接强度
+  const processedLinks = JSON.parse(JSON.stringify(graphData.links)).map((link: LinkData) => {
+    const sourceId = link.source
+    const targetId = link.target
+
+    // 判断连接类型并设置相应颜色和连接强度
+    if (sourceId.length <= 3 && targetId.length <= 3) {
+      // 区域到区域的连接 - 统一连接强度为2
+      link.value = 2
+      link.lineStyle = {
+        color: linkColors.areaToArea,
+        width: 2,
+      }
+    } else if (sourceId.length <= 3 && targetId.includes('_')) {
+      // 区域到传感器的连接 - 统一连接强度为2
+      link.value = 2
+      link.lineStyle = {
+        color: linkColors.areaToSensor,
+        width: 2,
+      }
+    } else if (
+      sourceId.includes('_') &&
+      !sourceId.includes('safe') &&
+      !sourceId.includes('warning') &&
+      !sourceId.includes('danger')
+    ) {
+      // 传感器到安全状态节点的连接 - 连接强度在1~4之间
+      let linkValue = 0
+
+      if (targetId.includes('safe')) {
+        // 提取权重并计算连接强度(1-4)
+        const sourceNode = processedNodes.find((node: { id: string }) => node.id === sourceId) as NodeData
+        const weight = sourceNode?.weight || 0.5
+        linkValue = Math.max(1, Math.min(4, Math.round((1 - weight) * 4)))
+
+        link.value = linkValue
+        link.lineStyle = {
+          color: linkColors.sensorToSafe,
+          width: linkValue,
+        }
+      } else if (targetId.includes('warning')) {
+        // 提取权重并计算连接强度(1-4)
+        const sourceNode = processedNodes.find((node: { id: string }) => node.id === sourceId) as NodeData
+        const weight = sourceNode?.weight || 0.5
+        linkValue = Math.max(1, Math.min(4, Math.round(4 * (0.5 - Math.abs(weight - 0.5)) * 2)))
+
+        link.value = linkValue
+        link.lineStyle = {
+          color: linkColors.sensorToWarning,
+          width: linkValue,
+        }
+      } else if (targetId.includes('danger')) {
+        // 提取权重并计算连接强度(1-4)
+        const sourceNode = processedNodes.find((node: { id: string }) => node.id === sourceId) as NodeData
+        const weight = sourceNode?.weight || 0.5
+        linkValue = Math.max(1, Math.min(4, Math.round(weight * 4)))
+
+        link.value = linkValue
+        link.lineStyle = {
+          color: linkColors.sensorToDanger,
+          width: linkValue,
+        }
+      }
+    }
+
+    return link
+  })
+
+  // 保存原始连接以便后续恢复
+  originalLinks.value = JSON.parse(JSON.stringify(processedLinks))
 
   // 设置图表选项
   const option = {
     tooltip: {
+      trigger: 'item',
       formatter: (params: any) => {
         if (params.dataType === 'node') {
-          const data = params.data
-          if (data.id.startsWith('sensor_')) {
-            const sensorId = data.name
-            const sensorInfo = monitoringData.find((item) => item.point_id === sensorId)
-            if (sensorInfo) {
-              return `<div style="padding:8px;line-height:1.5">
-                <p style="font-weight:bold;font-size:14px;margin-bottom:6px">${sensorId}</p>
-                <p><strong>区域:</strong> ${sensorInfo.area_name}</p>
-                <p><strong>风险状态:</strong> ${sensorInfo.pred_risk}</p>
-                <p><strong>权重指数:</strong> ${sensorInfo.weight.toFixed(3)}</p>
-              </div>`
-            }
-          } else if (data.id.includes('_safe') || data.id.includes('_warning') || data.id.includes('_danger')) {
-            const sensorId = data.id.split('_')[0]
-            const stateType = data.id.split('_')[1]
-            const sensorInfo = monitoringData.find((item) => item.point_id === sensorId)
+          const data = params.data as NodeData
 
-            if (sensorInfo) {
-              let stateText = ''
-              if (stateType === 'safe') {
-                const safeScore = (1 - sensorInfo.weight) * 100
-                stateText = `安全系数: ${safeScore.toFixed(1)}%`
-              } else if (stateType === 'warning') {
-                const warningScore = (1 - Math.abs(sensorInfo.weight - 0.5) * 2) * 100
-                stateText = `警告系数: ${warningScore.toFixed(1)}%`
-              } else if (stateType === 'danger') {
-                const dangerScore = sensorInfo.weight * 100
-                stateText = `危险系数: ${dangerScore.toFixed(1)}%`
-              }
-
-              return `<div style="padding:8px">
-                <p style="font-weight:bold">${sensorId}</p>
-                <p>${stateText}</p>
+          // 传感器节点
+          if (data.weight !== undefined && data.category === 1) {
+            return `<div style="text-align:left">
+              <b>${data.name}</b><br/>
+              区域: ${data.area_code}<br/>
+              当前状态: ${data.pred_risk}<br/>
+              风险值: ${(data.weight * 100).toFixed(2)}%
+            </div>`
+          }
+          // 安全状态节点
+          else if (data.category === 2 || data.category === 3 || data.category === 4) {
+            if (data.sensor_id && data.weight !== undefined) {
+              return `<div style="text-align:left">
+                <b>${data.name}</b><br/>
+                传感器: ${data.sensor_id}<br/>
+                风险值: ${(data.weight * 100).toFixed(2)}%
               </div>`
             }
           }
-          return `${data.name}`
+          // 区域节点
+          return `<div style="text-align:left"><b>${data.name}</b></div>`
+        } else if (params.dataType === 'edge') {
+          return `连接强度: ${params.data.value}`
         }
         return ''
       },
-    },
-    legend: {
-      data: graphData.categories.map((category) => category.name),
+      backgroundColor: 'rgba(50,50,50,0.8)',
+      borderWidth: 0,
       textStyle: {
         color: '#fff',
       },
+    },
+    legend: {
+      data: graphData.categories.map((a) => a.name),
+      orient: 'vertical',
+      right: 10,
+      top: 20,
+      textStyle: {
+        color: '#333',
+      },
+      itemWidth: 25,
+      itemHeight: 14,
+      itemStyle: {
+        borderWidth: 0,
+      },
+      textGap: 8,
       selected: {
-        区域: true,
+        安全: true,
+        警告: true,
+        危险: true,
         传感器: true,
-        安全节点: true,
-        警告节点: true,
-        危险节点: true,
+        区域: true,
       },
     },
     animationDuration: 1500,
     animationEasingUpdate: 'quinticInOut',
     series: [
       {
-        name: '化工监测点安全状态',
-        type: 'graphGL',
-        nodes: graphData.nodes,
-        edges: graphData.links,
-        categories: graphData.categories,
-
-        // 使用自定义布局
-        layout: 'none',
-
-        itemStyle: {
-          opacity: 0.95,
-        },
-
-        emphasis: {
-          scale: 1.2,
-          label: {
-            show: true,
-            formatter: '{b}',
-            position: 'right',
-            fontSize: 14,
-            fontWeight: 'bold',
-            backgroundColor: 'rgba(0,0,0,0.6)',
-            padding: [4, 8],
-            borderRadius: 4,
+        id: 'knowledge-graph',
+        name: '工厂监控点知识图谱',
+        type: 'graph',
+        layout: 'force',
+        // 使用处理后的节点数据和连接数据
+        data: processedNodes,
+        links: processedLinks,
+        categories: graphData.categories.map((category, index) => ({
+          ...category,
+          itemStyle: {
+            color: categoryColors[index],
           },
-        },
-
+        })),
+        roam: true, // 允许缩放和平移
+        // 固定初始缩放级别为15%
+        zoom: 0.15,
+        // 居中显示
+        center: ['50%', '50%'],
         label: {
-          show: false,
+          show: showAllLabels.value, // 根据标签显示状态初始化
           position: 'right',
           formatter: '{b}',
-          textStyle: {
-            fontSize: 12,
-            color: '#fff',
-            backgroundColor: 'rgba(0,0,0,0.3)',
-            padding: [3, 5],
-          },
+          fontSize: 12,
+          color: '#333',
+          backgroundColor: 'rgba(255,255,255,0.7)', // 添加标签背景色，提高可读性
+          padding: [3, 5],
+          borderRadius: 3,
         },
-
-        // 视角控制 - 优化摄像机交互控制
-        viewControl: {
-          // 默认自动旋转
-          autoRotate: true,
-          autoRotateAfterStill: 2, // 停止交互2秒后恢复自动旋转
-          autoRotateSpeed: 1.2,
-
-          // 提高摄像机交互灵敏度
-          rotateSensitivity: 2.2, // 增加旋转灵敏度
-          zoomSensitivity: 1.8, // 增加缩放灵敏度
-          panSensitivity: 1.5, // 增加平移灵敏度
-          damping: 0.85,
-
-          // 调整视距和角度以适应更大的层间距
-          distance: 5000,
-          minDistance: 1000,
-          maxDistance: 10000,
-
-          // 设置初始角度，更好展示分层结构
-          alpha: 40, // 垂直角度
-          beta: 30, // 水平角度
-
-          center: [0, 0, 0],
-          animation: true,
-          animationDurationUpdate: 500,
-          animationEasingUpdate: 'cubicInOut',
+        // 确保节点样式不会被series级别的itemStyle覆盖
+        itemStyle: {
+          borderColor: '#fff',
+          borderWidth: 1,
+          shadowBlur: 10,
+          shadowColor: 'rgba(0, 0, 0, 0.3)',
         },
-
-        // 交互效果
-        focusNodeAdjacency: true,
-        focusNodeAdjacencyOn: 'click',
-
-        // 光照和环境效果
-        light: {
-          main: {
-            intensity: 1.2,
-            shadow: true,
-            shadowQuality: 'medium',
-          },
-          ambient: {
-            intensity: 0.4,
-          },
+        // 禁用系列级别的自动颜色分配
+        color: categoryColors,
+        force: {
+          repulsion: [800, 1500], // 增加节点间的斥力，尤其是区域节点
+          edgeLength: [100, 300], // 增加边的长度
+          gravity: 0.05, // 降低重力，让节点分散得更开
+          layoutAnimation: true,
+          friction: 0.8, // 增加摩擦系数，使布局更稳定
         },
-
-        // 后期处理效果
-        postEffect: {
-          enable: true,
-          bloom: {
-            intensity: 0.15,
-          },
-          SSAO: {
-            enable: true,
-            radius: 8,
-            intensity: 1.3,
-          },
+        edgeSymbol: ['none', 'none'],
+        edgeLabel: {
+          show: false,
         },
-
-        // 边缘箭头
-        edgeSymbol: ['none', 'arrow'],
-        edgeSymbolSize: [0, 8],
+        lineStyle: {
+          opacity: 0.8,
+          curveness: 0.2,
+        },
+        emphasis: {
+          focus: 'adjacency',
+          lineStyle: {
+            width: 6,
+          },
+          scale: true,
+        },
       },
     ],
     backgroundColor: 'transparent',
@@ -478,237 +316,217 @@ const initChart = () => {
   // 应用选项
   chart.setOption(option as echarts.EChartsOption)
 
-  // 图表初始化完成后，进行自定义力导向布局
-  // 为每个层级单独应用力导向，传入正确的配置参数
-  applyLayeredForceAtlas(chart, graphData, forceAtlasConfig)
+  // 添加双击事件 - 实现区域节点聚焦功能
+  chart.on('dblclick', (params) => {
+    if (params.dataType === 'node') {
+      const nodeData = params.data as NodeData
+
+      if (nodeData.category === 0) {
+        // 如果双击的是区域节点
+        const areaCode = nodeData.id
+
+        // 判断是否已经聚焦在该区域，如果是则恢复全部显示
+        if (focusedArea.value === areaCode) {
+          restoreFullGraph()
+          focusedArea.value = null
+          return
+        }
+
+        // 记录当前聚焦的区域
+        focusedArea.value = areaCode
+
+        // 过滤出需要显示的节点和连接
+        focusOnArea(areaCode)
+      } else {
+        // 对于非区域节点的双击，高亮关联节点和边
+        chart?.dispatchAction({
+          type: 'focusNodeAdjacency',
+          seriesIndex: 0,
+          dataIndex: params.dataIndex,
+        })
+
+        // 临时显示标签
+        chart?.setOption({
+          series: [
+            {
+              id: 'knowledge-graph',
+              label: {
+                show: true,
+              },
+            },
+          ],
+        })
+
+        // 3秒后隐藏标签，除非全局标签显示已开启
+        setTimeout(() => {
+          if (!showAllLabels.value) {
+            chart?.setOption({
+              series: [
+                {
+                  id: 'knowledge-graph',
+                  label: {
+                    show: false,
+                  },
+                },
+              ],
+            })
+          }
+        }, 3000)
+      }
+    }
+  })
+
+  // 添加图例点击事件处理
+  chart.on('legendselectchanged', (params: any) => {
+    console.log('图例选择变化:', params.name, params.selected)
+  })
 }
 
-// 为每个层级单独应用力导向布局 - 修改传参方式
-const applyLayeredForceAtlas = (chart: any, graphData: any, forceConfig: any) => {
-  // 按layerIndex分组节点
-  const layerNodes: Record<number, any[]> = {}
-  graphData.nodes.forEach((node: any) => {
-    const layerIndex = node.layerIndex || 0
-    if (!layerNodes[layerIndex]) {
-      layerNodes[layerIndex] = []
-    }
-    layerNodes[layerIndex].push(node)
-  })
+// 切换标签显示状态
+const toggleLabels = () => {
+  showAllLabels.value = !showAllLabels.value
 
-  // 按layerIndex分组连接
-  const layerLinks: Record<number, any[]> = {}
-  graphData.links.forEach((link: any) => {
-    if (link.isInterLayer) return // 跳过跨层连接
-
-    // 查找源节点和目标节点
-    const sourceNode = graphData.nodes.find((n: any) => n.id === link.source)
-    const targetNode = graphData.nodes.find((n: any) => n.id === link.target)
-
-    if (!sourceNode || !targetNode) return
-
-    // 确保源节点和目标节点在同一层
-    if (sourceNode.layerIndex !== targetNode.layerIndex) return
-
-    const layerIndex = sourceNode.layerIndex
-    if (!layerLinks[layerIndex]) {
-      layerLinks[layerIndex] = []
-    }
-    layerLinks[layerIndex].push(link)
-  })
-
-  // 启动动画循环，为每层应用力导向
-  let frameCount = 0
-  const maxFrames = 100 // 最大循环次数，防止无限循环
-
-  function animate() {
-    if (frameCount >= maxFrames) return
-
-    // 每一帧，为每层应用力导向算法
-    Object.keys(layerNodes).forEach((layerIndexStr) => {
-      const layerIndex = parseInt(layerIndexStr)
-      const nodes = layerNodes[layerIndex]
-      const links = layerLinks[layerIndex] || []
-
-      // 使用简化的力导向算法，只在XZ平面内运动
-      // 正确传入力导向配置
-      applyForceStep(nodes, links, forceConfig)
-    })
-
-    // 更新节点位置，但保持Y坐标不变
-    const newNodes = graphData.nodes.map((node: any) => {
-      return {
-        ...node,
-        y: node.fixedY, // 确保Y坐标不变
-      }
-    })
-
-    // 更新图表
+  if (chart) {
     chart.setOption({
       series: [
         {
-          data: newNodes,
+          id: 'knowledge-graph',
+          label: {
+            show: showAllLabels.value,
+          },
         },
       ],
     })
-
-    frameCount++
-    requestAnimationFrame(animate)
   }
-
-  // 开始动画
-  animate()
 }
 
-// 简单的力导向布局步骤 - 只在XZ平面应用
-const applyForceStep = (nodes: any[], links: any[], config: any) => {
-  // 确保config存在，使用默认值作为备选
-  const repulsion = config?.repulsion || 100
-  const gravity = config?.gravity || 0.1
+// 聚焦到特定区域，并显示标签
+const focusOnArea = (areaCode: string) => {
+  if (!chart || !originalNodes.value.length || !originalLinks.value.length) return
 
-  // 计算节点间斥力 (仅同层节点)
-  nodes.forEach((node1) => {
-    node1.fx = 0
-    node1.fz = 0
+  // 找出该区域下的所有传感器节点ID
+  const areaSensors = originalNodes.value
+    .filter((node: NodeData) => node.category === 1 && node.area_code === areaCode)
+    .map((node: NodeData) => node.id)
 
-    nodes.forEach((node2) => {
-      if (node1.id === node2.id) return
+  // 添加需要显示的节点ID集合
+  const showNodeIds = new Set<string>()
+  showNodeIds.add(areaCode) // 添加区域节点
 
-      // 只计算同层节点间的力
-      if (node1.layerIndex !== node2.layerIndex) return
+  // 添加该区域的传感器节点
+  areaSensors.forEach((sensorId) => showNodeIds.add(sensorId))
 
-      const dx = node1.x - node2.x
-      const dz = node1.z - node2.z
-      const distance = Math.sqrt(dx * dx + dz * dz) || 0.1
-
-      // 斥力与距离平方成反比
-      const force = repulsion / (distance * distance)
-
-      // 只在XZ平面应用力
-      node1.fx += (dx / distance) * force
-      node1.fz += (dz / distance) * force
-    })
-
-    // 添加向中心的引力
-    node1.fx -= node1.x * gravity
-    node1.fz -= node1.z * gravity
-  })
-
-  // 计算连接的拉力 (仅同层连接)
-  links.forEach((link) => {
-    const source = nodes.find((n) => n.id === link.source) || link.source
-    const target = nodes.find((n) => n.id === link.target) || link.target
-
-    if (typeof source === 'object' && typeof target === 'object') {
-      // 只计算同层节点间的连接力
-      if (source.layerIndex !== target.layerIndex) return
-
-      const dx = source.x - target.x
-      const dz = source.z - target.z
-
-      source.fx -= dx * 0.05
-      source.fz -= dz * 0.05
-      target.fx += dx * 0.05
-      target.fz += dz * 0.05
+  // 添加传感器连接的安全等级节点
+  originalLinks.value.forEach((link: LinkData) => {
+    // 确保源节点是我们感兴趣的传感器
+    if (areaSensors.includes(link.source as string)) {
+      const targetId = link.target as string
+      // 确保目标节点是安全等级节点
+      if (targetId.includes('_safe') || targetId.includes('_warning') || targetId.includes('_danger')) {
+        showNodeIds.add(targetId)
+      }
     }
   })
 
-  // 更新位置 (仅更新XZ坐标)
-  nodes.forEach((node) => {
-    node.x += Math.min(5, Math.max(-5, node.fx)) // 限制最大移动幅度
-    node.z += Math.min(5, Math.max(-5, node.fz))
-  })
-}
+  // 过滤需要显示的节点
+  const filteredNodes = originalNodes.value.filter((node: NodeData) => showNodeIds.has(node.id))
 
-// 切换自动旋转
-const toggleAutoRotate = () => {
-  if (!chart) return
+  // 过滤需要显示的连接
+  const filteredLinks = originalLinks.value.filter(
+    (link: LinkData) => showNodeIds.has(link.source as string) && showNodeIds.has(link.target as string),
+  )
 
-  isAutoRotate.value = !isAutoRotate.value
+  // 更新图表数据，同时显示所有保留节点的标签
   chart.setOption({
     series: [
       {
-        viewControl: {
-          autoRotate: isAutoRotate.value,
+        id: 'knowledge-graph',
+        data: filteredNodes,
+        links: filteredLinks,
+        zoom: 0.4,
+        center: ['50%', '50%'],
+        // 显示保留节点的标签，忽略全局标签设置
+        label: {
+          show: true,
+          position: 'right',
+          formatter: (params: any) => {
+            // 根据节点类型返回不同格式的标签
+            const node = params.data
+
+            if (node.category === 0) {
+              // 区域节点
+              return node.name
+            } else if (node.category === 1) {
+              // 传感器节点
+              return node.id
+            } else if ([2, 3, 4].includes(node.category)) {
+              // 安全等级节点
+              return node.name
+            }
+            return params.name
+          },
+          color: '#333',
+          backgroundColor: 'rgba(255,255,255,0.7)',
+          padding: [3, 5],
+          borderRadius: 3,
+        },
+      },
+    ],
+  })
+
+  // 调整力布局参数，减少节点聚集
+  chart.setOption({
+    series: [
+      {
+        id: 'knowledge-graph',
+        force: {
+          repulsion: 1500,
+          edgeLength: 200,
         },
       },
     ],
   })
 }
 
-// 重置视角
-const resetView = () => {
-  if (!chart) return
+// 恢复显示完整图表，同时隐藏标签（除非全局标签显示已开启）
+const restoreFullGraph = () => {
+  if (!chart || !originalNodes.value.length || !originalLinks.value.length) return
 
   chart.setOption({
     series: [
       {
-        viewControl: {
-          alpha: 40,
-          beta: 30,
-          distance: 5000,
-          center: [0, 0, 0],
-          animation: true,
+        id: 'knowledge-graph',
+        data: originalNodes.value,
+        links: originalLinks.value,
+        zoom: 0.15, // 恢复原始缩放
+        center: ['50%', '50%'],
+        label: {
+          // 根据全局标签状态决定是否显示标签
+          show: showAllLabels.value,
         },
       },
     ],
   })
 }
 
-// 切换到预设视角
-const changeViewAngle = (viewName: string) => {
-  if (!chart) return
-
-  currentView.value = viewName
-
-  let alpha = 40
-  let beta = 30
-
-  switch (viewName) {
-    case '顶视图':
-      alpha = 90
-      beta = 0
-      break
-    case '底视图':
-      alpha = -90
-      beta = 0
-      break
-    case '侧视图':
-      alpha = 0
-      beta = 90
-      break
-    case '正视图':
-      alpha = 40
-      beta = 30
-      break
-  }
-
-  chart.setOption({
-    series: [
-      {
-        viewControl: {
-          alpha: alpha,
-          beta: beta,
-          animation: true,
-        },
-      },
-    ],
-  })
-}
-
-// 监听窗口大小变化和展开状态
+// 监听窗口大小变化
 const handleResize = () => {
   if (chart) {
     chart.resize()
   }
 }
 
+// 监听展开状态变化
 watch(isChartExpanded, () => {
+  // 延迟执行以等待DOM更新
   setTimeout(() => {
     handleResize()
   }, 300)
 })
 
+// 生命周期钩子
 onMounted(() => {
+  // 初始化图表
   initChart()
   window.addEventListener('resize', handleResize)
 })
@@ -723,44 +541,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!-- 其余模板代码保持不变 -->
   <div class="knowledge-graph-container">
-    <div ref="chartRef" class="chart"></div>
-
-    <!-- 摄像机控制面板 -->
-    <div class="camera-controls">
-      <div class="control-panel">
-        <button class="control-btn" :class="{ active: isAutoRotate }" @click="toggleAutoRotate">
-          {{ isAutoRotate ? '停止旋转' : '开始旋转' }}
-        </button>
-
-        <button class="control-btn" @click="resetView">重置视角</button>
-
-        <div class="view-buttons">
-          <button
-            v-for="view in ['正视图', '顶视图', '底视图', '侧视图']"
-            :key="view"
-            class="view-btn"
-            :class="{ active: currentView === view }"
-            @click="changeViewAngle(view)"
-          >
-            {{ view }}
-          </button>
-        </div>
-      </div>
-
-      <div class="control-tips">
-        <div class="tip"><span class="action">拖动</span>: 旋转视角</div>
-        <div class="tip"><span class="action">滚轮</span>: 缩放视图</div>
-        <div class="tip"><span class="action">Shift+拖动</span>: 平移视图</div>
-        <div class="tip"><span class="action">点击节点</span>: 查看关联</div>
-      </div>
+    <div class="controls bottom-right">
+      <button class="toggle-labels-btn" @click="toggleLabels">
+        {{ showAllLabels ? '隐藏标签' : '显示标签' }}
+      </button>
     </div>
+    <div ref="chartRef" class="chart"></div>
   </div>
 </template>
 
 <style scoped>
-/* 样式保持不变 */
 .knowledge-graph-container {
   width: 100%;
   height: 100%;
@@ -772,74 +563,31 @@ onUnmounted(() => {
 .chart {
   flex: 1;
   min-height: 600px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-/* 摄像机控制面板样式 */
-.camera-controls {
+.controls {
   position: absolute;
-  bottom: 20px;
+  z-index: 10;
+}
+
+.bottom-right {
   right: 20px;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  bottom: 20px;
 }
 
-.control-panel {
-  background-color: rgba(0, 0, 0, 0.6);
-  border-radius: 8px;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.control-btn,
-.view-btn {
+.toggle-labels-btn {
   padding: 6px 12px;
-  background-color: rgba(255, 255, 255, 0.2);
+  font-size: 14px;
+  background-color: #409eff;
+  color: #fff;
   border: none;
   border-radius: 4px;
-  color: white;
   cursor: pointer;
-  font-size: 12px;
-  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s;
 }
 
-.control-btn:hover,
-.view-btn:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-.control-btn.active,
-.view-btn.active {
-  background-color: rgba(25, 118, 210, 0.6);
-}
-
-.view-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.control-tips {
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.tip {
-  margin: 4px 0;
-}
-
-.action {
-  display: inline-block;
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 1px 6px;
-  border-radius: 3px;
-  margin-right: 5px;
+.toggle-labels-btn:hover {
+  background-color: #66b1ff;
 }
 </style>
