@@ -16,7 +16,31 @@
 import { ref, onMounted, inject, computed, watch, onBeforeUnmount } from 'vue'
 import type { Ref } from 'vue'
 import * as echarts from 'echarts'
-import responseData from '../../mock/eventResponse.json'
+import report from '../../mock/report.json'
+
+// 准备算法性能指标数据
+const responseData = {
+  indicators: [
+    { name: '响应时间', max: 300 },
+    { name: '响应及时性', max: 1 },
+    { name: '响应质量', max: 1 },
+    { name: '资源利用率', max: 1 },
+    { name: '事件完成率', max: 1 },
+  ],
+  data: [
+    {
+      name: '算法性能',
+      values: [
+        report.performance.response_time,
+        Math.abs(report.performance.response_timeliness),
+        report.performance.response_quality,
+        report.performance.resource_utilization,
+        report.performance.event_completion_rate,
+      ],
+      color: '#4CAF50',
+    },
+  ],
+}
 
 // 注入展开状态
 const isExpanded = inject<Ref<boolean>>('isChartExpanded', ref(false))
@@ -96,7 +120,10 @@ const updateChart = () => {
       },
     },
     radar: {
-      indicator: responseData.indicators,
+      indicator: responseData.indicators.map((indicator) => ({
+        name: indicator.name,
+        max: indicator.max,
+      })),
       center: ['50%', '50%'],
       radius: '55%',
       splitNumber: 5,
