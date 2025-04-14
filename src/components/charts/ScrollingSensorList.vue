@@ -267,8 +267,8 @@ const toggleAttributeDropdown = () => {
   showAttributeDropdown.value = !showAttributeDropdown.value
 }
 
-const getAttributeName = (attribute: string): string => {
-  const map = {
+const getAttributeName = (attribute: keyof Sensor): string => {
+  const map: Record<keyof Sensor, string> = {
     temperature: '温度',
     pressure: '压力',
     flow_rate: '流量',
@@ -276,10 +276,10 @@ const getAttributeName = (attribute: string): string => {
     gas_type: '气体类型',
     gas_concentration: '气体浓度',
   }
-  return map[attribute] || attribute
+  return map[attribute] || attribute.toString()
 }
 
-const getAttributeValue = (sensor: Sensor, attribute: string): any => {
+const getAttributeValue = (sensor: Sensor, attribute: keyof Sensor): any => {
   return sensor[attribute]
 }
 
