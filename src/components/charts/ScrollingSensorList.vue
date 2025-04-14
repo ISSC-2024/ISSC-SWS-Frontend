@@ -80,8 +80,18 @@
 import { ref, onMounted, computed, inject, watch, onUnmounted } from 'vue'
 import sensorData from '@/mock/predictions_arima_auto.json'
 
-// 嵌入 metadata.json 中的 sensors 部分
-const sensorMetadata = {
+// 1. 定义明确的元组类型和接口
+type RangeTuple = [number, number]
+interface SensorMeta {
+  unit: string
+  normal_ranges: Record<string, RangeTuple>
+  precision?: string
+  response_time?: string
+  gas_types?: string[]
+}
+
+// 2. 使用明确的类型声明并确保元组结构
+const sensorMetadata: Record<string, SensorMeta> = {
   temperature: {
     unit: '°C',
     normal_ranges: {
@@ -90,7 +100,7 @@ const sensorMetadata = {
       SEP: [50, 120],
       PRO: [15, 35],
       UTL: [20, 90],
-    },
+    } as Record<string, RangeTuple>,
     precision: '±0.5°C',
     response_time: '1-3秒',
   },
@@ -102,7 +112,7 @@ const sensorMetadata = {
       SEP: [0.3, 2.0],
       PRO: [0.1, 0.5],
       UTL: [0.2, 1.5],
-    },
+    } as Record<string, RangeTuple>,
     precision: '±0.01MPa',
     response_time: '小于1秒',
   },
@@ -114,7 +124,7 @@ const sensorMetadata = {
       SEP: [15, 90],
       PRO: [5, 60],
       UTL: [30, 150],
-    },
+    } as Record<string, RangeTuple>,
     precision: '±0.5m³/h',
     response_time: '1-2秒',
   },
@@ -126,7 +136,7 @@ const sensorMetadata = {
       SEP: [20, 70],
       PRO: [20, 80],
       UTL: [30, 70],
-    },
+    } as Record<string, RangeTuple>,
     precision: '±1%',
     response_time: '2-5秒',
   },
@@ -137,13 +147,13 @@ const sensorMetadata = {
       'H₂S': [0, 10],
       'NH₃': [0, 25],
       CO: [0, 50],
-    },
+    } as Record<string, RangeTuple>,
     precision: '±1ppm',
     response_time: '2-4秒',
   },
 }
 
-// 状态加载函数
+// 3. 修改后的状态加载函数
 const loadSavedState = () => {
   const savedRegion = localStorage.getItem('scrollingListSelectedRegion')
   const savedAttributes = localStorage.getItem('scrollingListSelectedAttributes')
@@ -236,15 +246,17 @@ const processSensorData = (rawData: any[]): Sensor[] => {
   })
 }
 
+// 4. 重构后的判断函数
 const isHighValue = (value: number, type: keyof typeof sensorMetadata, key: string): boolean => {
   const sensorMeta = sensorMetadata[type]
   if (!sensorMeta?.normal_ranges) return false
 
-  let ranges: [number, number] = [0, 0]
-  if (type === 'gas_concentration') {
-    ranges = (sensorMeta.normal_ranges as Record<string, [number, number]>)[key] || [0, 100]
-  } else {
-    ranges = (sensorMeta.normal_ranges as Record<string, [number, number]>)[key] || [0, 100]
+  // 安全类型转换
+  const ranges = (sensorMeta.normal_ranges as Record<string, RangeTuple>)[key]
+
+  if (!ranges || ranges.length !== 2) {
+    console.warn(`Invalid range for ${type}.${key}`)
+    return false
   }
 
   return value < ranges[0] || value > ranges[1]
