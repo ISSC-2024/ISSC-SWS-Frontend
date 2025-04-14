@@ -67,7 +67,7 @@
             v-else-if="attribute === 'gas_concentration'"
             :class="{ 'high-value': isHighValue(sensor.gas_concentration, 'gas_concentration', sensor.gas_type) }"
           >
-            {{ formatValue(sensor.gas_concentration) }} ppm
+            {{ formatValue(sensor.gas_concentration) }}
           </div>
           <div v-else>{{ getAttributeValue(sensor, attribute) }}</div>
         </div>
@@ -170,14 +170,14 @@ const isExpanded = inject('isChartExpanded', ref(false))
 
 // 响应式状态
 const selectedRegion = ref('')
-const selectedAttributes = ref<keyof Sensor[]>([])
+const selectedAttributes = ref<string[]>([])
 const showAttributeDropdown = ref(false)
 
 // 初始化加载状态
 const initializeState = () => {
   const savedState = loadSavedState()
   selectedRegion.value = savedState.region
-  selectedAttributes.value = savedState.attributes as keyof Sensor[]
+  selectedAttributes.value = savedState.attributes
 }
 
 // 在挂载时和展开状态变化时初始化状态
@@ -209,7 +209,7 @@ watch(
   selectedAttributes,
   (newVal) => {
     // 按照 attributes 的顺序对选中的属性进行排序
-    const sortedAttributes = [...newVal].sort((a, b) => {
+    const sortedAttributes = newVal.sort((a, b) => {
       const indexA = attributes.findIndex((attr) => attr.value === a)
       const indexB = attributes.findIndex((attr) => attr.value === b)
       return indexA - indexB
@@ -222,8 +222,8 @@ watch(
 
 const processSensorData = (rawData: any[]): Sensor[] => {
   return rawData.map((item) => {
-    const pointIdPrefix = item.point_id.slice(0, 3).toUpperCase() as keyof Sensor
-    const region = pointIdPrefix
+    const pointIdPrefix = item.point_id.slice(0, 3).toUpperCase()
+    const region = pointIdPrefix // 假设 point_id 的前缀是区域代码
 
     return {
       timestamp: item.timestamp || new Date().toISOString(),
@@ -234,7 +234,7 @@ const processSensorData = (rawData: any[]): Sensor[] => {
       level: Number(item.level) || 0,
       gas_type: item.gas_type || 'N/A',
       gas_concentration: Number(item.gas_concentration) || 0,
-      region: region,
+      region: region, // 添加区域信息
     }
   })
 }
@@ -267,8 +267,8 @@ const toggleAttributeDropdown = () => {
   showAttributeDropdown.value = !showAttributeDropdown.value
 }
 
-const getAttributeName = (attribute: keyof Sensor): string => {
-  const map: Record<keyof Sensor, string> = {
+const getAttributeName = (attribute: string): string => {
+  const map = {
     temperature: '温度',
     pressure: '压力',
     flow_rate: '流量',
@@ -276,10 +276,10 @@ const getAttributeName = (attribute: keyof Sensor): string => {
     gas_type: '气体类型',
     gas_concentration: '气体浓度',
   }
-  return map[attribute] || attribute.toString()
+  return map[attribute] || attribute
 }
 
-const getAttributeValue = (sensor: Sensor, attribute: keyof Sensor): any => {
+const getAttributeValue = (sensor: Sensor, attribute: string): any => {
   return sensor[attribute]
 }
 
@@ -313,7 +313,7 @@ const scrollList = () => {
 
 const toggleScrolling = (expanded: boolean) => {
   if (expanded) {
-    if (scrollTimer !== null) {
+    if (scrollTimer) {
       clearInterval(scrollTimer)
     }
     scrollTimer = null
@@ -331,13 +331,14 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (scrollTimer !== null) {
+  if (scrollTimer) {
     clearInterval(scrollTimer)
   }
 })
 </script>
 
 <style scoped>
+/* 原有样式保持不变 */
 .scrolling-list-container {
   width: 100%;
   height: 100%;
@@ -463,7 +464,7 @@ onUnmounted(() => {
 }
 
 .high-value {
-  color: #ff4d4f;
-  font-weight: bold;
+  color: #ff4d4f; /* 字体颜色改为红色 */
+  font-weight: bold; /* 可选：加粗字体 */
 }
 </style>
