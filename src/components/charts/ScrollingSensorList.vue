@@ -209,7 +209,7 @@ watch(
   selectedAttributes,
   (newVal) => {
     // 按照 attributes 的顺序对选中的属性进行排序
-    const sortedAttributes = newVal.sort((a, b) => {
+    const sortedAttributes = [...newVal].sort((a, b) => {
       const indexA = attributes.findIndex((attr) => attr.value === a)
       const indexB = attributes.findIndex((attr) => attr.value === b)
       return indexA - indexB
@@ -222,8 +222,8 @@ watch(
 
 const processSensorData = (rawData: any[]): Sensor[] => {
   return rawData.map((item) => {
-    const pointIdPrefix = item.point_id.slice(0, 3).toUpperCase()
-    const region = pointIdPrefix // 假设 point_id 的前缀是区域代码
+    const pointIdPrefix = item.point_id.slice(0, 3).toUpperCase() as keyof Sensor
+    const region = pointIdPrefix
 
     return {
       timestamp: item.timestamp || new Date().toISOString(),
@@ -234,7 +234,7 @@ const processSensorData = (rawData: any[]): Sensor[] => {
       level: Number(item.level) || 0,
       gas_type: item.gas_type || 'N/A',
       gas_concentration: Number(item.gas_concentration) || 0,
-      region: region, // 添加区域信息
+      region: region,
     }
   })
 }
@@ -268,7 +268,7 @@ const toggleAttributeDropdown = () => {
 }
 
 const getAttributeName = (attribute: keyof Sensor): string => {
-  const map = {
+  const map: Record<keyof Sensor, string> = {
     temperature: '温度',
     pressure: '压力',
     flow_rate: '流量',
@@ -313,7 +313,7 @@ const scrollList = () => {
 
 const toggleScrolling = (expanded: boolean) => {
   if (expanded) {
-    if (scrollTimer) {
+    if (scrollTimer !== null) {
       clearInterval(scrollTimer)
     }
     scrollTimer = null
@@ -331,7 +331,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (scrollTimer) {
+  if (scrollTimer !== null) {
     clearInterval(scrollTimer)
   }
 })
