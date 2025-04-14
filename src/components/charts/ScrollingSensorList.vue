@@ -67,7 +67,7 @@
             v-else-if="attribute === 'gas_concentration'"
             :class="{ 'high-value': isHighValue(sensor.gas_concentration, 'gas_concentration', sensor.gas_type) }"
           >
-            {{ formatValue(sensor.gas_concentration) }}
+            {{ formatValue(sensor.gas_concentration) }} ppm
           </div>
           <div v-else>{{ getAttributeValue(sensor, attribute) }}</div>
         </div>
@@ -170,14 +170,14 @@ const isExpanded = inject('isChartExpanded', ref(false))
 
 // 响应式状态
 const selectedRegion = ref('')
-const selectedAttributes = ref<string[]>([])
+const selectedAttributes = ref<keyof Sensor[]>([])
 const showAttributeDropdown = ref(false)
 
 // 初始化加载状态
 const initializeState = () => {
   const savedState = loadSavedState()
   selectedRegion.value = savedState.region
-  selectedAttributes.value = savedState.attributes
+  selectedAttributes.value = savedState.attributes as keyof Sensor[]
 }
 
 // 在挂载时和展开状态变化时初始化状态
@@ -267,7 +267,7 @@ const toggleAttributeDropdown = () => {
   showAttributeDropdown.value = !showAttributeDropdown.value
 }
 
-const getAttributeName = (attribute: string): string => {
+const getAttributeName = (attribute: keyof Sensor): string => {
   const map = {
     temperature: '温度',
     pressure: '压力',
@@ -276,10 +276,10 @@ const getAttributeName = (attribute: string): string => {
     gas_type: '气体类型',
     gas_concentration: '气体浓度',
   }
-  return map[attribute] || attribute
+  return map[attribute] || attribute.toString()
 }
 
-const getAttributeValue = (sensor: Sensor, attribute: string): any => {
+const getAttributeValue = (sensor: Sensor, attribute: keyof Sensor): any => {
   return sensor[attribute]
 }
 
@@ -338,7 +338,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 原有样式保持不变 */
 .scrolling-list-container {
   width: 100%;
   height: 100%;
@@ -464,7 +463,7 @@ onUnmounted(() => {
 }
 
 .high-value {
-  color: #ff4d4f; /* 字体颜色改为红色 */
-  font-weight: bold; /* 可选：加粗字体 */
+  color: #ff4d4f;
+  font-weight: bold;
 }
 </style>
