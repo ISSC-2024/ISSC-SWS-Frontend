@@ -163,7 +163,7 @@ interface Sensor {
   level: number
   gas_type: string
   gas_concentration: number
-  region: string // 添加区域信息
+  region: string
 }
 
 const isExpanded = inject('isChartExpanded', ref(false))
@@ -180,7 +180,6 @@ const initializeState = () => {
   selectedAttributes.value = savedState.attributes
 }
 
-// 在挂载时和展开状态变化时初始化状态
 onMounted(initializeState)
 watch(isExpanded, initializeState)
 
@@ -204,11 +203,9 @@ watch(selectedRegion, (newVal) => {
   localStorage.setItem('scrollingListSelectedRegion', newVal)
 })
 
-// 在 watch 监听 selectedAttributes 的变化时，确保选中的属性按照 attributes 的顺序排列
 watch(
   selectedAttributes,
   (newVal) => {
-    // 按照 attributes 的顺序对选中的属性进行排序
     const sortedAttributes = newVal.sort((a, b) => {
       const indexA = attributes.findIndex((attr) => attr.value === a)
       const indexB = attributes.findIndex((attr) => attr.value === b)
@@ -223,7 +220,7 @@ watch(
 const processSensorData = (rawData: any[]): Sensor[] => {
   return rawData.map((item) => {
     const pointIdPrefix = item.point_id.slice(0, 3).toUpperCase()
-    const region = pointIdPrefix // 假设 point_id 的前缀是区域代码
+    const region = pointIdPrefix
 
     return {
       timestamp: item.timestamp || new Date().toISOString(),
@@ -234,26 +231,20 @@ const processSensorData = (rawData: any[]): Sensor[] => {
       level: Number(item.level) || 0,
       gas_type: item.gas_type || 'N/A',
       gas_concentration: Number(item.gas_concentration) || 0,
-      region: region, // 添加区域信息
+      region: region,
     }
   })
 }
 
-const isHighValue = (
-  value: number,
-  type: keyof typeof sensorMetadata,
-  key: string, // 这里可能是区域代码或气体类型
-): boolean => {
+const isHighValue = (value: number, type: keyof typeof sensorMetadata, key: string): boolean => {
   const sensorMeta = sensorMetadata[type]
-  if (!sensorMeta || !sensorMeta.normal_ranges) return false
+  if (!sensorMeta?.normal_ranges) return false
 
-  let ranges: [number, number]
+  let ranges: [number, number] = [0, 0]
   if (type === 'gas_concentration') {
-    // 使用气体类型获取范围
-    ranges = sensorMeta.normal_ranges[key as keyof typeof sensorMeta.normal_ranges] || [0, 100]
+    ranges = (sensorMeta.normal_ranges as Record<string, [number, number]>)[key] || [0, 100]
   } else {
-    // 使用区域代码获取范围
-    ranges = sensorMeta.normal_ranges[key as keyof typeof sensorMeta.normal_ranges] || [0, 100]
+    ranges = (sensorMeta.normal_ranges as Record<string, [number, number]>)[key] || [0, 100]
   }
 
   return value < ranges[0] || value > ranges[1]
@@ -267,8 +258,11 @@ const toggleAttributeDropdown = () => {
   showAttributeDropdown.value = !showAttributeDropdown.value
 }
 
-const getAttributeName = (attribute: keyof Sensor): string => {
-  const map: Record<keyof Sensor, string> = {
+const getAttributeName = (attribute: string): string => {
+  const map: Record<string, string> = {
+    timestamp: '时间戳',
+    point_id: '传感器编号',
+    region: '区域',
     temperature: '温度',
     pressure: '压力',
     flow_rate: '流量',
@@ -276,11 +270,11 @@ const getAttributeName = (attribute: keyof Sensor): string => {
     gas_type: '气体类型',
     gas_concentration: '气体浓度',
   }
-  return map[attribute] || attribute.toString()
+  return map[attribute] || attribute
 }
 
-const getAttributeValue = (sensor: Sensor, attribute: keyof Sensor): any => {
-  return sensor[attribute]
+const getAttributeValue = (sensor: Sensor, attribute: string): any => {
+  return sensor[attribute as keyof Sensor]
 }
 
 const formatValue = (value: number): string => {
@@ -338,7 +332,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 原有样式保持不变 */
+/* 样式部分保持不变，同用户提供的原始代码 */
 .scrolling-list-container {
   width: 100%;
   height: 100%;
@@ -464,7 +458,7 @@ onUnmounted(() => {
 }
 
 .high-value {
-  color: #ff4d4f; /* 字体颜色改为红色 */
-  font-weight: bold; /* 可选：加粗字体 */
+  color: #ff4d4f;
+  font-weight: bold;
 }
 </style>
