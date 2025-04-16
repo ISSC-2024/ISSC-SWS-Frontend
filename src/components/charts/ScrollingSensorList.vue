@@ -405,7 +405,7 @@ const currentSensorId = ref('')
 
 const showImage = (sensor: Sensor) => {
   // 图片路径
-  currentImage.value = ''
+  currentImage.value = '/images/image.png'
   currentSensorId.value = sensor.point_id
   showImageModal.value = true
 }
