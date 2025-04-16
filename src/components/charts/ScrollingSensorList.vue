@@ -1,4 +1,16 @@
 <template>
+  <!-- 
+   * @description 传感器数据滚动列表组件
+   * 
+   * 该组件显示传感器的实时数据列表，包括传感器编号、温度、压力和安全状态。
+   * 包含以下功能：
+   * 1. 非展开状态下自动滚动显示传感器数据，鼠标悬停在数据上时停止滚动
+   * 2. 展开状态下显示全部传感器数据，可滚动查看，点击监测点按钮展示预测图表
+   * 3. 根据安全状态自动显示不同颜色的状态指示器（安全/警告/危险）
+   * 4. 响应式布局设计，适应不同显示状态
+   * 5. 带有固定表头的数据列表
+   * 
+   -->
   <div class="scrolling-list-container">
     <!-- 左上角下拉框 -->
     <div class="dropdown-container">
@@ -35,43 +47,72 @@
       </div>
     </div>
     <div class="scrolling-list-body" ref="listBody">
-      <div v-for="sensor in visibleSensors" :key="sensor.point_id" class="list-row">
+      <div
+        v-for="sensor in visibleSensors"
+        :key="sensor.point_id"
+        class="list-row"
+        @mouseover="handleHover"
+        @mouseleave="handleHoverEnd"
+      >
         <div class="list-item">{{ formatTimestamp(sensor.timestamp) }}</div>
-        <div class="list-item">{{ sensor.point_id }}</div>
+        <div class="list-item">
+          <button class="btn" v-if="isExpanded" @click="showImage(sensor)">
+            {{ sensor.point_id }}
+          </button>
+          <span v-else>{{ sensor.point_id }}</span>
+        </div>
         <div class="list-item" v-for="attribute in selectedAttributes" :key="attribute">
           <div
             v-if="attribute === 'temperature'"
-            :class="{ 'high-value': isHighValue(sensor.temperature, 'temperature', sensor.region) }"
+            :class="{
+              'high-value': isHighValue(sensor.temperature, 'temperature', sensor.region),
+            }"
           >
             {{ formatValue(sensor.temperature) }}°C
           </div>
           <div
             v-else-if="attribute === 'pressure'"
-            :class="{ 'high-value': isHighValue(sensor.pressure, 'pressure', sensor.region) }"
+            :class="{
+              'high-value': isHighValue(sensor.pressure, 'pressure', sensor.region),
+            }"
           >
             {{ formatValue(sensor.pressure) }} kPa
           </div>
           <div
             v-else-if="attribute === 'flow_rate'"
-            :class="{ 'high-value': isHighValue(sensor.flow_rate, 'flow_rate', sensor.region) }"
+            :class="{
+              'high-value': isHighValue(sensor.flow_rate, 'flow_rate', sensor.region),
+            }"
           >
             {{ formatValue(sensor.flow_rate) }} m³/h
           </div>
           <div
             v-else-if="attribute === 'level'"
-            :class="{ 'high-value': isHighValue(sensor.level, 'level', sensor.region) }"
+            :class="{
+              'high-value': isHighValue(sensor.level, 'level', sensor.region),
+            }"
           >
             {{ formatValue(sensor.level) }} %
           </div>
           <div
             v-else-if="attribute === 'gas_concentration'"
-            :class="{ 'high-value': isHighValue(sensor.gas_concentration, 'gas_concentration', sensor.gas_type) }"
+            :class="{
+              'high-value': isHighValue(sensor.gas_concentration, 'gas_concentration', sensor.gas_type),
+            }"
           >
             {{ formatValue(sensor.gas_concentration) }}
           </div>
           <div v-else>{{ getAttributeValue(sensor, attribute) }}</div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- 图片弹窗 -->
+  <div v-if="showImageModal" class="image-modal" @click="closeImageModal">
+    <div class="modal-content" @click.stop>
+      <img :src="currentImage" :alt="currentSensorId" class="modal-image" />
+      <button class="close-button" @click="closeImageModal">×</button>
     </div>
   </div>
 </template>
@@ -341,6 +382,37 @@ onUnmounted(() => {
     clearInterval(scrollTimer)
   }
 })
+const handleHover = () => {
+  // 鼠标悬停时停止滚动
+  if (scrollTimer) {
+    clearInterval(scrollTimer)
+    scrollTimer = null
+  }
+}
+
+// 处理鼠标离开
+const handleHoverEnd = () => {
+  // 如果不在展开状态，重新开始滚动
+  if (!isExpanded.value && !scrollTimer) {
+    scrollTimer = setInterval(scrollList, 2000) as unknown as number
+  }
+}
+
+// 图片弹窗相关
+const showImageModal = ref(false)
+const currentImage = ref('')
+const currentSensorId = ref('')
+
+const showImage = (sensor: Sensor) => {
+  // 图片路径
+  currentImage.value = '/images/image.png'
+  currentSensorId.value = sensor.point_id
+  showImageModal.value = true
+}
+
+const closeImageModal = () => {
+  showImageModal.value = false
+}
 </script>
 
 <style scoped>
@@ -472,5 +544,51 @@ onUnmounted(() => {
 .high-value {
   color: #ff4d4f;
   font-weight: bold;
+}
+.btn {
+  cursor: pointer;
+  /* border: none;
+  border-radius: 3px; */
+}
+.btn:hover {
+  background-color: #bdc1c4;
+}
+
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 85%;
+  max-height: 95%;
+  overflow: auto;
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  border: none;
+  font-size: 80px;
+  cursor: pointer;
 }
 </style>
