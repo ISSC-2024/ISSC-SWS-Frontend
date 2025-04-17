@@ -42,6 +42,14 @@ const showTip = (msg: string) => {
 // 处理子组件的表单提交
 const handleFormSubmit = (data: any) => {
   console.log('提交表单:', data)
+
+  // 如果是模型4（算法选择）的提交，显示特定提示
+  if (data.模型 === 'model4') {
+    const algorithm = data.参数.param1
+    const threshold = data.参数.param2
+    showTip(`已应用算法 ${algorithm}，阈值 ${threshold} 的资源分配方案`)
+  }
+
   closeWindow()
 }
 </script>
