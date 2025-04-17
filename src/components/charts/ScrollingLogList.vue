@@ -21,8 +21,11 @@
           'log-info': log.risk_level === 'safe',
           'log-warning': log.risk_level === 'warning',
           'log-danger': log.risk_level === 'danger',
+          'log-selected': isLogSelected(log),
         }"
         @click="handleLogClick(log)"
+        @mouseenter="handleLogHover(log)"
+        @mouseleave="handleLogLeave(log)"
       >
         <div class="log-time">{{ formatTime(log.timestamp) }}</div>
         <div class="log-type">{{ log.region }}</div>
@@ -46,6 +49,10 @@ interface LogEntry {
   message: string
 }
 
+// 定义有效区域常量
+const VALID_REGIONS = ['RMS', 'REA', 'SEP', 'PRO', 'UTL']
+const VALID_RISK_LEVELS = ['safe', 'warning', 'danger']
+
 // 从ChartContainer注入的扩展状态
 const isChartExpandedKey = Symbol() as InjectionKey<Ref<boolean>>
 const isExpanded = inject(isChartExpandedKey, ref(false))
@@ -54,6 +61,9 @@ const logs = ref<LogEntry[]>([])
 const startIndex = ref(0)
 const visibleCount = 100 // 一次显示的行数
 let scrollTimer: ReturnType<typeof setInterval> | null = null
+
+// 跟踪当前选中的日志项
+const selectedLog = ref<LogEntry | null>(null)
 
 // 性能优化参数
 const CHUNK_SIZE = 500 // 每次处理500条
@@ -82,18 +92,102 @@ const visibleLogs = computed(() => {
   }
 })
 
-// 点击日志行时的处理函数
+// 判断日志是否被选中
+const isLogSelected = (log: LogEntry): boolean => {
+  if (!selectedLog.value) return false
+  return (
+    log.region === selectedLog.value.region &&
+    log.message === selectedLog.value.message &&
+    log.risk_level === selectedLog.value.risk_level
+  )
+}
+
+// 验证并确保日志数据有效性
+const validateLog = (log: LogEntry): { isValid: boolean; log: LogEntry } => {
+  // 创建副本防止修改原始数据
+  const validatedLog = { ...log }
+
+  // 验证区域
+  if (!VALID_REGIONS.includes(validatedLog.region)) {
+    console.warn(`非法区域值: ${validatedLog.region}，将使用默认值 RMS`)
+    validatedLog.region = 'RMS'
+  }
+
+  // 验证风险等级
+  if (!VALID_RISK_LEVELS.includes(validatedLog.risk_level)) {
+    console.warn(`非法风险等级: ${validatedLog.risk_level}，将使用默认值 safe`)
+    validatedLog.risk_level = 'safe'
+  }
+
+  return {
+    isValid: true,
+    log: validatedLog,
+  }
+}
+
+// 准备发送给Unity的数据
+const prepareUnityData = (log: LogEntry) => {
+  const { isValid, log: validatedLog } = validateLog(log)
+
+  if (!isValid) return null
+
+  return {
+    region: validatedLog.region,
+    risk_level: validatedLog.risk_level,
+    message: validatedLog.message,
+  }
+}
+
+// 鼠标悬停在日志行时触发高亮
+const handleLogHover = (log: LogEntry) => {
+  if (!unityService.isUnityLoaded()) return
+
+  const unityData = prepareUnityData(log)
+  if (unityData) {
+    unityService.sendMessageToUnity('Sensor', 'RegionHighlightOn', JSON.stringify(unityData))
+  }
+}
+
+// 鼠标离开日志行时取消高亮
+const handleLogLeave = (log: LogEntry) => {
+  if (!unityService.isUnityLoaded()) return
+
+  const unityData = prepareUnityData(log)
+  if (unityData) {
+    unityService.sendMessageToUnity('Sensor', 'RegionHighlightOff', JSON.stringify(unityData))
+  }
+}
+
+// 点击日志行时的处理函数 - 持续高亮/取消高亮
 const handleLogClick = (log: LogEntry) => {
   // 检查Unity是否已加载
-  if (unityService.isUnityLoaded()) {
-    const logDataString = JSON.stringify(log)
-
-    // 调用Unity的方法传递数据
-    unityService.sendMessageToUnity('Sensor', 'HighlightRegion', logDataString)
-  } else {
-    // 如果Unity未加载，发出提示
+  if (!unityService.isUnityLoaded()) {
     message.warning('Unity尚未加载完成，无法发送日志')
+    return
   }
+
+  const unityData = prepareUnityData(log)
+  if (!unityData) return
+
+  // 如果点击的是已选中的日志，则取消选中状态
+  if (isLogSelected(log)) {
+    selectedLog.value = null
+  } else {
+    // 否则设置为选中状态
+    selectedLog.value = log
+  }
+
+  // 无论是选中还是取消选中，都发送同一个消息
+  unityService.sendMessageToUnity('Sensor', 'RegionContinuousHighlight', JSON.stringify(unityData))
+}
+
+// 格式化时间戳
+const formatTime = (timestamp: string): string => {
+  const date = new Date(timestamp)
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+  const seconds = date.getSeconds().toString().padStart(2, '0')
+  return `${hours}:${minutes}:${seconds}`
 }
 
 // 批量加载数据，优化性能
@@ -119,24 +213,12 @@ const loadDataInChunks = () => {
   )
 }
 
-// 格式化时间戳
-const formatTime = (timestamp: string): string => {
-  const date = new Date(timestamp)
-  const hours = date.getHours().toString().padStart(2, '0')
-  const minutes = date.getMinutes().toString().padStart(2, '0')
-  const seconds = date.getSeconds().toString().padStart(2, '0')
-  return `${hours}:${minutes}:${seconds}`
-}
-
 // 滚动列表的函数 - 简化为与ScrollingRegionList一致
 const scrollList = () => {
   if (logs.value.length > 0) {
     startIndex.value = (startIndex.value + 1) % logs.value.length
   }
 }
-
-// 移除toggleScrolling函数，不再需要根据展开状态切换滚动行为
-// 移除watch(isExpanded)，不再需要监听扩展状态变化
 
 onMounted(() => {
   // 加载模拟数据
@@ -201,6 +283,10 @@ onUnmounted(() => {
 
 .log-danger {
   border-left: 3px solid #f5222d;
+}
+
+.log-selected {
+  background-color: #e6f7ff;
 }
 
 .log-time {
