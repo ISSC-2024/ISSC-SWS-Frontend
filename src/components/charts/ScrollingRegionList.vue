@@ -9,6 +9,7 @@
    * 3. 根据风险级别自动显示不同颜色的状态指示器（安全/警告/危险）
    * 4. 响应式布局设计，适应不同显示状态
    * 5. 带有固定表头的数据列表
+   * 6. 与Unity交互：鼠标悬停高亮区域，离开取消高亮，点击持续高亮/再次点击取消高亮
    * 
    -->
   <div class="scrolling-list-container">
@@ -18,7 +19,15 @@
       <div class="header-item">安全预警</div>
     </div>
     <div class="scrolling-list-body" ref="listBody">
-      <div v-for="(region, index) in visibleRegions" :key="index" class="list-row">
+      <div
+        v-for="(region, index) in visibleRegions"
+        :key="index"
+        class="list-row"
+        :class="{ 'row-selected': isRegionSelected(region) }"
+        @mouseenter="handleRegionHover(region)"
+        @mouseleave="handleRegionLeave(region)"
+        @click="handleRegionClick(region)"
+      >
         <div class="list-item">{{ region.timestamp }}</div>
         <div class="list-item">{{ region.region }}</div>
         <div class="list-item">
@@ -41,6 +50,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, inject, onUnmounted, type InjectionKey, type Ref } from 'vue'
 import sensorData from '../../mock/riskRegionSummary.json'
+import unityService from '../../services/UnityService'
+import { message } from 'ant-design-vue'
 
 interface Region {
   timestamp: string
@@ -48,6 +59,17 @@ interface Region {
   risk_level: 'safe' | 'warning' | 'danger'
   message: string
 }
+
+// Unity通信数据结构
+interface UnityData {
+  region: string
+  risk_level: string
+  message: string
+}
+
+// 定义有效区域常量
+const VALID_REGIONS = ['RMS', 'REA', 'SEP', 'PRO', 'UTL']
+const VALID_RISK_LEVELS = ['safe', 'warning', 'danger']
 
 // 根据风险级别返回对应的中文文本
 const getRiskLevelText = (riskLevel: string): string => {
@@ -72,6 +94,9 @@ const startIndex = ref(0)
 const visibleCount = 100 // 一次显示的行数
 let scrollTimer: number | null = null
 
+// 跟踪当前选中的区域
+const selectedRegion = ref<Region | null>(null)
+
 // 计算当前可见的区域数据
 const visibleRegions = computed(() => {
   if (regions.value.length === 0) return []
@@ -93,6 +118,81 @@ const visibleRegions = computed(() => {
     return [...regions.value.slice(start), ...regions.value.slice(0, start)].slice(0, visibleCount)
   }
 })
+
+// 判断区域是否被选中
+const isRegionSelected = (region: Region): boolean => {
+  if (!selectedRegion.value) return false
+  return (
+    region.region === selectedRegion.value.region &&
+    region.message === selectedRegion.value.message &&
+    region.risk_level === selectedRegion.value.risk_level
+  )
+}
+
+// 验证并构造发送给Unity的数据
+const prepareUnityData = (region: Region): UnityData | null => {
+  // 验证区域名称
+  if (!VALID_REGIONS.includes(region.region)) {
+    console.warn(`非法区域值: ${region.region}，有效区域应为: ${VALID_REGIONS.join(', ')}`)
+    return null
+  }
+
+  // 验证风险等级
+  if (!VALID_RISK_LEVELS.includes(region.risk_level)) {
+    console.warn(`非法风险等级: ${region.risk_level}，有效风险等级应为: ${VALID_RISK_LEVELS.join(', ')}`)
+    return null
+  }
+
+  // 返回有效的Unity数据
+  return {
+    region: region.region,
+    risk_level: region.risk_level,
+    message: region.message || '',
+  }
+}
+
+// 鼠标悬停在区域上时触发高亮
+const handleRegionHover = (region: Region) => {
+  if (!unityService.isUnityLoaded()) return
+
+  const unityData = prepareUnityData(region)
+  if (unityData) {
+    unityService.sendMessageToUnity('Sensor', 'RegionHighlightOn', JSON.stringify(unityData))
+  }
+}
+
+// 鼠标离开区域时取消高亮
+const handleRegionLeave = (region: Region) => {
+  if (!unityService.isUnityLoaded()) return
+
+  const unityData = prepareUnityData(region)
+  if (unityData) {
+    unityService.sendMessageToUnity('Sensor', 'RegionHighlightOff', JSON.stringify(unityData))
+  }
+}
+
+// 点击区域时的处理函数 - 持续高亮/取消高亮
+const handleRegionClick = (region: Region) => {
+  // 检查Unity是否已加载
+  if (!unityService.isUnityLoaded()) {
+    message.warning('Unity尚未加载完成，无法发送区域数据')
+    return
+  }
+
+  const unityData = prepareUnityData(region)
+  if (!unityData) return
+
+  // 如果点击的是已选中的区域，则取消选中状态
+  if (isRegionSelected(region)) {
+    selectedRegion.value = null
+  } else {
+    // 否则设置为选中状态
+    selectedRegion.value = region
+  }
+
+  // 无论是选中还是取消选中，都发送同一个消息
+  unityService.sendMessageToUnity('Sensor', 'RegionContinuousHighlight', JSON.stringify(unityData))
+}
 
 // 滚动列表的函数
 const scrollList = () => {
@@ -161,10 +261,15 @@ onUnmounted(() => {
   padding: 6px 8px;
   border-bottom: 1px solid #f0f0f0;
   transition: background-color 0.3s;
+  cursor: pointer;
 }
 
 .list-row:hover {
   background-color: #f9f9f9;
+}
+
+.row-selected {
+  background-color: #e6f7ff;
 }
 
 .list-item {

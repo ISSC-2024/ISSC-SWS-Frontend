@@ -53,7 +53,7 @@ const linkColors = {
 
 // 发送高亮信息到Unity
 const sendHighlightToUnity = (areaCode: string | null, highlight: boolean): void => {
-  if (!areaCode && highlight) return // 如果要高亮但没有区域代码，则直接返回
+  if (!areaCode) return // 如果没有区域代码，则直接返回
 
   // 构建基本消息结构
   const message: { highlight: boolean; area: string; nodes: Record<string, number> } = {
@@ -62,20 +62,17 @@ const sendHighlightToUnity = (areaCode: string | null, highlight: boolean): void
     nodes: {},
   }
 
-  // 如果是高亮操作，添加传感器数据
-  if (highlight && areaCode) {
-    // 查找该区域下的所有传感器
-    const areaSensors = originalNodes.value.filter(
-      (node: NodeData) => node.category === 1 && node.area_code === areaCode,
-    )
+  // 添加传感器数据
 
-    // 为每个传感器添加权重信息
-    areaSensors.forEach((sensor: NodeData) => {
-      if (sensor.id && sensor.weight !== undefined) {
-        message.nodes[sensor.id.replace(`${areaCode}_`, '')] = Math.round(sensor.weight * 1000) / 1000
-      }
-    })
-  }
+  // 查找该区域下的所有传感器
+  const areaSensors = originalNodes.value.filter((node: NodeData) => node.category === 1 && node.area_code === areaCode)
+
+  // 为每个传感器添加权重信息
+  areaSensors.forEach((sensor: NodeData) => {
+    if (sensor.id && sensor.weight !== undefined) {
+      message.nodes[sensor.id.replace(`${areaCode}_`, '')] = Math.round(sensor.weight * 1000) / 1000
+    }
+  })
 
   // 发送消息到Unity
   const messageJson = JSON.stringify(message)
@@ -86,9 +83,6 @@ const sendHighlightToUnity = (areaCode: string | null, highlight: boolean): void
 // 初始化图表
 const initChart = () => {
   if (!chartRef.value) return
-
-  // 输出当前状态，便于调试
-  console.log('初始化图表，Pinia存储的聚焦区域:', graphStore.focusedArea)
 
   // 销毁已有实例
   if (chart) {
@@ -390,7 +384,6 @@ const initChart = () => {
         // 记录当前聚焦的区域（更新Pinia状态）
         graphStore.setFocusedArea(areaCode)
         focusedArea.value = areaCode
-        console.log('双击区域节点，聚焦更新为:', graphStore.focusedArea)
 
         // 向Unity发送高亮信息
         sendHighlightToUnity(areaCode, true)
@@ -435,16 +428,6 @@ const initChart = () => {
       }
     }
   })
-
-  // 添加图例点击事件处理
-  chart.on('legendselectchanged', (params: any) => {
-    console.log('图例选择变化:', params.name, params.selected)
-  })
-
-  // 如果有聚焦区域，确保Unity高亮状态同步
-  // if (graphStore.focusedArea) {
-  //   sendHighlightToUnity(graphStore.focusedArea, true)
-  // }
 }
 
 // 获取过滤后的节点和连接数据
@@ -501,8 +484,6 @@ const toggleLabels = (): void => {
   // 同步本地状态
   showAllLabels.value = graphStore.showLabels
 
-  console.log('切换标签显示:', graphStore.showLabels)
-
   if (chart) {
     chart.setOption({
       series: [
@@ -520,8 +501,6 @@ const toggleLabels = (): void => {
 // 聚焦到特定区域，并显示标签
 const focusOnArea = (areaCode: string): void => {
   if (!chart || !originalNodes.value.length || !originalLinks.value.length) return
-
-  console.log('聚焦到区域:', areaCode)
 
   // 获取过滤后的节点和连接
   const { nodes, links } = getFilteredNodesAndLinks(areaCode)
@@ -585,8 +564,6 @@ const focusOnArea = (areaCode: string): void => {
 const restoreFullGraph = (): void => {
   if (!chart || !originalNodes.value.length || !originalLinks.value.length) return
 
-  console.log('恢复完整图表')
-
   // 向Unity发送取消高亮信息
   sendHighlightToUnity(graphStore.focusedArea, false)
 
@@ -621,8 +598,6 @@ const restoreFullGraph = (): void => {
 // 应用当前状态 - 恢复当前聚焦状态或全部显示
 const applyCurrentState = (): void => {
   if (!chart) return
-
-  console.log('应用当前状态，聚焦区域:', graphStore.focusedArea)
 
   // 如果有聚焦区域但没有过滤后的数据，重新获取
   if (graphStore.focusedArea && (!graphStore.filteredNodes.length || !graphStore.filteredLinks.length)) {
@@ -691,9 +666,7 @@ const handleResize = (): void => {
 }
 
 // 关键修复: 监听展开状态变化，保持当前状态
-watch(isChartExpanded, (newValue) => {
-  console.log('展开状态变化:', newValue, '聚焦区域:', graphStore.focusedArea)
-
+watch(isChartExpanded, () => {
   // 同步本地状态和Pinia状态
   focusedArea.value = graphStore.focusedArea
   showAllLabels.value = graphStore.showLabels
@@ -716,8 +689,6 @@ watch(isChartExpanded, (newValue) => {
 
 // 生命周期钩子
 onMounted(() => {
-  console.log('组件挂载，Pinia存储的聚焦区域:', graphStore.focusedArea)
-
   // 初始化图表
   initChart()
   window.addEventListener('resize', handleResize)
