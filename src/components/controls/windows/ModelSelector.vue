@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useAlgorithmStore } from '../../../stores/algorithmStore'
 
 /**
  * ModelSelector.vue - 模型选择组件
@@ -10,6 +11,9 @@ import { ref } from 'vue'
 
 // 定义组件向外发出的事件
 const emit = defineEmits(['close', 'show-tip', 'submit'])
+
+// 获取算法状态管理
+const algorithmStore = useAlgorithmStore()
 
 // 模型选择相关数据
 const selectedModel = ref('')
@@ -45,9 +49,9 @@ const modelParamsConfig = {
     { id: 'param3', name: '批次大小', options: ['32', '64', '128', '256'] },
   ],
   model4: [
-    { id: 'param1', name: '模式', options: ['快速', '标准', '精确'] },
-    { id: 'param2', name: '并行度', options: ['低', '中', '高'] },
-    { id: 'param3', name: '预处理', options: ['是', '否'] },
+    { id: 'param1', name: '算法', options: ['Independent Q-Learning', 'DQN', 'MADDPG', 'MAPPO'] },
+    { id: 'param2', name: '收敛阈值', options: ['0.001', '0.005'] },
+    { id: 'param3', name: '最大迭代次数', options: ['1000'] },
   ],
 }
 
@@ -100,6 +104,16 @@ const submitModelSelection = () => {
   const submitData = {
     模型: selectedModel.value,
     参数: { ...modelParams.value },
+  }
+
+  // 如果是model4（算法选择），则保存到算法状态管理中
+  if (selectedModel.value === 'model4') {
+    const algorithm = modelParams.value.param1 // 算法名称
+    const threshold = modelParams.value.param2 // 收敛阈值
+
+    // 保存到状态管理中
+    algorithmStore.setAlgorithmSelection(algorithm, threshold)
+    emit('show-tip', `已选择算法: ${algorithm}, 阈值: ${threshold}`)
   }
 
   // 向父组件发送提交事件和数据

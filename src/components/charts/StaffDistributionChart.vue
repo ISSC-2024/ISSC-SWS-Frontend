@@ -12,50 +12,164 @@
  * 6. 缩略图状态下使用简化的图例和更紧凑的布局
  * 7. 优化的tooltip显示，确保不被容器遮挡
  * 8. 人力资源、物料资源和电力资源图表轮播展示
+ * 9. 支持图表悬停时显示Unity中的管道流动效果
  *
  */
 import { ref, onMounted, inject, computed, watch, onBeforeUnmount } from 'vue'
 import type { Ref } from 'vue'
 import * as echarts from 'echarts'
-import report from '../../mock/report.json'
+import { useAlgorithmStore } from '../../stores/algorithmStore'
+import unityService from '../../services/UnityService' // 引入Unity服务
+
+// 默认数据
+import defaultReport from '../../mock/report.json'
+
+// 获取算法状态管理
+const algorithmStore = useAlgorithmStore()
+
+// 当前使用的报告数据
+const reportData = ref(defaultReport)
+
+// 动态加载报告数据
+const loadReportData = async () => {
+  if (algorithmStore.isDataLoaded) {
+    try {
+      const fileName = algorithmStore.getDataFileName()
+      console.log('加载数据文件:', fileName)
+      // 动态导入JSON文件
+      const module = await import(`../../mock/${fileName}`)
+      reportData.value = module.default
+      console.log('成功加载算法数据')
+      // 更新图表数据
+      updateChartData()
+      // 重新渲染图表
+      updateChart()
+    } catch (error) {
+      console.error('加载数据文件失败:', error)
+      reportData.value = defaultReport
+    }
+  } else {
+    reportData.value = defaultReport
+  }
+}
+
+// 更新图表数据
+const updateChartData = () => {
+  // 更新人力资源数据
+  staffData.staff = {
+    原料储存区: {
+      技术人员: reportData.value.resources.personnel.subtypes.technician.data[0].value,
+      管理人员: reportData.value.resources.personnel.subtypes.manager.data[0].value,
+      维修人员: reportData.value.resources.personnel.subtypes.maintenance.data[0].value,
+      安全人员: reportData.value.resources.personnel.subtypes.safety.data[0].value,
+      操作人员: reportData.value.resources.personnel.subtypes.operator.data[0].value,
+    },
+    反应器区: {
+      技术人员: reportData.value.resources.personnel.subtypes.technician.data[1].value,
+      管理人员: reportData.value.resources.personnel.subtypes.manager.data[1].value,
+      维修人员: reportData.value.resources.personnel.subtypes.maintenance.data[1].value,
+      安全人员: reportData.value.resources.personnel.subtypes.safety.data[1].value,
+      操作人员: reportData.value.resources.personnel.subtypes.operator.data[1].value,
+    },
+    分离提纯区: {
+      技术人员: reportData.value.resources.personnel.subtypes.technician.data[2].value,
+      管理人员: reportData.value.resources.personnel.subtypes.manager.data[2].value,
+      维修人员: reportData.value.resources.personnel.subtypes.maintenance.data[2].value,
+      安全人员: reportData.value.resources.personnel.subtypes.safety.data[2].value,
+      操作人员: reportData.value.resources.personnel.subtypes.operator.data[2].value,
+    },
+    成品储存区: {
+      技术人员: reportData.value.resources.personnel.subtypes.technician.data[3].value,
+      管理人员: reportData.value.resources.personnel.subtypes.manager.data[3].value,
+      维修人员: reportData.value.resources.personnel.subtypes.maintenance.data[3].value,
+      安全人员: reportData.value.resources.personnel.subtypes.safety.data[3].value,
+      操作人员: reportData.value.resources.personnel.subtypes.operator.data[3].value,
+    },
+    公用工程区: {
+      技术人员: reportData.value.resources.personnel.subtypes.technician.data[4].value,
+      管理人员: reportData.value.resources.personnel.subtypes.manager.data[4].value,
+      维修人员: reportData.value.resources.personnel.subtypes.maintenance.data[4].value,
+      安全人员: reportData.value.resources.personnel.subtypes.safety.data[4].value,
+      操作人员: reportData.value.resources.personnel.subtypes.operator.data[4].value,
+    },
+  }
+
+  // 更新物料资源数据
+  materialsData.materials = {
+    原料储存区: {
+      原料: reportData.value.resources.materials.subtypes.raw_material.data[0].value,
+      催化剂: reportData.value.resources.materials.subtypes.catalyst.data[0].value,
+      存储容量: reportData.value.resources.materials.subtypes.storage.data[0].value,
+    },
+    反应器区: {
+      原料: reportData.value.resources.materials.subtypes.raw_material.data[1].value,
+      催化剂: reportData.value.resources.materials.subtypes.catalyst.data[1].value,
+      存储容量: reportData.value.resources.materials.subtypes.storage.data[1].value,
+    },
+    分离提纯区: {
+      原料: reportData.value.resources.materials.subtypes.raw_material.data[2].value,
+      催化剂: reportData.value.resources.materials.subtypes.catalyst.data[2].value,
+      存储容量: reportData.value.resources.materials.subtypes.storage.data[2].value,
+    },
+    成品储存区: {
+      原料: reportData.value.resources.materials.subtypes.raw_material.data[3].value,
+      催化剂: reportData.value.resources.materials.subtypes.catalyst.data[3].value,
+      存储容量: reportData.value.resources.materials.subtypes.storage.data[3].value,
+    },
+    公用工程区: {
+      原料: reportData.value.resources.materials.subtypes.raw_material.data[4].value,
+      催化剂: reportData.value.resources.materials.subtypes.catalyst.data[4].value,
+      存储容量: reportData.value.resources.materials.subtypes.storage.data[4].value,
+    },
+  }
+
+  // 更新电力资源数据
+  electricityData.electricity = {
+    原料储存区: reportData.value.resources.electricity.data[0].value,
+    反应器区: reportData.value.resources.electricity.data[1].value,
+    分离提纯区: reportData.value.resources.electricity.data[2].value,
+    成品储存区: reportData.value.resources.electricity.data[3].value,
+    公用工程区: reportData.value.resources.electricity.data[4].value,
+  }
+}
 
 // 准备人力资源分配数据
 const staffData = {
   staff: {
     原料储存区: {
-      技术人员: report.resources.personnel.subtypes.technician.data[0].value,
-      管理人员: report.resources.personnel.subtypes.manager.data[0].value,
-      维修人员: report.resources.personnel.subtypes.maintenance.data[0].value,
-      安全人员: report.resources.personnel.subtypes.safety.data[0].value,
-      操作人员: report.resources.personnel.subtypes.operator.data[0].value,
+      技术人员: defaultReport.resources.personnel.subtypes.technician.data[0].value,
+      管理人员: defaultReport.resources.personnel.subtypes.manager.data[0].value,
+      维修人员: defaultReport.resources.personnel.subtypes.maintenance.data[0].value,
+      安全人员: defaultReport.resources.personnel.subtypes.safety.data[0].value,
+      操作人员: defaultReport.resources.personnel.subtypes.operator.data[0].value,
     },
     反应器区: {
-      技术人员: report.resources.personnel.subtypes.technician.data[1].value,
-      管理人员: report.resources.personnel.subtypes.manager.data[1].value,
-      维修人员: report.resources.personnel.subtypes.maintenance.data[1].value,
-      安全人员: report.resources.personnel.subtypes.safety.data[1].value,
-      操作人员: report.resources.personnel.subtypes.operator.data[1].value,
+      技术人员: defaultReport.resources.personnel.subtypes.technician.data[1].value,
+      管理人员: defaultReport.resources.personnel.subtypes.manager.data[1].value,
+      维修人员: defaultReport.resources.personnel.subtypes.maintenance.data[1].value,
+      安全人员: defaultReport.resources.personnel.subtypes.safety.data[1].value,
+      操作人员: defaultReport.resources.personnel.subtypes.operator.data[1].value,
     },
     分离提纯区: {
-      技术人员: report.resources.personnel.subtypes.technician.data[2].value,
-      管理人员: report.resources.personnel.subtypes.manager.data[2].value,
-      维修人员: report.resources.personnel.subtypes.maintenance.data[2].value,
-      安全人员: report.resources.personnel.subtypes.safety.data[2].value,
-      操作人员: report.resources.personnel.subtypes.operator.data[2].value,
+      技术人员: defaultReport.resources.personnel.subtypes.technician.data[2].value,
+      管理人员: defaultReport.resources.personnel.subtypes.manager.data[2].value,
+      维修人员: defaultReport.resources.personnel.subtypes.maintenance.data[2].value,
+      安全人员: defaultReport.resources.personnel.subtypes.safety.data[2].value,
+      操作人员: defaultReport.resources.personnel.subtypes.operator.data[2].value,
     },
     成品储存区: {
-      技术人员: report.resources.personnel.subtypes.technician.data[3].value,
-      管理人员: report.resources.personnel.subtypes.manager.data[3].value,
-      维修人员: report.resources.personnel.subtypes.maintenance.data[3].value,
-      安全人员: report.resources.personnel.subtypes.safety.data[3].value,
-      操作人员: report.resources.personnel.subtypes.operator.data[3].value,
+      技术人员: defaultReport.resources.personnel.subtypes.technician.data[3].value,
+      管理人员: defaultReport.resources.personnel.subtypes.manager.data[3].value,
+      维修人员: defaultReport.resources.personnel.subtypes.maintenance.data[3].value,
+      安全人员: defaultReport.resources.personnel.subtypes.safety.data[3].value,
+      操作人员: defaultReport.resources.personnel.subtypes.operator.data[3].value,
     },
     公用工程区: {
-      技术人员: report.resources.personnel.subtypes.technician.data[4].value,
-      管理人员: report.resources.personnel.subtypes.manager.data[4].value,
-      维修人员: report.resources.personnel.subtypes.maintenance.data[4].value,
-      安全人员: report.resources.personnel.subtypes.safety.data[4].value,
-      操作人员: report.resources.personnel.subtypes.operator.data[4].value,
+      技术人员: defaultReport.resources.personnel.subtypes.technician.data[4].value,
+      管理人员: defaultReport.resources.personnel.subtypes.manager.data[4].value,
+      维修人员: defaultReport.resources.personnel.subtypes.maintenance.data[4].value,
+      安全人员: defaultReport.resources.personnel.subtypes.safety.data[4].value,
+      操作人员: defaultReport.resources.personnel.subtypes.operator.data[4].value,
     },
   },
   colors: {
@@ -133,29 +247,29 @@ interface ElectricityData {
 const materialsData = {
   materials: {
     原料储存区: {
-      原料: report.resources.materials.subtypes.raw_material.data[0].value,
-      催化剂: report.resources.materials.subtypes.catalyst.data[0].value,
-      存储容量: report.resources.materials.subtypes.storage.data[0].value,
+      原料: defaultReport.resources.materials.subtypes.raw_material.data[0].value,
+      催化剂: defaultReport.resources.materials.subtypes.catalyst.data[0].value,
+      存储容量: defaultReport.resources.materials.subtypes.storage.data[0].value,
     },
     反应器区: {
-      原料: report.resources.materials.subtypes.raw_material.data[1].value,
-      催化剂: report.resources.materials.subtypes.catalyst.data[1].value,
-      存储容量: report.resources.materials.subtypes.storage.data[1].value,
+      原料: defaultReport.resources.materials.subtypes.raw_material.data[1].value,
+      催化剂: defaultReport.resources.materials.subtypes.catalyst.data[1].value,
+      存储容量: defaultReport.resources.materials.subtypes.storage.data[1].value,
     },
     分离提纯区: {
-      原料: report.resources.materials.subtypes.raw_material.data[2].value,
-      催化剂: report.resources.materials.subtypes.catalyst.data[2].value,
-      存储容量: report.resources.materials.subtypes.storage.data[2].value,
+      原料: defaultReport.resources.materials.subtypes.raw_material.data[2].value,
+      催化剂: defaultReport.resources.materials.subtypes.catalyst.data[2].value,
+      存储容量: defaultReport.resources.materials.subtypes.storage.data[2].value,
     },
     成品储存区: {
-      原料: report.resources.materials.subtypes.raw_material.data[3].value,
-      催化剂: report.resources.materials.subtypes.catalyst.data[3].value,
-      存储容量: report.resources.materials.subtypes.storage.data[3].value,
+      原料: defaultReport.resources.materials.subtypes.raw_material.data[3].value,
+      催化剂: defaultReport.resources.materials.subtypes.catalyst.data[3].value,
+      存储容量: defaultReport.resources.materials.subtypes.storage.data[3].value,
     },
     公用工程区: {
-      原料: report.resources.materials.subtypes.raw_material.data[4].value,
-      催化剂: report.resources.materials.subtypes.catalyst.data[4].value,
-      存储容量: report.resources.materials.subtypes.storage.data[4].value,
+      原料: defaultReport.resources.materials.subtypes.raw_material.data[4].value,
+      催化剂: defaultReport.resources.materials.subtypes.catalyst.data[4].value,
+      存储容量: defaultReport.resources.materials.subtypes.storage.data[4].value,
     },
   },
   colors: {
@@ -168,11 +282,11 @@ const materialsData = {
 // 准备电力资源分配数据
 const electricityData = {
   electricity: {
-    原料储存区: report.resources.electricity.data[0].value,
-    反应器区: report.resources.electricity.data[1].value,
-    分离提纯区: report.resources.electricity.data[2].value,
-    成品储存区: report.resources.electricity.data[3].value,
-    公用工程区: report.resources.electricity.data[4].value,
+    原料储存区: defaultReport.resources.electricity.data[0].value,
+    反应器区: defaultReport.resources.electricity.data[1].value,
+    分离提纯区: defaultReport.resources.electricity.data[2].value,
+    成品储存区: defaultReport.resources.electricity.data[3].value,
+    公用工程区: defaultReport.resources.electricity.data[4].value,
   },
   colors: {
     电力: '#9C27B0',
@@ -208,6 +322,72 @@ const getLegendNames = () => {
     default:
       return []
   }
+}
+
+// 管道流动处理功能
+// 显示管道流动
+const showPipeFlow = (params: any) => {
+  if (!params || !params.seriesName || !params.name) return
+
+  // 确定资源类型和车间
+  const workshop = params.name // 车间名称
+  let resourceType = params.seriesName
+  let value = params.value
+  let fromWorkshop = ''
+  let toWorkshop = ''
+
+  // 根据当前图表类型和资源类型定义流动路径
+  switch (currentChartType.value) {
+    case 0: // 人力资源
+      // 人力资源从原料储存区流向展示的车间
+      resourceType = params.seriesName
+      fromWorkshop = '原料储存区'
+      toWorkshop = workshop !== '原料储存区' ? workshop : '反应器区'
+      break
+    case 1: // 物料资源
+      if (resourceType === '原料') {
+        fromWorkshop = '原料储存区'
+        toWorkshop = workshop !== '原料储存区' ? workshop : '反应器区'
+      } else if (resourceType === '催化剂') {
+        fromWorkshop = '公用工程区'
+        toWorkshop = workshop !== '公用工程区' ? workshop : '反应器区'
+      } else {
+        fromWorkshop = workshop
+        toWorkshop =
+          workshop === '反应器区'
+            ? '分离提纯区'
+            : workshop === '分离提纯区'
+              ? '成品储存区'
+              : workshop === '成品储存区'
+                ? '原料储存区'
+                : '反应器区'
+      }
+      break
+    case 2: // 电力资源
+      fromWorkshop = '公用工程区'
+      toWorkshop = workshop !== '公用工程区' ? workshop : '反应器区'
+      break
+  }
+
+  // 构建发送给Unity的数据
+  const pipeData = {
+    from_workshop: fromWorkshop,
+    to_workshop: toWorkshop,
+    resource_type: resourceType,
+    amount: value || 0,
+    iteration: 1,
+    timestamp: Date.now(),
+  }
+
+  // 发送消息到Unity显示管道
+  console.log('显示管道流动:', pipeData)
+  unityService.sendMessageToUnity('Pipe', 'PipeHighlightOn', JSON.stringify(pipeData))
+}
+
+// 隐藏管道流动
+const hidePipeFlow = () => {
+  // 发送消息到Unity隐藏管道
+  unityService.sendMessageToUnity('Pipe', 'PipeHighlightOff', '')
 }
 
 // 将数据转换为echarts所需格式
@@ -308,6 +488,15 @@ const initChart = () => {
 
   // 更新图表
   updateChart()
+
+  // 添加事件监听
+  chartInstance.on('mouseover', (params) => {
+    showPipeFlow(params)
+  })
+
+  chartInstance.on('mouseout', () => {
+    hidePipeFlow()
+  })
 }
 
 // 添加全局样式
@@ -425,6 +614,11 @@ watch(isExpanded, () => {
 // 组件挂载时初始化图表
 onMounted(() => {
   addGlobalStyle()
+
+  // 加载报告数据
+  loadReportData()
+
+  // 初始化图表
   initChart()
 
   // 添加窗口大小变化监听
@@ -433,10 +627,27 @@ onMounted(() => {
       chartInstance.resize()
     }
   })
+
+  // 监听算法选择变化
+  watch(
+    // 同时监听算法名称和阈值参数的变化
+    () => [algorithmStore.selectedAlgorithm, algorithmStore.convergenceThreshold],
+    () => {
+      if (algorithmStore.isDataLoaded) {
+        loadReportData()
+      }
+    },
+  )
 })
 
 // 组件销毁前清理
 onBeforeUnmount(() => {
+  // 先移除事件监听
+  if (chartInstance) {
+    chartInstance.off('mouseover')
+    chartInstance.off('mouseout')
+  }
+
   // 移除窗口大小变化监听
   window.removeEventListener('resize', () => {
     if (chartInstance) {
