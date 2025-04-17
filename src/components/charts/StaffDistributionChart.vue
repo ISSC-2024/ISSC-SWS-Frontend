@@ -12,12 +12,14 @@
  * 6. 缩略图状态下使用简化的图例和更紧凑的布局
  * 7. 优化的tooltip显示，确保不被容器遮挡
  * 8. 人力资源、物料资源和电力资源图表轮播展示
+ * 9. 支持图表悬停时显示Unity中的管道流动效果
  *
  */
 import { ref, onMounted, inject, computed, watch, onBeforeUnmount } from 'vue'
 import type { Ref } from 'vue'
 import * as echarts from 'echarts'
 import { useAlgorithmStore } from '../../stores/algorithmStore'
+import unityService from '../../services/UnityService' // 引入Unity服务
 
 // 默认数据
 import defaultReport from '../../mock/report.json'
@@ -322,6 +324,72 @@ const getLegendNames = () => {
   }
 }
 
+// 管道流动处理功能
+// 显示管道流动
+const showPipeFlow = (params: any) => {
+  if (!params || !params.seriesName || !params.name) return
+
+  // 确定资源类型和车间
+  const workshop = params.name // 车间名称
+  let resourceType = params.seriesName
+  let value = params.value
+  let fromWorkshop = ''
+  let toWorkshop = ''
+
+  // 根据当前图表类型和资源类型定义流动路径
+  switch (currentChartType.value) {
+    case 0: // 人力资源
+      // 人力资源从原料储存区流向展示的车间
+      resourceType = params.seriesName
+      fromWorkshop = '原料储存区'
+      toWorkshop = workshop !== '原料储存区' ? workshop : '反应器区'
+      break
+    case 1: // 物料资源
+      if (resourceType === '原料') {
+        fromWorkshop = '原料储存区'
+        toWorkshop = workshop !== '原料储存区' ? workshop : '反应器区'
+      } else if (resourceType === '催化剂') {
+        fromWorkshop = '公用工程区'
+        toWorkshop = workshop !== '公用工程区' ? workshop : '反应器区'
+      } else {
+        fromWorkshop = workshop
+        toWorkshop =
+          workshop === '反应器区'
+            ? '分离提纯区'
+            : workshop === '分离提纯区'
+              ? '成品储存区'
+              : workshop === '成品储存区'
+                ? '原料储存区'
+                : '反应器区'
+      }
+      break
+    case 2: // 电力资源
+      fromWorkshop = '公用工程区'
+      toWorkshop = workshop !== '公用工程区' ? workshop : '反应器区'
+      break
+  }
+
+  // 构建发送给Unity的数据
+  const pipeData = {
+    from_workshop: fromWorkshop,
+    to_workshop: toWorkshop,
+    resource_type: resourceType,
+    amount: value || 0,
+    iteration: 1,
+    timestamp: Date.now(),
+  }
+
+  // 发送消息到Unity显示管道
+  console.log('显示管道流动:', pipeData)
+  unityService.sendMessageToUnity('Pipe', 'PipeHighlightOn', JSON.stringify(pipeData))
+}
+
+// 隐藏管道流动
+const hidePipeFlow = () => {
+  // 发送消息到Unity隐藏管道
+  unityService.sendMessageToUnity('Pipe', 'PipeHighlightOff', '')
+}
+
 // 将数据转换为echarts所需格式
 const getSeriesData = () => {
   switch (currentChartType.value) {
@@ -420,6 +488,15 @@ const initChart = () => {
 
   // 更新图表
   updateChart()
+
+  // 添加事件监听
+  chartInstance.on('mouseover', (params) => {
+    showPipeFlow(params)
+  })
+
+  chartInstance.on('mouseout', () => {
+    hidePipeFlow()
+  })
 }
 
 // 添加全局样式
@@ -565,6 +642,12 @@ onMounted(() => {
 
 // 组件销毁前清理
 onBeforeUnmount(() => {
+  // 先移除事件监听
+  if (chartInstance) {
+    chartInstance.off('mouseover')
+    chartInstance.off('mouseout')
+  }
+
   // 移除窗口大小变化监听
   window.removeEventListener('resize', () => {
     if (chartInstance) {
