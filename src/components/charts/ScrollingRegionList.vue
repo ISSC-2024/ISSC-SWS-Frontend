@@ -154,7 +154,11 @@ const prepareUnityData = (region: Region): UnityData | null => {
 // 鼠标悬停在区域上时触发高亮
 const handleRegionHover = (region: Region) => {
   if (!unityService.isUnityLoaded()) return
-
+  // 鼠标悬停时停止滚动
+  if (scrollTimer) {
+    clearInterval(scrollTimer)
+    scrollTimer = null
+  }
   const unityData = prepareUnityData(region)
   if (unityData) {
     unityService.sendMessageToUnity('Sensor', 'RegionHighlightOn', JSON.stringify(unityData))
@@ -164,7 +168,10 @@ const handleRegionHover = (region: Region) => {
 // 鼠标离开区域时取消高亮
 const handleRegionLeave = (region: Region) => {
   if (!unityService.isUnityLoaded()) return
-
+  // 如果不在展开状态，重新开始滚动
+  if (!isExpanded.value && !scrollTimer) {
+    scrollTimer = setInterval(scrollList, 2000) as unknown as number
+  }
   const unityData = prepareUnityData(region)
   if (unityData) {
     unityService.sendMessageToUnity('Sensor', 'RegionHighlightOff', JSON.stringify(unityData))
