@@ -141,7 +141,11 @@ const prepareUnityData = (log: LogEntry) => {
 // 鼠标悬停在日志行时触发高亮
 const handleLogHover = (log: LogEntry) => {
   if (!unityService.isUnityLoaded()) return
-
+  // 鼠标悬停时停止滚动
+  if (scrollTimer) {
+    clearInterval(scrollTimer)
+    scrollTimer = null
+  }
   const unityData = prepareUnityData(log)
   if (unityData) {
     unityService.sendMessageToUnity('Sensor', 'RegionHighlightOn', JSON.stringify(unityData))
@@ -151,7 +155,10 @@ const handleLogHover = (log: LogEntry) => {
 // 鼠标离开日志行时取消高亮
 const handleLogLeave = (log: LogEntry) => {
   if (!unityService.isUnityLoaded()) return
-
+  // 如果不在展开状态，重新开始滚动
+  if (!isExpanded.value && !scrollTimer) {
+    scrollTimer = setInterval(scrollList, 2000) as unknown as number
+  }
   const unityData = prepareUnityData(log)
   if (unityData) {
     unityService.sendMessageToUnity('Sensor', 'RegionHighlightOff', JSON.stringify(unityData))

@@ -21,6 +21,7 @@
           <option value="REA">REA</option>
           <option value="SEP">SEP</option>
           <option value="UTL">UTL</option>
+          <option value="RMS">RMS</option>
         </select>
       </div>
       <div class="dropdown">
@@ -51,8 +52,9 @@
         v-for="sensor in visibleSensors"
         :key="sensor.point_id"
         class="list-row"
-        @mouseover="handleHover"
+        @mouseover="handleHover(sensor)"
         @mouseleave="handleHoverEnd"
+        @click="handleClick(sensor)"
       >
         <div class="list-item">{{ formatTimestamp(sensor.timestamp) }}</div>
         <div class="list-item">
@@ -120,6 +122,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, inject, watch, onUnmounted } from 'vue'
 import sensorData from '@/mock/predictions_arima_auto.json'
+import UnityService from '../../services/UnityService'
 
 // 1. 定义明确的元组类型和接口
 type RangeTuple = [number, number]
@@ -382,12 +385,17 @@ onUnmounted(() => {
     clearInterval(scrollTimer)
   }
 })
-const handleHover = () => {
+
+const handleHover = (sensor: Sensor) => {
   // 鼠标悬停时停止滚动
   if (scrollTimer) {
     clearInterval(scrollTimer)
     scrollTimer = null
   }
+  // 向Unity发送消息，高亮传感器
+  const SensorJson = JSON.stringify(sensor)
+  console.log('向Unity发送消息:', SensorJson)
+  UnityService.sendMessageToUnity('Sensor', 'SensorHighlightOn', SensorJson)
 }
 
 // 处理鼠标离开
@@ -396,6 +404,14 @@ const handleHoverEnd = () => {
   if (!isExpanded.value && !scrollTimer) {
     scrollTimer = setInterval(scrollList, 2000) as unknown as number
   }
+  // 向Unity发送消息，取消高亮传感器
+  UnityService.sendMessageToUnity('Sensor', 'SensorHighlightOff')
+}
+
+// 处理鼠标点击
+const handleClick = (sensor: Sensor) => {
+  // 向Unity发送消息，持续高亮传感器
+  UnityService.sendMessageToUnity('Sensor', 'SensorContinuousHighlight', JSON.stringify(sensor))
 }
 
 // 图片弹窗相关
