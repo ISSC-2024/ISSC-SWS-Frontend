@@ -1,7 +1,7 @@
 <template>
-  <!-- 
+  <!--
    * @description 区域风险滚动列表组件
-   * 
+   *
    * 该组件显示区域的实时风险数据列表，包括时间戳、区域和安全状态。
    * 包含以下功能：
    * 1. 非展开状态下自动滚动显示区域数据
@@ -10,7 +10,7 @@
    * 4. 响应式布局设计，适应不同显示状态
    * 5. 带有固定表头的数据列表
    * 6. 与Unity交互：鼠标悬停高亮区域，离开取消高亮，点击持续高亮/再次点击取消高亮
-   * 
+   *
    -->
   <div class="scrolling-list-container">
     <div class="scrolling-list-header">
@@ -45,6 +45,7 @@
       </div>
     </div>
   </div>
+  <TextMessageDisplayBox />
 </template>
 
 <script setup lang="ts">
@@ -52,6 +53,8 @@ import { ref, onMounted, computed, inject, onUnmounted, type InjectionKey, type 
 import sensorData from '../../mock/riskRegionSummary.json'
 import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
+import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
+import { useMessageStore } from '@/stores/message'
 
 interface Region {
   timestamp: string
@@ -178,7 +181,19 @@ const handleRegionLeave = (region: Region) => {
   }
 }
 
-// 点击区域时的处理函数 - 持续高亮/取消高亮
+// 配置字段映射
+const textFieldConfig = {
+  labelMap: {
+    region: '区域名称',
+    risk_level: '风险等级',
+    message: '详细信息',
+  },
+  valueFormatters: {
+    risk_level: (v: string) => getRiskLevelText(v), // 复用已有的翻译函数
+  },
+}
+
+const messageStore = useMessageStore()
 const handleRegionClick = (region: Region) => {
   // 检查Unity是否已加载
   if (!unityService.isUnityLoaded()) {
@@ -199,6 +214,8 @@ const handleRegionClick = (region: Region) => {
 
   // 无论是选中还是取消选中，都发送同一个消息
   unityService.sendMessageToUnity('Sensor', 'RegionContinuousHighlight', JSON.stringify(unityData))
+  // 发送消息给文本框
+  messageStore.showMessage(unityData, textFieldConfig)
 }
 
 // 滚动列表的函数

@@ -8,8 +8,8 @@
    * 2. 展开状态下显示全部日志数据，可滚动查看
    * 3. 根据风险等级自动显示不同颜色的状态指示器（信息/警告/危险）
    * 4. 响应式布局设计，适应不同显示状态
-   * 5. 点击日志行可以将信息发送至Unity进行区域高亮
-   * 
+   * 5. 点击日志行可以将信息发送至Unity进行区域高亮，并显示在文本框中
+   *
    -->
   <div class="scrolling-log-container">
     <div class="scrolling-log-body" ref="logBody">
@@ -33,6 +33,7 @@
       </div>
     </div>
   </div>
+  <TextMessageDisplayBox />
 </template>
 
 <script setup lang="ts">
@@ -40,6 +41,8 @@ import { ref, onMounted, computed, inject, onUnmounted, type InjectionKey, type 
 import newPlantLogData from '../../mock/riskRegionSummary.json'
 import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
+import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
+import { useMessageStore } from '@/stores/message'
 
 // 定义新的日志数据结构接口
 interface LogEntry {
@@ -166,6 +169,7 @@ const handleLogLeave = (log: LogEntry) => {
 }
 
 // 点击日志行时的处理函数 - 持续高亮/取消高亮
+const messageStore = useMessageStore()
 const handleLogClick = (log: LogEntry) => {
   // 检查Unity是否已加载
   if (!unityService.isUnityLoaded()) {
@@ -186,6 +190,31 @@ const handleLogClick = (log: LogEntry) => {
 
   // 无论是选中还是取消选中，都发送同一个消息
   unityService.sendMessageToUnity('Sensor', 'RegionContinuousHighlight', JSON.stringify(unityData))
+
+  // 将数据发送到文本框
+  const textFieldConfig = {
+    labelMap: {
+      region: '区域',
+      risk_level: '风险等级',
+      message: '详细信息',
+    },
+    valueFormatters: {
+      risk_level: (v: string) => {
+        switch (v) {
+          case 'safe':
+            return '安全'
+          case 'warning':
+            return '警告'
+          case 'danger':
+            return '危险'
+          default:
+            return '未知'
+        }
+      },
+    },
+  }
+
+  messageStore.showMessage(unityData, textFieldConfig)
 }
 
 // 格式化时间戳

@@ -1,7 +1,7 @@
 <template>
-  <!-- 
+  <!--
    * @description 传感器数据滚动列表组件
-   * 
+   *
    * 该组件显示传感器的实时数据列表，包括传感器编号、温度、压力和安全状态。
    * 包含以下功能：
    * 1. 非展开状态下自动滚动显示传感器数据，鼠标悬停在数据上时停止滚动
@@ -9,7 +9,7 @@
    * 3. 根据安全状态自动显示不同颜色的状态指示器（安全/警告/危险）
    * 4. 响应式布局设计，适应不同显示状态
    * 5. 带有固定表头的数据列表
-   * 
+   *
    -->
   <div class="scrolling-list-container">
     <!-- 左上角下拉框 -->
@@ -117,12 +117,16 @@
       <button class="close-button" @click="closeImageModal">×</button>
     </div>
   </div>
+  <!-- 文本框组件 -->
+  <TextMessageDisplayBox />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed, inject, watch, onUnmounted } from 'vue'
 import sensorData from '@/mock/predictions_arima_auto.json'
 import UnityService from '../../services/UnityService'
+import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue' // 根据实际路径调整
+import { useMessageStore } from '@/stores/message'
 
 // 1. 定义明确的元组类型和接口
 type RangeTuple = [number, number]
@@ -408,9 +412,31 @@ const handleHoverEnd = () => {
   UnityService.sendMessageToUnity('Sensor', 'SensorHighlightOff')
 }
 
-// 处理鼠标点击
+// 替换原有状态和点击处理函数
+const messageStore = useMessageStore()
+
 const handleClick = (sensor: Sensor) => {
-  // 向Unity发送消息，持续高亮传感器
+  messageStore.showMessage(sensor, {
+    labelMap: {
+      timestamp: '时间戳',
+      point_id: '传感器编号',
+      region: '区域',
+      temperature: '温度',
+      pressure: '压力',
+      flow_rate: '流量',
+      level: '液位',
+      gas_type: '气体类型',
+      gas_concentration: '气体浓度',
+    },
+    valueFormatters: {
+      temperature: (v: number) => `${v.toFixed(2)}°C`,
+      pressure: (v: number) => `${v.toFixed(2)}kPa`,
+      flow_rate: (v: number) => `${v.toFixed(2)}m³/h`,
+      level: (v: number) => `${v.toFixed(2)}%`,
+      gas_concentration: (v: number) => `${v.toFixed(2)}ppm`,
+    },
+  })
+
   UnityService.sendMessageToUnity('Sensor', 'SensorContinuousHighlight', JSON.stringify(sensor))
 }
 

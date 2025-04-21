@@ -1,17 +1,10 @@
 <script setup lang="ts">
-/**
- * @description 资源展示面板组件
- *
- * 该组件显示应用中的资源信息列表，包含以下功能：
- * 1. 显示三类资源：人力资源、物料资源和业务信息
- * 2. 统一的布局和样式设计
- * 3. 简洁的视觉呈现，便于用户快速了解资源信息
- * 4. 与Unity交互，支持高亮显示
- */
-
-// 导入 Unity 服务
-import unityService from '../../services/UnityService' // 请确保路径正确
 import { ref } from 'vue'
+import unityService from '../../services/UnityService' // 请确保路径正确
+import { useMessageStore } from '@/stores/message'
+import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue' // 引入文本框组件
+
+const messageStore = useMessageStore()
 
 // 记录当前高亮状态
 const activeHighlights = ref({
@@ -31,7 +24,7 @@ const humanResources = [
 
 // 物料资源数据，更新name以匹配Unity要求
 const materialResources = [
-  { id: 1, name: 'RawMaterialnventory', displayName: '原料库存', description: '乙烯 (900吨)', icon: '🧪' },
+  { id: 1, name: 'RawMaterialInventory', displayName: '原料库存', description: '乙烯 (900吨)', icon: '🧪' },
   { id: 2, name: 'Catalyst', displayName: '催化剂', description: '钯碳催化剂 (400kg)', icon: '⚗️' },
   { id: 3, name: 'TankCapacity', displayName: '储罐容量', description: '液化气储罐 (400吨)', icon: '🔋' },
 ]
@@ -42,51 +35,6 @@ const businessInfo = [
   { id: 3, name: '质检报告', description: '合格率 (98.5%)', icon: '✅' },
 ]
 
-// 处理人员鼠标悬停事件
-const handleHumanResourceMouseEnter = (item: any) => {
-  const dataJson = {
-    name: item.name,
-    job: item.job,
-    age: item.age,
-  }
-
-  console.log('发送数据到Unity - 人员高亮:', dataJson)
-  // 发送消息到Unity
-  unityService.sendMessageToUnity('People', 'PeopleHighlightOn', JSON.stringify(dataJson))
-}
-
-// 处理人员鼠标离开事件
-const handleHumanResourceMouseLeave = () => {
-  // 如果没有持续高亮，才发送取消高亮消息
-  if (!activeHighlights.value.hr) {
-    console.log('发送数据到Unity - 取消人员高亮')
-    // 发送消息到Unity
-    unityService.sendMessageToUnity('People', 'PeopleHighlightOff', '')
-  }
-}
-
-// 处理资源鼠标悬停事件
-const handleMaterialResourceMouseEnter = (item: any) => {
-  const dataJson = {
-    name: item.name,
-    desc: item.description,
-  }
-
-  console.log('发送数据到Unity - 资源高亮:', dataJson)
-  // 发送消息到Unity
-  unityService.sendMessageToUnity('Resource', 'ResourceHighlightOn', JSON.stringify(dataJson))
-}
-
-// 处理资源鼠标离开事件
-const handleMaterialResourceMouseLeave = () => {
-  // 如果没有持续高亮，才发送取消高亮消息
-  if (!activeHighlights.value.mr) {
-    console.log('发送数据到Unity - 取消资源高亮')
-    // 发送消息到Unity
-    unityService.sendMessageToUnity('Resource', 'ResourceHighlightOff', '')
-  }
-}
-
 // 处理人员点击事件（持续高亮）
 const handleHumanResourceClick = (item: any) => {
   const dataJson = {
@@ -95,7 +43,7 @@ const handleHumanResourceClick = (item: any) => {
     age: item.age,
   }
 
-  console.log('发送数据到Unity - 人员（取消）持续高亮:', dataJson)
+  // 发送消息到Unity
   unityService.sendMessageToUnity('People', 'PeopleContinuousHighlight', JSON.stringify(dataJson))
 
   // 更新本地高亮状态
@@ -104,6 +52,24 @@ const handleHumanResourceClick = (item: any) => {
   } else {
     activeHighlights.value.hr = item.name
   }
+
+  // 发送数据到文本框显示
+  messageStore.showMessage(
+    {
+      message: `人员点击事件: ${item.name}\n职位: ${item.job}\n年龄: ${item.age}`,
+      timestamp: new Date().toISOString(),
+      status: activeHighlights.value.hr ? '持续高亮' : '取消持续高亮',
+    },
+    {
+      labelMap: {
+        timestamp: '时间戳',
+        status: '状态',
+      },
+      valueFormatters: {
+        timestamp: (v: string) => new Date(v).toLocaleString(),
+      },
+    },
+  )
 }
 
 // 处理物料资源点击事件（持续高亮）
@@ -113,7 +79,7 @@ const handleMaterialResourceClick = (item: any) => {
     desc: item.description,
   }
 
-  console.log('发送数据到Unity - 资源（取消）持续高亮:', dataJson)
+  // 发送消息到Unity
   unityService.sendMessageToUnity('Resource', 'ResourceContinuousHighlight', JSON.stringify(dataJson))
 
   // 更新本地高亮状态
@@ -122,6 +88,24 @@ const handleMaterialResourceClick = (item: any) => {
   } else {
     activeHighlights.value.mr = item.name
   }
+
+  // 发送数据到文本框显示
+  messageStore.showMessage(
+    {
+      message: `资源点击事件: ${item.displayName}\n描述: ${item.description}`,
+      timestamp: new Date().toISOString(),
+      status: activeHighlights.value.mr ? '持续高亮' : '取消持续高亮',
+    },
+    {
+      labelMap: {
+        timestamp: '时间戳',
+        status: '状态',
+      },
+      valueFormatters: {
+        timestamp: (v: string) => new Date(v).toLocaleString(),
+      },
+    },
+  )
 }
 </script>
 
@@ -136,8 +120,6 @@ const handleMaterialResourceClick = (item: any) => {
             class="resource-item"
             v-for="item in humanResources"
             :key="item.id"
-            @mouseenter="handleHumanResourceMouseEnter(item)"
-            @mouseleave="handleHumanResourceMouseLeave"
             @click="handleHumanResourceClick(item)"
             :class="{ 'item-active': activeHighlights.hr === item.name }"
           >
@@ -160,8 +142,6 @@ const handleMaterialResourceClick = (item: any) => {
             class="resource-item"
             v-for="item in materialResources"
             :key="item.id"
-            @mouseenter="handleMaterialResourceMouseEnter(item)"
-            @mouseleave="handleMaterialResourceMouseLeave"
             @click="handleMaterialResourceClick(item)"
             :class="{ 'item-active': activeHighlights.mr === item.name }"
           >
@@ -193,6 +173,9 @@ const handleMaterialResourceClick = (item: any) => {
       </div>
     </div>
   </div>
+
+  <!-- 文本框组件 -->
+  <TextMessageDisplayBox />
 </template>
 
 <style scoped>
