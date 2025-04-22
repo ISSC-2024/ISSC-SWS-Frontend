@@ -399,7 +399,7 @@ const showPipeFlow = (params: any) => {
     to_workshop: toWorkshop,
     amount: value || 0,
     unit: getUnitByResourceType(),
-    status: getResourceStatus(value, resourceType, workshop),
+    status: getResourceStatus(value),
   }
 
   // 显示消息框
