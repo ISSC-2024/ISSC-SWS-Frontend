@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMessageStore } from '@/stores/message' // 根据实际路径调整
+import { useMessageStore } from '../../../stores/message' // 根据实际路径调整
 
 // type StatusType = 'normal' | 'warning' | 'danger'
 

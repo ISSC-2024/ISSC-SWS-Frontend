@@ -398,7 +398,7 @@ const showPipeFlow = (params: any) => {
     from_workshop: fromWorkshop,
     to_workshop: toWorkshop,
     amount: value || 0,
-    unit: getUnitByResourceType(resourceType),
+    unit: getUnitByResourceType(),
     status: getResourceStatus(value, resourceType, workshop),
   }
 
@@ -445,8 +445,8 @@ const getUnitByResourceType = () => {
 }
 
 // 获取资源状态
-const getResourceStatus = (value: number, type: string, workshop: string) => {
-  const ranges = getNormalRanges(type, workshop)
+const getResourceStatus = (value: number) => {
+  const ranges = getNormalRanges()
   if (!ranges) return '正常'
   return value < ranges[0] || value > ranges[1] ? '警告' : '正常'
 }
