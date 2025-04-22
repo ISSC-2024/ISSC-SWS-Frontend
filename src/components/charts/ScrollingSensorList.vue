@@ -126,7 +126,7 @@ import { ref, onMounted, computed, inject, watch, onUnmounted } from 'vue'
 import sensorData from '@/mock/predictions_arima_auto.json'
 import UnityService from '../../services/UnityService'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue' // 根据实际路径调整
-import { useMessageStore } from '@/stores/message'
+import { useMessageStore } from '../../stores/message'
 
 // 1. 定义明确的元组类型和接口
 type RangeTuple = [number, number]

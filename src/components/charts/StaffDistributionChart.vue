@@ -20,7 +20,7 @@ import type { Ref } from 'vue'
 import * as echarts from 'echarts'
 import { useAlgorithmStore } from '../../stores/algorithmStore'
 import unityService from '../../services/UnityService' // 引入Unity服务
-import { useMessageStore } from '@/stores/message'
+import { useMessageStore } from '../../stores/message'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue' // 根据实际路径调整
 
 // 默认数据

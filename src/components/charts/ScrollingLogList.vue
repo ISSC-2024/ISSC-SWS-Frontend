@@ -42,7 +42,7 @@ import newPlantLogData from '../../mock/riskRegionSummary.json'
 import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-import { useMessageStore } from '@/stores/message'
+import { useMessageStore } from '../../stores/message'
 
 // 定义新的日志数据结构接口
 interface LogEntry {

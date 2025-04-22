@@ -54,7 +54,7 @@ import sensorData from '../../mock/riskRegionSummary.json'
 import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-import { useMessageStore } from '@/stores/message'
+import { useMessageStore } from '../../stores/message'
 
 interface Region {
   timestamp: string
