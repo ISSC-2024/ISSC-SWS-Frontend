@@ -215,7 +215,10 @@ const handleRegionClick = (region: Region) => {
   // 无论是选中还是取消选中，都发送同一个消息
   unityService.sendMessageToUnity('Sensor', 'RegionContinuousHighlight', JSON.stringify(unityData))
   // 发送消息给文本框
-  messageStore.showMessage(unityData, textFieldConfig)
+  messageStore.showMessage(unityData, textFieldConfig, {
+    source: 'region', // 可选的消息来源标识
+    title: `区域-${region.region}`, // 设置特定标题
+  })
 }
 
 // 滚动列表的函数

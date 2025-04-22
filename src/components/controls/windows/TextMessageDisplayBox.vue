@@ -1,7 +1,7 @@
 <template>
   <div v-if="visible" class="text-message-display-box">
     <div class="message-box-content">
-      <h3 class="message-box-title">{{ title }}</h3>
+      <h3 class="message-box-title">{{ messageStore.title }}</h3>
       <div class="message-box-body">
         <div v-for="key in filteredKeys" :key="key" class="message-row">
           <span class="attribute-label">{{ getFieldLabel(key) }}：</span>
@@ -198,78 +198,73 @@ const getMessageStatusClass = (messageLine: string) => {
 const handleClose = () => {
   messageStore.hideMessage() // 不传参数，关闭所有消息
 }
-
-// 保留的props仅用于标题配置
-defineProps({
-  title: {
-    type: String,
-    default: '信息详情',
-  },
-})
 </script>
 
 <style scoped>
 .text-message-display-box {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: absolute;
+  bottom: 330px;
+  left: 400px;
   z-index: 1000;
   pointer-events: none;
 }
 
 .message-box-content {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 12px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  width: 360px;
+  width: 300px;
   max-width: 90vw;
+  max-height: 70vh;
   padding: 24px;
   position: relative;
   pointer-events: auto;
-}
-
-.message-box-title {
-  margin: 0 0 20px 0;
-  font-size: 18px;
-  color: #1a1a1a;
-  font-weight: 600;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 12px;
+  overflow: hidden; /* 防止内部元素溢出 */
 }
 
 .message-box-body {
   max-height: 30vh;
   overflow-y: auto;
-  padding-right: 20px;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #ddd #f5f5f5;
+}
+
+.message-box-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.message-box-body::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.message-box-body::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 6px;
 }
 
 .message-row {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: baseline;
   padding: 10px 0;
   border-bottom: 1px solid #f5f5f5;
-}
-
-.message-row:last-child {
-  border-bottom: none;
+  gap: 8px;
 }
 
 .attribute-label {
+  flex: 0 0 120px;
   color: #666;
   font-size: 14px;
-  flex-shrink: 0;
-  width: 120px;
 }
 
 .attribute-value {
+  flex: 1;
+  min-width: 0;
   color: #333;
   font-weight: 500;
-  text-align: right;
-  margin-left: 10px;
   word-break: break-word;
-  max-width: calc(100% - 140px);
+  overflow-wrap: break-word;
 }
 
 .normal-status {

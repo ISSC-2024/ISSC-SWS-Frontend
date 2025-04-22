@@ -423,7 +423,10 @@ const showPipeFlow = (params: any) => {
         status: (v: string) => v.toLowerCase(),
       },
     },
-    COMPONENT_SOURCE,
+    {
+      source: COMPONENT_SOURCE, // 可选的消息来源标识
+      title: `${resourceTitles[currentChartType.value]}`, // 设置特定标题
+    },
   )
 }
 

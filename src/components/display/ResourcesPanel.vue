@@ -35,7 +35,7 @@ const businessInfo = [
   { id: 3, name: '质检报告', description: '合格率 (98.5%)', icon: '✅' },
 ]
 
-// 处理人员点击事件（持续高亮）
+// 处理人员点击事件（切换显示/隐藏）
 const handleHumanResourceClick = (item: any) => {
   const dataJson = {
     name: item.name,
@@ -49,30 +49,34 @@ const handleHumanResourceClick = (item: any) => {
   // 更新本地高亮状态
   if (activeHighlights.value.hr === item.name) {
     activeHighlights.value.hr = null
+    // 第二次点击时隐藏消息
+    messageStore.hideMessage('HumanResource')
   } else {
     activeHighlights.value.hr = item.name
+    // 第一次点击时显示消息
+    messageStore.showMessage(
+      {
+        message: `职位: ${item.job}\n年龄: ${item.age}`,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        labelMap: {
+          timestamp: '时间戳',
+          status: '状态',
+        },
+        valueFormatters: {
+          timestamp: (v: string) => new Date(v).toLocaleString(),
+        },
+      },
+      {
+        source: 'HumanResource',
+        title: `人力资源`,
+      },
+    )
   }
-
-  // 发送数据到文本框显示
-  messageStore.showMessage(
-    {
-      message: `人员点击事件: ${item.name}\n职位: ${item.job}\n年龄: ${item.age}`,
-      timestamp: new Date().toISOString(),
-      status: activeHighlights.value.hr ? '持续高亮' : '取消持续高亮',
-    },
-    {
-      labelMap: {
-        timestamp: '时间戳',
-        status: '状态',
-      },
-      valueFormatters: {
-        timestamp: (v: string) => new Date(v).toLocaleString(),
-      },
-    },
-  )
 }
 
-// 处理物料资源点击事件（持续高亮）
+// 处理物料资源点击事件（切换显示/隐藏）
 const handleMaterialResourceClick = (item: any) => {
   const dataJson = {
     name: item.name,
@@ -85,27 +89,31 @@ const handleMaterialResourceClick = (item: any) => {
   // 更新本地高亮状态
   if (activeHighlights.value.mr === item.name) {
     activeHighlights.value.mr = null
+    // 第二次点击时隐藏消息
+    messageStore.hideMessage('MaterialResource')
   } else {
     activeHighlights.value.mr = item.name
+    // 第一次点击时显示消息
+    messageStore.showMessage(
+      {
+        message: `${item.description}`,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        labelMap: {
+          timestamp: '时间戳',
+          status: '状态',
+        },
+        valueFormatters: {
+          timestamp: (v: string) => new Date(v).toLocaleString(),
+        },
+      },
+      {
+        source: 'MaterialResource',
+        title: `物料资源`,
+      },
+    )
   }
-
-  // 发送数据到文本框显示
-  messageStore.showMessage(
-    {
-      message: `资源点击事件: ${item.displayName}\n描述: ${item.description}`,
-      timestamp: new Date().toISOString(),
-      status: activeHighlights.value.mr ? '持续高亮' : '取消持续高亮',
-    },
-    {
-      labelMap: {
-        timestamp: '时间戳',
-        status: '状态',
-      },
-      valueFormatters: {
-        timestamp: (v: string) => new Date(v).toLocaleString(),
-      },
-    },
-  )
 }
 </script>
 

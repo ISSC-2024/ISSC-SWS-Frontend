@@ -416,26 +416,33 @@ const handleHoverEnd = () => {
 const messageStore = useMessageStore()
 
 const handleClick = (sensor: Sensor) => {
-  messageStore.showMessage(sensor, {
-    labelMap: {
-      timestamp: '时间戳',
-      point_id: '传感器编号',
-      region: '区域',
-      temperature: '温度',
-      pressure: '压力',
-      flow_rate: '流量',
-      level: '液位',
-      gas_type: '气体类型',
-      gas_concentration: '气体浓度',
+  messageStore.showMessage(
+    sensor,
+    {
+      labelMap: {
+        timestamp: '时间戳',
+        point_id: '传感器编号',
+        region: '区域',
+        temperature: '温度',
+        pressure: '压力',
+        flow_rate: '流量',
+        level: '液位',
+        gas_type: '气体类型',
+        gas_concentration: '气体浓度',
+      },
+      valueFormatters: {
+        temperature: (v: number) => `${v.toFixed(2)}°C`,
+        pressure: (v: number) => `${v.toFixed(2)}kPa`,
+        flow_rate: (v: number) => `${v.toFixed(2)}m³/h`,
+        level: (v: number) => `${v.toFixed(2)}%`,
+        gas_concentration: (v: number) => `${v.toFixed(2)}ppm`,
+      },
     },
-    valueFormatters: {
-      temperature: (v: number) => `${v.toFixed(2)}°C`,
-      pressure: (v: number) => `${v.toFixed(2)}kPa`,
-      flow_rate: (v: number) => `${v.toFixed(2)}m³/h`,
-      level: (v: number) => `${v.toFixed(2)}%`,
-      gas_concentration: (v: number) => `${v.toFixed(2)}ppm`,
+    {
+      source: 'sensor', // 可选的消息来源标识
+      title: `传感器详情 - ${sensor.point_id}`, // 设置特定标题
     },
-  })
+  )
 
   UnityService.sendMessageToUnity('Sensor', 'SensorContinuousHighlight', JSON.stringify(sensor))
 }

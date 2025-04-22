@@ -213,8 +213,12 @@ const handleLogClick = (log: LogEntry) => {
       },
     },
   }
-
-  messageStore.showMessage(unityData, textFieldConfig)
+  // 创建副本防止修改原始数据
+  const validatedLog = { ...log }
+  messageStore.showMessage(unityData, textFieldConfig, {
+    source: 'region', // 可选的消息来源标识
+    title: `日志-${validatedLog.region}`, // 设置特定标题
+  })
 }
 
 // 格式化时间戳
