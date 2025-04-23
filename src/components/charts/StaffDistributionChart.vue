@@ -20,6 +20,8 @@ import type { Ref } from 'vue'
 import * as echarts from 'echarts'
 import { useAlgorithmStore } from '../../stores/algorithmStore'
 import unityService from '../../services/UnityService' // 引入Unity服务
+import { useMessageStore } from '../../stores/message'
+import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue' // 根据实际路径调整
 
 // 默认数据
 import defaultReport from '../../mock/report.json'
@@ -29,6 +31,9 @@ const algorithmStore = useAlgorithmStore()
 
 // 当前使用的报告数据
 const reportData = ref(defaultReport)
+
+// 获取消息store
+const messageStore = useMessageStore()
 
 // 动态加载报告数据
 const loadReportData = async () => {
@@ -324,6 +329,9 @@ const getLegendNames = () => {
   }
 }
 
+// 添加组件常量标识
+const COMPONENT_SOURCE = 'chemical-resource-chart'
+
 // 管道流动处理功能
 // 显示管道流动
 const showPipeFlow = (params: any) => {
@@ -382,10 +390,85 @@ const showPipeFlow = (params: any) => {
   // 发送消息到Unity显示管道
   console.log('显示管道流动:', pipeData)
   unityService.sendMessageToUnity('Pipe', 'PipeHighlightOn', JSON.stringify(pipeData))
+
+  // 构建文本框显示数据
+  const displayData = {
+    timestamp: new Date().toISOString(),
+    resource_type: resourceType,
+    from_workshop: fromWorkshop,
+    to_workshop: toWorkshop,
+    amount: value || 0,
+    unit: getUnitByResourceType(),
+    status: getResourceStatus(value),
+  }
+
+  // 显示消息框
+  messageStore.showMessage(
+    displayData,
+    {
+      labelMap: {
+        timestamp: '时间戳',
+        resource_type: '资源类型',
+        from_workshop: '来源区域',
+        to_workshop: '目标区域',
+        amount: '数值',
+        unit: '单位',
+        status: '状态',
+      },
+      valueFormatters: {
+        amount: (v: number) => `${v.toFixed(2)}`,
+        timestamp: (v: string) => new Date(v).toLocaleString(),
+      },
+      statusCheckers: {
+        status: (v: string) => v.toLowerCase(),
+      },
+    },
+    {
+      source: COMPONENT_SOURCE, // 可选的消息来源标识
+      title: `${resourceTitles[currentChartType.value]}`, // 设置特定标题
+    },
+  )
+}
+
+// 获取资源单位
+const getUnitByResourceType = () => {
+  switch (currentChartType.value) {
+    case 0:
+      return '人'
+    case 1:
+      return '吨'
+    case 2:
+      return 'kW'
+    default:
+      return ''
+  }
+}
+
+// 获取资源状态
+const getResourceStatus = (value: number) => {
+  const ranges = getNormalRanges()
+  if (!ranges) return '正常'
+  return value < ranges[0] || value > ranges[1] ? '警告' : '正常'
+}
+
+// 获取正常范围（示例逻辑，根据实际情况调整）
+const getNormalRanges = (): [number, number] | null => {
+  switch (currentChartType.value) {
+    case 0: // 人力资源
+      return [3, 10] // 示例范围
+    case 1: // 物料资源
+      return [100, 500] // 示例范围
+    case 2: // 电力资源
+      return [200, 1000] // 示例范围
+    default:
+      return null
+  }
 }
 
 // 隐藏管道流动
 const hidePipeFlow = () => {
+  // 隐藏文本框
+  messageStore.hideMessage(COMPONENT_SOURCE)
   // 发送消息到Unity隐藏管道
   unityService.sendMessageToUnity('Pipe', 'PipeHighlightOff', '')
 }
@@ -613,6 +696,9 @@ watch(isExpanded, () => {
 
 // 组件挂载时初始化图表
 onMounted(() => {
+  // 文本框
+  chartRef.value?.addEventListener('mouseleave', hidePipeFlow)
+
   addGlobalStyle()
 
   // 加载报告数据
@@ -642,6 +728,9 @@ onMounted(() => {
 
 // 组件销毁前清理
 onBeforeUnmount(() => {
+  // 文本框
+  chartRef.value?.removeEventListener('mouseleave', hidePipeFlow)
+
   // 先移除事件监听
   if (chartInstance) {
     chartInstance.off('mouseover')
@@ -673,6 +762,15 @@ const chartStyle = computed(() => {
   }
   return {}
 })
+
+// 在图表容器添加鼠标离开监听
+onMounted(() => {
+  chartRef.value?.addEventListener('mouseleave', hidePipeFlow)
+})
+
+// onBeforeUnmount(() => {
+//   chartRef.value?.removeEventListener('mouseleave', hidePipeFlow)
+// })
 </script>
 
 <template>
@@ -695,6 +793,7 @@ const chartStyle = computed(() => {
       </button>
     </div>
   </div>
+  <TextMessageDisplayBox />
 </template>
 
 <style scoped>
