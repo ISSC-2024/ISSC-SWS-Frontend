@@ -58,7 +58,7 @@ onUnmounted(() => {
 <template>
   <header class="app-header">
     <div class="logo">
-      <span class="logo-text">安全风险智能预警决策</span>
+      <span class="logo-text">全域互联的工业智能体协同平台</span>
     </div>
     <div class="header-right">
       <!-- <button 

@@ -71,7 +71,7 @@ const handleLogin = async () => {
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h1 class="login-title">安全风险智能预警决策</h1>
+      <h1 class="login-title">全域互联的工业智能体协同平台</h1>
 
       <!-- 添加切换按钮 -->
       <div class="login-type-switch">
