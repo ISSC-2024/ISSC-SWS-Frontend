@@ -15,7 +15,7 @@
   <div class="scrolling-log-container">
     <div class="scrolling-log-body" ref="logBody">
       <div
-        v-for="log in visibleLogs"
+        v-for="(log, index) in visibleLogs"
         :key="log.timestamp + log.region"
         class="log-row"
         :class="{
@@ -23,6 +23,7 @@
           'log-warning': log.risk_level === 'warning',
           'log-danger': log.risk_level === 'danger',
           'log-selected': isLogSelected(log),
+          'log-row-alt': index % 2 === 1,
         }"
         @click="handleLogClick(log)"
         @mouseenter="handleLogHover(log)"
@@ -285,14 +286,15 @@ onUnmounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(32, 160, 255, 0.2);
   border-radius: 4px;
   overflow: hidden;
   padding-top: 0;
   position: relative;
   z-index: 0;
-  background-color: #f9f9f9;
-  color: #333;
+  background-color: rgba(11, 19, 43, 0.95);
+  color: rgba(220, 230, 240, 0.9);
+  box-shadow: 0 0 15px rgba(0, 100, 255, 0.1);
 }
 
 .scrolling-log-body {
@@ -300,45 +302,92 @@ onUnmounted(() => {
   overflow-y: auto;
   font-size: 12px;
   font-family: 'Consolas', 'Monaco', monospace;
+  /* 添加自定义滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
+}
+
+.scrolling-log-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrolling-log-body::-webkit-scrollbar-track {
+  background: rgba(11, 19, 43, 0.3);
+}
+
+.scrolling-log-body::-webkit-scrollbar-thumb {
+  background-color: rgba(32, 160, 255, 0.6);
+  border-radius: 3px;
 }
 
 .log-row {
   display: flex;
-  padding: 6px 8px;
-  border-bottom: 1px solid #e8e8e8;
-  transition: background-color 0.3s;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(32, 160, 255, 0.1);
+  transition: all 0.25s ease;
   align-items: center;
   cursor: pointer;
+  background-color: rgba(15, 25, 50, 0.7);
+  position: relative;
+}
+
+.log-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 2px;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.log-row-alt {
+  background-color: rgba(20, 35, 65, 0.7);
 }
 
 .log-row:hover {
-  background-color: #f0f0f0;
+  background-color: rgba(30, 50, 90, 0.8);
+  transform: translateX(2px);
+  box-shadow: -2px 0 8px rgba(32, 160, 255, 0.15);
 }
 
-.log-info {
-  border-left: 3px solid #52c41a;
+.log-info::before {
+  background: linear-gradient(to bottom, #52c41a, #52c41a80);
+  box-shadow: 0 0 8px rgba(82, 196, 26, 0.6);
 }
 
-.log-warning {
-  border-left: 3px solid #faad14;
+.log-warning::before {
+  background: linear-gradient(to bottom, #faad14, #faad1480);
+  box-shadow: 0 0 8px rgba(250, 173, 20, 0.6);
 }
 
-.log-danger {
-  border-left: 3px solid #f5222d;
+.log-danger::before {
+  background: linear-gradient(to bottom, #f5222d, #f5222d80);
+  box-shadow: 0 0 8px rgba(245, 34, 45, 0.6);
 }
 
 .log-selected {
-  background-color: #e6f7ff;
+  background-color: rgba(32, 87, 160, 0.4) !important;
+  border-right: 1px solid rgba(32, 160, 255, 0.3);
 }
 
 .log-time {
-  flex: 0 0 80px;
-  color: #888;
+  flex: 0 0 70px;
+  color: rgba(130, 180, 230, 0.8);
+  font-family: 'Consolas', monospace;
+  text-shadow: 0 0 5px rgba(32, 160, 255, 0.3);
 }
 
 .log-type {
-  flex: 0 0 100px;
+  flex: 0 0 70px;
   font-weight: bold;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .log-message {
@@ -347,6 +396,15 @@ onUnmounted(() => {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+  padding-left: 10px;
+  position: relative;
+}
+
+.log-message::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: rgba(32, 160, 255, 0.6);
 }
 
 .log-message.expanded {
@@ -355,17 +413,39 @@ onUnmounted(() => {
   overflow: visible;
   text-overflow: clip;
   height: auto;
+  line-height: 1.4;
+}
+
+.expanded-chart .log-type {
+  flex: 0 0 100px;
 }
 
 .log-info .log-type {
-  color: #52c41a;
+  color: rgba(82, 196, 26, 0.9);
+  text-shadow: 0 0 5px rgba(82, 196, 26, 0.4);
 }
 
 .log-warning .log-type {
-  color: #faad14;
+  color: rgba(250, 173, 20, 0.9);
+  text-shadow: 0 0 5px rgba(250, 173, 20, 0.4);
 }
 
 .log-danger .log-type {
-  color: #f5222d;
+  color: rgba(245, 34, 45, 0.9);
+  text-shadow: 0 0 5px rgba(245, 34, 45, 0.4);
+}
+
+/* 轻微扫描线效果 */
+.scrolling-log-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 50%, rgba(32, 160, 255, 0.03) 50%);
+  background-size: 100% 4px;
+  z-index: 1;
 }
 </style>
