@@ -9,6 +9,7 @@
    * 3. 根据风险等级自动显示不同颜色的状态指示器（信息/警告/危险）
    * 4. 响应式布局设计，适应不同显示状态
    * 5. 点击日志行可以将信息发送至Unity进行区域高亮，并显示在文本框中
+   * 6. 非展开状态下，消息内容过长会被截断并显示省略号
    *
    -->
   <div class="scrolling-log-container">
@@ -29,7 +30,9 @@
       >
         <div class="log-time">{{ formatTime(log.timestamp) }}</div>
         <div class="log-type">{{ log.region }}</div>
-        <div class="log-message">{{ log.message }}</div>
+        <div class="log-message" :class="{ expanded: isExpanded }" :title="log.message">
+          {{ log.message }}
+        </div>
       </div>
     </div>
   </div>
@@ -37,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, inject, onUnmounted, type InjectionKey, type Ref } from 'vue'
+import { ref, onMounted, computed, inject, onUnmounted } from 'vue'
 import newPlantLogData from '../../mock/riskRegionSummary.json'
 import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
@@ -57,8 +60,7 @@ const VALID_REGIONS = ['RMS', 'REA', 'SEP', 'PRO', 'UTL']
 const VALID_RISK_LEVELS = ['safe', 'warning', 'danger']
 
 // 从ChartContainer注入的扩展状态
-const isChartExpandedKey = Symbol() as InjectionKey<Ref<boolean>>
-const isExpanded = inject(isChartExpandedKey, ref(false))
+const isExpanded = inject('isChartExpanded', ref(false))
 
 const logs = ref<LogEntry[]>([])
 const startIndex = ref(0)
@@ -341,6 +343,18 @@ onUnmounted(() => {
 
 .log-message {
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.log-message.expanded {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow: visible;
+  text-overflow: clip;
+  height: auto;
 }
 
 .log-info .log-type {
