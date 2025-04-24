@@ -211,7 +211,7 @@ const updateChart = () => {
     },
     legend: {
       data: responseData.data.map((item) => item.name),
-      bottom: isExpanded.value ? 15 : 10, // 修改：非展开状态下上移到10px
+      bottom: isExpanded.value ? 15 : 10,
       itemWidth: isExpanded.value ? 12 : 10,
       itemHeight: isExpanded.value ? 12 : 10,
       textStyle: {
@@ -230,8 +230,8 @@ const updateChart = () => {
         name: indicator.name,
         max: indicator.max,
       })),
-      center: ['50%', isExpanded.value ? '50%' : '42%'], // 修改：非展开状态下上移雷达图中心
-      radius: isExpanded.value ? '60%' : '50%', // 修改：非展开状态下缩小半径
+      center: ['50%', isExpanded.value ? '50%' : '42%'],
+      radius: isExpanded.value ? '60%' : '50%',
       splitNumber: 5,
       shape: 'polygon',
       axisLine: {
@@ -257,6 +257,18 @@ const updateChart = () => {
         borderRadius: 3,
         shadowColor: 'rgba(0, 0, 0, 0.3)',
         shadowBlur: 5,
+        rich: {
+          // 添加富文本配置实现指标名称加粗
+          value: {
+            color: 'rgba(220, 230, 240, 0.9)',
+            fontWeight: 'bold',
+            fontSize: isExpanded.value ? 13 : 12,
+          },
+        },
+        formatter: function (name?: string) {
+          // 将指标名称用富文本包装实现加粗
+          return '{value|' + (name || '') + '}'
+        },
       },
     },
     series: [
@@ -541,5 +553,10 @@ const chartStyle = computed(() => {
   padding: 10px 14px !important;
   color: rgba(220, 230, 240, 0.95) !important;
   font-family: 'Inter', 'Roboto', sans-serif !important;
+}
+
+:deep(.radar-indicator-name) {
+  font-weight: bold !important;
+  text-shadow: 0 0 5px rgba(32, 160, 255, 0.2) !important;
 }
 </style>

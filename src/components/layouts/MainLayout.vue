@@ -59,7 +59,6 @@
         <slot name="webgl-content"></slot>
       </div>
 
-      <!-- 保持原有布局和样式 -->
       <div class="controls-container tech-container">
         <div class="corner corner-top-left"></div>
         <div class="corner corner-top-right"></div>
@@ -87,7 +86,6 @@
 </template>
 
 <style scoped>
-/* 保留原有样式 */
 .dashboard-container {
   display: flex;
   width: 100%;
@@ -157,7 +155,7 @@
   box-sizing: border-box;
 }
 
-/* WebGL 容器样式 - 增强银屏质感 */
+/* WebGL 容器样式  */
 .webgl-container {
   flex: 1;
   min-height: 65%;
@@ -175,7 +173,7 @@
   backdrop-filter: blur(1px);
 }
 
-/* 添加多层边框效果 - 银屏质感 */
+/* 多层边框效果  */
 .webgl-container::before {
   content: '';
   position: absolute;
@@ -202,7 +200,7 @@
   animation: border-gradient 8s infinite linear;
 }
 
-/* 添加内侧阴影发光效果 */
+/* 内侧阴影发光效果 */
 .webgl-container::after {
   content: '';
   position: absolute;
@@ -436,7 +434,7 @@
   animation: data-line-flash 3.5s infinite alternate 0.5s;
 }
 
-/* 添加脉冲波纹 */
+/* 脉冲波纹 */
 .pulse-ring {
   position: absolute;
   top: 50%;
@@ -451,7 +449,6 @@
   pointer-events: none;
 }
 
-/* 保留原有的控制按钮和资源面板样式 */
 .controls-container,
 .resources-container {
   position: relative;
@@ -522,7 +519,7 @@
   filter: drop-shadow(0 0 3px rgba(64, 169, 255, 0.4));
 }
 
-/* 添加角点效果 */
+/* 角点效果 */
 .corner::after {
   content: '';
   position: absolute;
@@ -553,7 +550,6 @@
   right: -1px;
 }
 
-/* 保留原有动画和悬停效果 */
 .controls-container:hover .corner,
 .resources-container:hover .corner {
   filter: drop-shadow(0 0 5px rgba(64, 169, 255, 0.6));
@@ -565,7 +561,6 @@
   box-shadow: 0 0 6px 2px rgba(64, 169, 255, 0.8);
 }
 
-/* 保留原有动画 */
 .controls-container::before,
 .resources-container::before {
   content: '';
@@ -584,7 +579,7 @@
   opacity: 0.7;
 }
 
-/* 次要容器边框脉冲动画 - 保留原有效果 */
+/* 次要容器边框脉冲动画 */
 @keyframes pulse-border-secondary {
   0% {
     border-color: rgba(64, 169, 255, 0.4);
@@ -613,8 +608,6 @@
 .resources-container {
   animation: pulse-border-secondary 4s ease-in-out infinite;
 }
-
-/* ---- 新增动画效果 ---- */
 
 /* WebGL边框增强脉冲动画 */
 @keyframes pulse-border-enhanced {
@@ -777,7 +770,7 @@
   }
 }
 
-/* WebGL容器悬停效果增强 */
+/* WebGL容器悬停效果 */
 .webgl-container:hover {
   border-color: rgba(220, 240, 255, 0.9);
   box-shadow:
@@ -806,7 +799,6 @@
     0 0 20px 10px rgba(150, 220, 255, 0.4);
 }
 
-/* 保留原有响应式调整 */
 @media (max-width: 1200px) {
   .left-column,
   .right-column {

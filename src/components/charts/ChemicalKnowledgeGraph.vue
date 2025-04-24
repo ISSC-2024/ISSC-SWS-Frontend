@@ -101,7 +101,7 @@
       </div>
     </div>
 
-    <!-- 非展开状态下的提示 (可选) -->
+    <!-- 非展开状态下的提示  -->
     <div v-if="!isChartExpanded" class="mini-tip">
       <div class="mini-tip-icon">
         <svg viewBox="0 0 24 24" width="14" height="14">

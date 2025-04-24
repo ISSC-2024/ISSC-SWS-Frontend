@@ -58,16 +58,23 @@ onMounted(() => {
 
     <div class="logo">
       <div class="logo-icon">
+        <!-- Logo SVG -->
         <svg viewBox="0 0 24 24" width="28" height="28">
           <path
             fill="currentColor"
-            d="M12,3C7.58,3 4,4.79 4,7C4,9.21 7.58,11 12,11C16.42,11 20,9.21 20,7C20,4.79 16.42,3 12,3M4,9V12C4,14.21 7.58,16 12,16C16.42,16 20,14.21 20,12V9C20,11.21 16.42,13 12,13C7.58,13 4,11.21 4,9M4,14V17C4,19.21 7.58,21 12,21C16.42,21 20,19.21 20,17V14C20,16.21 16.42,18 12,18C7.58,18 4,16.21 4,14Z"
+            d="M12,2L1,21H23L12,2M12,6L19.53,19H4.47L12,6M11,10V14H13V10H11M11,16V18H13V16H11Z"
           />
         </svg>
+        <!-- 添加光环效果 -->
+        <div class="logo-halo"></div>
       </div>
       <div class="logo-text-container">
         <span class="logo-text">全域互联的工业智能体协同平台</span>
+        <span class="logo-shine"></span>
         <span class="logo-underline"></span>
+        <div class="text-particles">
+          <span class="particle" v-for="n in 5" :key="n"></span>
+        </div>
       </div>
     </div>
 
@@ -104,9 +111,28 @@ onMounted(() => {
   z-index: 100;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   overflow: hidden;
+  border-bottom: 1px solid rgba(64, 169, 255, 0.5);
 }
 
-/* 背景效果 */
+.app-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(32, 160, 255, 0.2),
+    rgba(32, 160, 255, 0.7) 20%,
+    rgba(64, 169, 255, 0.8) 50%,
+    rgba(32, 160, 255, 0.7) 80%,
+    rgba(32, 160, 255, 0.2)
+  );
+  box-shadow: 0 0 6px rgba(32, 160, 255, 0.6);
+  z-index: 10;
+}
+
 .header-bg-effects {
   position: absolute;
   top: 0;
@@ -142,7 +168,6 @@ onMounted(() => {
   opacity: 0.4;
 }
 
-/* Logo样式 */
 .logo {
   display: flex;
   align-items: center;
@@ -150,44 +175,105 @@ onMounted(() => {
 }
 
 .logo-icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(32, 160, 255, 0.8), rgba(64, 112, 255, 0.8));
+  background: linear-gradient(135deg, rgba(32, 160, 255, 0.8), rgba(64, 128, 255, 0.8));
   box-shadow:
     0 0 15px rgba(32, 160, 255, 0.5),
-    inset 0 0 4px rgba(255, 255, 255, 0.6);
+    0 0 30px rgba(32, 160, 255, 0.2),
+    inset 0 0 8px rgba(255, 255, 255, 0.6);
   color: rgba(255, 255, 255, 0.95);
-  animation: pulseGlow 4s infinite alternate;
+  animation: iconPulse 4s infinite alternate;
+  z-index: 2;
 }
 
-@keyframes pulseGlow {
+/* 光环效果 */
+.logo-halo {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid rgba(32, 160, 255, 0.4);
+  box-shadow: 0 0 20px rgba(32, 160, 255, 0.4);
+  animation: haloGlow 3s infinite alternate;
+  z-index: -1;
+}
+
+/* Logo动画 */
+@keyframes iconPulse {
   0% {
-    box-shadow: 0 0 15px rgba(32, 160, 255, 0.5);
+    box-shadow:
+      0 0 15px rgba(32, 160, 255, 0.5),
+      0 0 30px rgba(32, 160, 255, 0.2),
+      inset 0 0 8px rgba(255, 255, 255, 0.6);
+    transform: scale(1);
   }
   100% {
-    box-shadow: 0 0 25px rgba(32, 160, 255, 0.8);
+    box-shadow:
+      0 0 25px rgba(32, 160, 255, 0.7),
+      0 0 40px rgba(32, 160, 255, 0.3),
+      inset 0 0 12px rgba(255, 255, 255, 0.8);
+    transform: scale(1.05);
   }
 }
 
+@keyframes haloGlow {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(1.15);
+  }
+}
+
+/* 标题容器样式 */
 .logo-text-container {
   position: relative;
   padding-bottom: 4px;
+  z-index: 1;
+  overflow: hidden;
 }
 
+/* 标题文本样式 */
 .logo-text {
+  position: relative;
   font-size: 22px;
   font-weight: 600;
   letter-spacing: 1px;
-  background: linear-gradient(90deg, #4a90e2, #20a0ff, #7cb3f5);
+  background: linear-gradient(90deg, #4a90e2, #20a0ff, #75d0ff, #20a0ff, #4a90e2);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: gradientText 6s linear infinite;
+  animation: enhancedGradientText 8s linear infinite;
+  text-shadow: 0 0 5px rgba(32, 160, 255, 0.3);
+  z-index: 2;
+}
+
+/* 滑动光泽效果 */
+.logo-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  animation: shineSweep 5s infinite;
+  z-index: 3;
 }
 
 .logo-underline {
@@ -196,19 +282,135 @@ onMounted(() => {
   left: 0;
   height: 2px;
   width: 100%;
-  background: linear-gradient(to right, rgba(74, 144, 226, 0), rgba(74, 144, 226, 0.8) 50%, rgba(74, 144, 226, 0));
+  background: linear-gradient(
+    to right,
+    rgba(74, 144, 226, 0),
+    rgba(74, 144, 226, 0.6) 20%,
+    rgba(100, 180, 255, 0.8) 50%,
+    rgba(74, 144, 226, 0.6) 80%,
+    rgba(74, 144, 226, 0)
+  );
+  animation: underlinePulse 3s infinite alternate;
 }
 
-@keyframes gradientText {
+/* 粒子效果装饰 */
+.text-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: rgba(100, 200, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(100, 200, 255, 0.6);
+  animation: particleFloat 10s infinite linear;
+}
+
+.particle:nth-child(1) {
+  top: 20%;
+  left: 10%;
+  animation-duration: 7s;
+  animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+  top: 30%;
+  left: 30%;
+  animation-duration: 9s;
+  animation-delay: 0.5s;
+}
+
+.particle:nth-child(3) {
+  top: 60%;
+  left: 50%;
+  animation-duration: 8s;
+  animation-delay: 1s;
+}
+
+.particle:nth-child(4) {
+  top: 40%;
+  left: 70%;
+  animation-duration: 10s;
+  animation-delay: 1.5s;
+}
+
+.particle:nth-child(5) {
+  top: 20%;
+  left: 90%;
+  animation-duration: 6s;
+  animation-delay: 2s;
+}
+
+/* 渐变文本动画 */
+@keyframes enhancedGradientText {
   0% {
     background-position: 0% center;
+    filter: brightness(1) drop-shadow(0 0 1px rgba(32, 160, 255, 0.3));
+  }
+  50% {
+    background-position: 100% center;
+    filter: brightness(1.1) drop-shadow(0 0 2px rgba(32, 160, 255, 0.5));
   }
   100% {
-    background-position: 200% center;
+    background-position: 0% center;
+    filter: brightness(1) drop-shadow(0 0 1px rgba(32, 160, 255, 0.3));
   }
 }
 
-/* 右侧内容 */
+/* 滑动光泽动画 */
+@keyframes shineSweep {
+  0% {
+    left: -100%;
+  }
+  20% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* 粒子浮动动画 */
+@keyframes particleFloat {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(20px, -15px);
+    opacity: 0;
+  }
+}
+
+/* 底部下划线动画 */
+@keyframes underlinePulse {
+  0% {
+    width: 90%;
+    left: 5%;
+    opacity: 0.7;
+    box-shadow: 0 0 5px rgba(100, 180, 255, 0.3);
+  }
+  100% {
+    width: 100%;
+    left: 0;
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(100, 180, 255, 0.5);
+  }
+}
+
 .header-right {
   display: flex;
   align-items: center;
@@ -237,7 +439,6 @@ onMounted(() => {
   letter-spacing: 0.5px;
 }
 
-/* 按钮样式 */
 .logout-btn {
   display: flex;
   align-items: center;
@@ -283,7 +484,6 @@ onMounted(() => {
   align-items: center;
 }
 
-/* 响应式设计 */
 @media (max-width: 768px) {
   .app-header {
     padding: 0 15px;
@@ -304,8 +504,8 @@ onMounted(() => {
 
 @media (max-width: 576px) {
   .logo-icon {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
   }
 
   .logo-text {
