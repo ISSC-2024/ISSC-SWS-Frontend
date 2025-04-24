@@ -19,9 +19,9 @@ import { ref, onMounted, inject, computed, watch, onBeforeUnmount } from 'vue'
 import type { Ref } from 'vue'
 import * as echarts from 'echarts'
 import { useAlgorithmStore } from '../../stores/algorithmStore'
-import unityService from '../../services/UnityService' // 引入Unity服务
+import unityService from '../../services/UnityService'
 import { useMessageStore } from '../../stores/message'
-import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue' // 根据实际路径调整
+import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
 
 // 默认数据
 import defaultReport from '../../mock/report.json'
@@ -451,15 +451,15 @@ const getResourceStatus = (value: number) => {
   return value < ranges[0] || value > ranges[1] ? '警告' : '正常'
 }
 
-// 获取正常范围（示例逻辑，根据实际情况调整）
+// 获取正常范围
 const getNormalRanges = (): [number, number] | null => {
   switch (currentChartType.value) {
     case 0: // 人力资源
-      return [3, 10] // 示例范围
+      return [3, 10]
     case 1: // 物料资源
-      return [100, 500] // 示例范围
+      return [100, 500]
     case 2: // 电力资源
-      return [200, 1000] // 示例范围
+      return [200, 1000]
     default:
       return null
   }
@@ -488,17 +488,24 @@ const getSeriesData = () => {
           itemStyle: {
             color: typedStaffData.colors[type],
           },
-          // 根据展开状态决定是否显示标签
+          // 修复重复 show 属性的问题
           label: {
-            show: isExpanded.value,
             position: 'inside' as const,
-            formatter: '{c}',
+            formatter: function (params: any) {
+              // 在展开状态下且值大于3时显示标签
+              if (isExpanded.value && params.value > 3) {
+                return params.value.toFixed(2)
+              }
+              return ''
+            },
             fontSize: 12,
             color: '#fff',
             textShadowColor: 'rgba(0, 0, 0, 0.5)',
             textShadowBlur: 3,
             textShadowOffsetX: 1,
             textShadowOffsetY: 1,
+            avoidLabelOverlap: true,
+            show: true,
           },
           data: workshops.map((workshop) => typedStaffData.staff[workshop][type]),
         }
@@ -515,17 +522,23 @@ const getSeriesData = () => {
           itemStyle: {
             color: typedMaterialsData.colors[type],
           },
-          // 根据展开状态决定是否显示标签
           label: {
-            show: isExpanded.value,
             position: 'inside' as const,
-            formatter: '{c}',
+            formatter: function (params: any) {
+              // 在展开状态下且值大于3时显示标签
+              if (isExpanded.value && params.value > 3) {
+                return params.value.toFixed(2)
+              }
+              return ''
+            },
             fontSize: 12,
             color: '#fff',
             textShadowColor: 'rgba(0, 0, 0, 0.5)',
             textShadowBlur: 3,
             textShadowOffsetX: 1,
             textShadowOffsetY: 1,
+            avoidLabelOverlap: true,
+            show: true,
           },
           data: workshops.map((workshop) => typedMaterialsData.materials[workshop][type]),
         }
@@ -542,17 +555,23 @@ const getSeriesData = () => {
           itemStyle: {
             color: typedElectricityData.colors[type],
           },
-          // 根据展开状态决定是否显示标签
           label: {
-            show: isExpanded.value,
             position: 'inside' as const,
-            formatter: '{c}',
+            formatter: function (params: any) {
+              // 在展开状态下且值大于3时显示标签
+              if (isExpanded.value && params.value > 3) {
+                return params.value.toFixed(2)
+              }
+              return ''
+            },
             fontSize: 12,
             color: '#fff',
             textShadowColor: 'rgba(0, 0, 0, 0.5)',
             textShadowBlur: 3,
             textShadowOffsetX: 1,
             textShadowOffsetY: 1,
+            avoidLabelOverlap: true,
+            show: true,
           },
           data: workshops.map((workshop) => typedElectricityData.electricity[workshop]),
         }
@@ -582,31 +601,6 @@ const initChart = () => {
   })
 }
 
-// 添加全局样式
-const addGlobalStyle = () => {
-  const styleElement = document.createElement('style')
-  styleElement.id = 'staff-chart-tooltip-style'
-  styleElement.innerHTML = `
-    .staff-chart-tooltip {
-      z-index: 10000 !important;
-      position: fixed !important;
-      pointer-events: none !important;
-      box-shadow: 0 3px 14px rgba(0,0,0,0.2) !important;
-      max-width: none !important;
-      overflow: visible !important;
-    }
-  `
-  document.head.appendChild(styleElement)
-}
-
-// 移除全局样式
-const removeGlobalStyle = () => {
-  const styleElement = document.getElementById('staff-chart-tooltip-style')
-  if (styleElement) {
-    document.head.removeChild(styleElement)
-  }
-}
-
 // 更新图表
 const updateChart = () => {
   if (!chartInstance) return
@@ -627,7 +621,6 @@ const updateChart = () => {
         // 确保tooltip不会太靠边缘
         return [point[0], point[1]]
       },
-      extraCssText: 'z-index: 10000 !important; pointer-events: none;',
     },
     legend: {
       data: getLegendNames(),
@@ -720,8 +713,6 @@ onMounted(() => {
   // 文本框
   chartRef.value?.addEventListener('mouseleave', hidePipeFlow)
 
-  addGlobalStyle()
-
   // 加载报告数据
   loadReportData()
 
@@ -770,8 +761,6 @@ onBeforeUnmount(() => {
     chartInstance.dispose()
     chartInstance = null
   }
-
-  removeGlobalStyle()
 })
 
 // 根据展开状态计算样式
@@ -788,10 +777,6 @@ const chartStyle = computed(() => {
 onMounted(() => {
   chartRef.value?.addEventListener('mouseleave', hidePipeFlow)
 })
-
-// onBeforeUnmount(() => {
-//   chartRef.value?.removeEventListener('mouseleave', hidePipeFlow)
-// })
 </script>
 
 <template>
@@ -1066,17 +1051,20 @@ onMounted(() => {
   box-shadow: 0 0 0 2px rgba(32, 160, 255, 0.4);
 }
 
-/*  echarts 工具提示样式 */
-:global(.staff-chart-tooltip) {
-  background: rgba(15, 30, 60, 0.8) !important;
+/* echarts 工具提示样式 */
+:global(.staff-chart-tooltip:nth-of-type(2)) {
+  background: rgba(8, 20, 40, 0.9) !important;
   backdrop-filter: blur(10px) !important;
   border-radius: 6px !important;
-  border: 1px solid rgba(32, 160, 255, 0.3) !important;
+  border: 1px solid rgba(64, 169, 255, 0.5) !important;
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.3),
     0 0 15px rgba(32, 160, 255, 0.15) !important;
   padding: 8px 12px !important;
-  color: rgba(220, 230, 240, 0.95) !important;
+  color: rgba(255, 255, 255, 1) !important;
   font-family: 'Inter', 'Roboto', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 </style>
