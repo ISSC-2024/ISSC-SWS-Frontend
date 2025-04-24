@@ -126,23 +126,61 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 主容器样式 */
+/* 修改主容器样式 - 使用外边框方式 */
 .chart-container {
   background: linear-gradient(135deg, rgba(13, 25, 50, 0.95), rgba(16, 30, 60, 0.95));
-  border: 1px solid rgba(32, 160, 255, 0.15);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(32, 160, 255, 0.2);
   border-radius: 8px;
   margin-bottom: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  height: calc(33.33% - 11px);
+  height: calc(33.33% - 8px); /* 略微增加高度 */
   display: flex;
   flex-direction: column;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(5px);
+  /* 使用outline代替border，outline不占用盒模型空间 */
+  outline: 2px solid rgba(32, 160, 255, 0.4);
+  outline-offset: 0px;
 }
 
-/* 容器进入动画 */
+/* 修改悬停效果 */
+.chart-container:hover {
+  outline-color: rgba(64, 169, 255, 0.6);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.35),
+    0 0 25px rgba(32, 160, 255, 0.3);
+}
+
+/* 添加脉动边框效果 - 使用outline */
+@keyframes border-pulse {
+  0% {
+    outline-color: rgba(32, 160, 255, 0.4);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(32, 160, 255, 0.2);
+  }
+  50% {
+    outline-color: rgba(64, 169, 255, 0.6);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      0 0 25px rgba(64, 169, 255, 0.3);
+  }
+  100% {
+    outline-color: rgba(32, 160, 255, 0.4);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(32, 160, 255, 0.2);
+  }
+}
+
+.chart-container {
+  animation: border-pulse 4s ease-in-out infinite;
+}
+
+/* 容器进入动画 - 保持不变 */
 .chart-container-enter {
   opacity: 0;
   transform: translateY(20px);
@@ -156,14 +194,7 @@ onMounted(() => {
     transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.chart-container:hover {
-  border-color: rgba(32, 160, 255, 0.3);
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.35),
-    0 0 15px rgba(32, 160, 255, 0.2);
-}
-
-/* 背景特效 */
+/* 背景特效 - 保持不变 */
 .chart-background-effects {
   position: absolute;
   top: 0;
@@ -199,48 +230,87 @@ onMounted(() => {
   z-index: 2;
 }
 
-/* 角落边框特效 */
+/* 优化角落边框特效 - 更精致的设计 */
 .chart-border-effect {
   position: absolute;
   width: 16px;
   height: 16px;
-  border-color: rgba(32, 160, 255, 0.5);
   z-index: 10;
+  pointer-events: none; /* 确保不干扰事件 */
 }
 
 .top-left {
   top: 0;
   left: 0;
-  border-top: 2px solid;
-  border-left: 2px solid;
-  border-top-left-radius: 4px;
+  background:
+    linear-gradient(45deg, transparent 50%, rgba(64, 169, 255, 0.7) 50%) no-repeat 0 0 / 8px 8px,
+    linear-gradient(to right, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 7px 0 / 10px 2px,
+    linear-gradient(to bottom, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 7px / 2px 10px;
+  filter: drop-shadow(0 0 3px rgba(64, 169, 255, 0.3));
 }
 
 .top-right {
   top: 0;
   right: 0;
-  border-top: 2px solid;
-  border-right: 2px solid;
-  border-top-right-radius: 4px;
+  background:
+    linear-gradient(135deg, transparent 50%, rgba(64, 169, 255, 0.7) 50%) no-repeat 100% 0 / 8px 8px,
+    linear-gradient(to left, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 0 / 10px 2px,
+    linear-gradient(to bottom, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 100% 7px / 2px 10px;
+  filter: drop-shadow(0 0 3px rgba(64, 169, 255, 0.3));
 }
 
 .bottom-left {
   bottom: 0;
   left: 0;
-  border-bottom: 2px solid;
-  border-left: 2px solid;
-  border-bottom-left-radius: 4px;
+  background:
+    linear-gradient(315deg, transparent 50%, rgba(64, 169, 255, 0.7) 50%) no-repeat 0 100% / 8px 8px,
+    linear-gradient(to right, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 7px 100% / 10px 2px,
+    linear-gradient(to top, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 0 / 2px 10px;
+  filter: drop-shadow(0 0 3px rgba(64, 169, 255, 0.3));
 }
 
 .bottom-right {
   bottom: 0;
   right: 0;
-  border-bottom: 2px solid;
-  border-right: 2px solid;
-  border-bottom-right-radius: 4px;
+  background:
+    linear-gradient(225deg, transparent 50%, rgba(64, 169, 255, 0.7) 50%) no-repeat 100% 100% / 8px 8px,
+    linear-gradient(to left, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 100% / 10px 2px,
+    linear-gradient(to top, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 100% 0 / 2px 10px;
+  filter: drop-shadow(0 0 3px rgba(64, 169, 255, 0.3));
 }
 
-/* 头部样式 */
+/* 添加角点发光点 */
+.chart-border-effect::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background-color: rgba(100, 200, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 6px 1px rgba(64, 169, 255, 0.6);
+}
+
+.top-left::after {
+  top: 0;
+  left: 0;
+}
+
+.top-right::after {
+  top: 0;
+  right: 0;
+}
+
+.bottom-left::after {
+  bottom: 0;
+  left: 0;
+}
+
+.bottom-right::after {
+  bottom: 0;
+  right: 0;
+}
+
+/* 头部样式 - 保持不变 */
 .chart-header {
   display: flex;
   justify-content: flex-end;
@@ -279,6 +349,7 @@ onMounted(() => {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+/* 内容区域 - 保持不变 */
 .chart-content {
   padding: 0;
   flex: 1;
@@ -288,7 +359,7 @@ onMounted(() => {
   z-index: 5;
 }
 
-/* 展开浮层样式 */
+/* 展开浮层样式 - 保持不变 */
 .overlay-fade-enter-active,
 .overlay-fade-leave-active {
   transition: opacity 0.3s ease;
@@ -343,13 +414,15 @@ onMounted(() => {
   }
 }
 
+/* 浮层容器 - 增强边框 */
 .expanded-container {
   background: linear-gradient(135deg, rgba(15, 28, 55, 0.95), rgba(20, 35, 70, 0.95));
-  border: 1px solid rgba(32, 160, 255, 0.2);
+  outline: 2px solid rgba(64, 169, 255, 0.5);
+  outline-offset: 0px;
   border-radius: 10px;
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.4),
-    0 0 20px rgba(32, 160, 255, 0.15);
+    0 0 30px rgba(32, 160, 255, 0.25);
   width: 85%;
   height: 85%;
   max-width: 1300px;
@@ -361,7 +434,7 @@ onMounted(() => {
   overflow: hidden;
 }
 
-/* 展开容器背景特效 */
+/* 展开容器背景特效 - 保持不变 */
 .expanded-background-effects {
   position: absolute;
   top: 0;
@@ -397,47 +470,87 @@ onMounted(() => {
   z-index: 2;
 }
 
-/* 展开容器边框特效 */
+/* 优化展开容器边框特效 */
 .expanded-border-effect {
   position: absolute;
   width: 30px;
   height: 30px;
-  border-color: rgba(32, 160, 255, 0.6);
   z-index: 10;
+  pointer-events: none;
 }
 
 .expanded-border-effect.top-left {
   top: 0;
   left: 0;
-  border-top: 2px solid;
-  border-left: 2px solid;
-  border-top-left-radius: 6px;
+  background:
+    linear-gradient(45deg, transparent 50%, rgba(64, 169, 255, 0.7) 50%) no-repeat 0 0 / 12px 12px,
+    linear-gradient(to right, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 10px 0 / 22px 2px,
+    linear-gradient(to bottom, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 10px / 2px 22px;
+  filter: drop-shadow(0 0 4px rgba(64, 169, 255, 0.3));
 }
 
 .expanded-border-effect.top-right {
   top: 0;
   right: 0;
-  border-top: 2px solid;
-  border-right: 2px solid;
-  border-top-right-radius: 6px;
+  background:
+    linear-gradient(135deg, transparent 50%, rgba(64, 169, 255, 0.7) 50%) no-repeat 100% 0 / 12px 12px,
+    linear-gradient(to left, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 0 / 22px 2px,
+    linear-gradient(to bottom, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 100% 10px / 2px 22px;
+  filter: drop-shadow(0 0 4px rgba(64, 169, 255, 0.3));
 }
 
 .expanded-border-effect.bottom-left {
   bottom: 0;
   left: 0;
-  border-bottom: 2px solid;
-  border-left: 2px solid;
-  border-bottom-left-radius: 6px;
+  background:
+    linear-gradient(315deg, transparent 50%, rgba(64, 169, 255, 0.7) 50%) no-repeat 0 100% / 12px 12px,
+    linear-gradient(to right, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 10px 100% / 22px 2px,
+    linear-gradient(to top, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 0 / 2px 22px;
+  filter: drop-shadow(0 0 4px rgba(64, 169, 255, 0.3));
 }
 
 .expanded-border-effect.bottom-right {
   bottom: 0;
   right: 0;
-  border-bottom: 2px solid;
-  border-right: 2px solid;
-  border-bottom-right-radius: 6px;
+  background:
+    linear-gradient(225deg, transparent 50%, rgba(64, 169, 255, 0.7) 50%) no-repeat 100% 100% / 12px 12px,
+    linear-gradient(to left, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 100% / 22px 2px,
+    linear-gradient(to top, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 100% 0 / 2px 22px;
+  filter: drop-shadow(0 0 4px rgba(64, 169, 255, 0.3));
 }
 
+/* 添加角点发光点到展开容器 */
+.expanded-border-effect::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: rgba(100, 200, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 8px 1px rgba(64, 169, 255, 0.6);
+}
+
+.expanded-border-effect.top-left::after {
+  top: 0;
+  left: 0;
+}
+
+.expanded-border-effect.top-right::after {
+  top: 0;
+  right: 0;
+}
+
+.expanded-border-effect.bottom-left::after {
+  bottom: 0;
+  left: 0;
+}
+
+.expanded-border-effect.bottom-right::after {
+  bottom: 0;
+  right: 0;
+}
+
+/* 头部样式 - 保持不变 */
 .expanded-header {
   display: flex;
   justify-content: space-between;
