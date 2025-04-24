@@ -12,7 +12,8 @@
    * 6. 与Unity交互：鼠标悬停高亮区域，离开取消高亮，点击持续高亮/再次点击取消高亮
    *
    -->
-  <div class="scrolling-list-container">
+  <!-- 添加展开状态的类绑定 -->
+  <div class="scrolling-list-container" :class="{ expanded: isExpanded }">
     <div class="scrolling-list-header">
       <div class="header-item">时间戳</div>
       <div class="header-item">区域</div>
@@ -107,13 +108,8 @@ const visibleRegions = computed(() => {
   if (regions.value.length === 0) return []
 
   if (isExpanded.value) {
-    // 展开状态下，显示部分数据，以滚动更新
-    const total = regions.value.length
-    const start = startIndex.value % total
-    const end = Math.min(start + visibleCount, total)
-
-    // 双段拼接保证视觉连续性
-    return [...regions.value.slice(start, end), ...regions.value.slice(0, Math.max(0, visibleCount - (total - start)))]
+    // 展开状态下，显示所有数据，不滚动
+    return regions.value
   } else {
     // 非展开状态下，显示部分数据并滚动
     const total = regions.value.length
@@ -127,11 +123,7 @@ const visibleRegions = computed(() => {
 // 判断区域是否被选中
 const isRegionSelected = (region: Region): boolean => {
   if (!selectedRegion.value) return false
-  return (
-    region.region === selectedRegion.value.region &&
-    region.message === selectedRegion.value.message &&
-    region.risk_level === selectedRegion.value.risk_level
-  )
+  return region.region.toUpperCase() === selectedRegion.value.region.toUpperCase()
 }
 
 // 验证并构造发送给Unity的数据
@@ -271,9 +263,9 @@ onUnmounted(() => {
   display: flex;
   background: linear-gradient(90deg, rgba(12, 24, 48, 0.9) 0%, rgba(20, 40, 80, 0.9) 50%, rgba(12, 24, 48, 0.9) 100%);
   font-weight: 600;
-  padding: 10px 8px; /* 减小表头高度 */
+  padding: 10px 8px;
   border-bottom: 1px solid rgba(32, 160, 255, 0.15);
-  font-size: 12px;
+  font-size: 14px; /* 从12px增加到14px */
   position: sticky;
   top: 0;
   z-index: 5;
@@ -292,7 +284,7 @@ onUnmounted(() => {
 .header-item::after {
   content: '';
   position: absolute;
-  bottom: -10px; /* 调整下划线位置 */
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
   width: 40%;
@@ -303,39 +295,47 @@ onUnmounted(() => {
 .scrolling-list-body {
   flex: 1;
   overflow-y: auto;
-  font-size: 12px;
+  font-size: 14px;
   font-family: 'Consolas', 'Monaco', monospace;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
   background: radial-gradient(ellipse at center, rgba(20, 40, 80, 0.3) 0%, rgba(8, 15, 35, 0.3) 100%);
+
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
 }
 
+/* WebKit/Chrome滚动条样式 */
 .scrolling-list-body::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 
 .scrolling-list-body::-webkit-scrollbar-track {
   background: rgba(11, 19, 43, 0.3);
-  border-radius: 3px;
 }
 
 .scrolling-list-body::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, rgba(32, 160, 255, 0.4), rgba(32, 160, 255, 0.8));
+  background-color: rgba(32, 160, 255, 0.6);
   border-radius: 3px;
-  border: 1px solid rgba(0, 50, 126, 0.3);
+}
+
+/* 非展开状态隐藏滚动条 */
+.scrolling-list-container:not(.expanded) .scrolling-list-body {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrolling-list-container:not(.expanded) .scrolling-list-body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .list-row {
   display: flex;
-  padding: 6px 10px; /* 减小行高 */
+  padding: 10px;
   border-bottom: 1px solid rgba(32, 160, 255, 0.06);
-  transition: all 0.2s ease; /* 简化过渡效果，减少抖动 */
+  transition: all 0.2s ease;
   cursor: pointer;
   align-items: center;
   background-color: rgba(12, 20, 40, 0.75);
   position: relative;
-  /* 移除模糊效果，提高清晰度 */
-  /* backdrop-filter: blur(2px); */
 }
 
 .list-row::before {
@@ -354,8 +354,8 @@ onUnmounted(() => {
 }
 
 .list-row:hover {
-  background-color: rgba(25, 45, 85, 0.95); /* 提高不透明度，减少模糊感 */
-  transform: translateX(2px); /* 减小变换幅度，避免抖动 */
+  background-color: rgba(25, 45, 85, 0.95);
+  transform: translateX(2px);
   box-shadow: -2px 0 8px rgba(32, 160, 255, 0.18);
   z-index: 2;
 }
@@ -376,20 +376,21 @@ onUnmounted(() => {
   font-family: 'Consolas', monospace;
   text-shadow: 0 0 5px rgba(32, 160, 255, 0.3);
   letter-spacing: 0.5px;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .list-region {
   font-weight: bold;
-  letter-spacing: 0.5px; /* 减小字母间距 */
+  letter-spacing: 0.5px;
   position: relative;
-  text-shadow: 0 0 5px rgba(32, 160, 255, 0.25); /* 减少文字模糊 */
+  text-shadow: 0 0 5px rgba(32, 160, 255, 0.25);
+  font-size: 13px;
 }
 
 .list-region::after {
   content: '';
   position: absolute;
-  bottom: -3px; /* 调整位置 */
+  bottom: -3px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
@@ -407,16 +408,16 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 10px; /* 减小内边距 */
-  border-radius: 10px; /* 减小圆角 */
-  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 13px;
   min-width: 70px;
   font-weight: 600;
-  transition: all 0.2s ease; /* 简化过渡效果 */
+  transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
   letter-spacing: 0.5px;
-  height: 18px; /* 减小高度 */
+  height: 20px;
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
@@ -426,8 +427,8 @@ onUnmounted(() => {
   position: absolute;
   inset: 0;
   z-index: -1;
-  filter: blur(6px); /* 减少模糊半径 */
-  opacity: 0.5; /* 减少发光强度 */
+  filter: blur(6px);
+  opacity: 0.5;
   transform: scale(0.9);
   transition: all 0.3s ease;
 }
@@ -440,12 +441,12 @@ onUnmounted(() => {
   right: 0;
   height: 50%;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0));
-  border-radius: 10px 10px 0 0; /* 调整圆角 */
+  border-radius: 10px 10px 0 0;
   pointer-events: none;
 }
 
 .list-row:hover .status-indicator {
-  transform: scale(1.03); /* 减小缩放比例 */
+  transform: scale(1.03);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -455,10 +456,10 @@ onUnmounted(() => {
 }
 
 .status-safe {
-  background: linear-gradient(145deg, rgba(40, 170, 30, 0.8), rgba(60, 200, 40, 0.8)); /* 提高不透明度 */
+  background: linear-gradient(145deg, rgba(40, 170, 30, 0.8), rgba(60, 200, 40, 0.8));
   color: rgba(255, 255, 255, 0.95);
   box-shadow: 0 1px 6px rgba(82, 196, 26, 0.3);
-  text-shadow: 0 1px 1px rgba(0, 80, 0, 0.5); /* 减少文字阴影 */
+  text-shadow: 0 1px 1px rgba(0, 80, 0, 0.5);
 }
 
 .status-safe::before {
@@ -466,10 +467,10 @@ onUnmounted(() => {
 }
 
 .status-warning {
-  background: linear-gradient(145deg, rgba(250, 150, 0, 0.8), rgba(255, 180, 30, 0.8)); /* 提高不透明度 */
+  background: linear-gradient(145deg, rgba(250, 150, 0, 0.8), rgba(255, 180, 30, 0.8));
   color: rgba(255, 255, 255, 0.95);
   box-shadow: 0 1px 6px rgba(250, 173, 20, 0.3);
-  text-shadow: 0 1px 1px rgba(120, 60, 0, 0.5); /* 减少文字阴影 */
+  text-shadow: 0 1px 1px rgba(120, 60, 0, 0.5);
 }
 
 .status-warning::before {
@@ -477,17 +478,17 @@ onUnmounted(() => {
 }
 
 .status-danger {
-  background: linear-gradient(145deg, rgba(220, 20, 10, 0.8), rgba(255, 50, 30, 0.8)); /* 提高不透明度 */
+  background: linear-gradient(145deg, rgba(220, 20, 10, 0.8), rgba(255, 50, 30, 0.8));
   color: rgba(255, 255, 255, 0.95);
   box-shadow: 0 1px 6px rgba(245, 34, 45, 0.3);
-  text-shadow: 0 1px 1px rgba(100, 0, 0, 0.5); /* 减少文字阴影 */
+  text-shadow: 0 1px 1px rgba(100, 0, 0, 0.5);
 }
 
 .status-danger::before {
   background: rgba(245, 34, 45, 0.6);
 }
 
-/* 添加精致的扫描线效果和网格 */
+/* 扫描线效果和网格 */
 .scrolling-list-container::after {
   content: '';
   position: absolute;
@@ -498,7 +499,7 @@ onUnmounted(() => {
   pointer-events: none;
   background-image:
     linear-gradient(to bottom, transparent 49.5%, rgba(32, 160, 255, 0.03) 50%, transparent 50.5%),
-    /* 减少扫描线对比度 */ linear-gradient(90deg, rgba(32, 160, 255, 0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(32, 160, 255, 0.01) 1px, transparent 1px),
     linear-gradient(rgba(32, 160, 255, 0.01) 1px, transparent 1px);
   background-size:
     100% 6px,
@@ -507,7 +508,7 @@ onUnmounted(() => {
   z-index: 1;
 }
 
-/* 添加全息投影效果 */
+/* 全息投影效果 */
 .scrolling-list-container::before {
   content: '';
   position: absolute;
@@ -526,18 +527,18 @@ onUnmounted(() => {
 .list-time::before {
   content: '⏱';
   margin-right: 3px;
-  font-size: 9px; /* 减小图标尺寸 */
+  font-size: 11px;
   opacity: 0.7;
 }
 
 .list-region::before {
   content: '◉';
   margin-right: 3px;
-  font-size: 9px; /* 减小图标尺寸 */
+  font-size: 11px;
   opacity: 0.7;
 }
 
-/* 状态脉动动画 - 减少强度 */
+/* 状态脉动动画 */
 @keyframes pulse {
   0% {
     opacity: 0.8;
@@ -552,5 +553,23 @@ onUnmounted(() => {
 
 .status-danger {
   animation: pulse 2.5s infinite;
+}
+
+/* 展开状态下更大字体 */
+.expanded .scrolling-list-body,
+.expanded .list-time,
+.expanded .list-region,
+.expanded .status-indicator {
+  font-size: 16px;
+}
+
+.expanded .status-indicator {
+  height: 26px;
+  padding: 4px 12px;
+}
+
+.expanded .list-time::before,
+.expanded .list-region::before {
+  font-size: 13px;
 }
 </style>

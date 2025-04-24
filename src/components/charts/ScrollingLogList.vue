@@ -91,11 +91,7 @@ const visibleLogs = computed(() => {
 // 判断日志是否被选中
 const isLogSelected = (log: LogEntry): boolean => {
   if (!selectedLog.value) return false
-  return (
-    log.region === selectedLog.value.region &&
-    log.message === selectedLog.value.message &&
-    log.risk_level === selectedLog.value.risk_level
-  )
+  return log.region === selectedLog.value.region
 }
 
 // 验证并确保日志数据有效性
@@ -267,7 +263,7 @@ onUnmounted(() => {
 .scrolling-log-body {
   flex: 1;
   overflow-y: auto;
-  font-size: 13px;
+  font-size: 14px;
   font-family: 'Consolas', 'Monaco', monospace;
   scrollbar-width: thin;
   scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
@@ -288,7 +284,7 @@ onUnmounted(() => {
 
 .log-row {
   display: flex;
-  padding: 9px 10px;
+  padding: 10px;
   border-bottom: 1px solid rgba(32, 160, 255, 0.1);
   transition: all 0.25s ease;
   align-items: center;
@@ -303,7 +299,7 @@ onUnmounted(() => {
   left: 0;
   top: 0;
   height: 100%;
-  width: 2px;
+  width: 4px;
   background: transparent;
   transition: all 0.2s ease;
 }
@@ -320,17 +316,17 @@ onUnmounted(() => {
 
 .log-info::before {
   background: linear-gradient(to bottom, #52c41a, #52c41a80);
-  box-shadow: 0 0 8px rgba(82, 196, 26, 0.6);
+  box-shadow: 0 0 10px rgba(82, 196, 26, 0.8); /* 增强阴影效果 */
 }
 
 .log-warning::before {
   background: linear-gradient(to bottom, #faad14, #faad1480);
-  box-shadow: 0 0 8px rgba(250, 173, 20, 0.6);
+  box-shadow: 0 0 10px rgba(250, 173, 20, 0.8); /* 增强阴影效果 */
 }
 
 .log-danger::before {
   background: linear-gradient(to bottom, #f5222d, #f5222d80);
-  box-shadow: 0 0 8px rgba(245, 34, 45, 0.6);
+  box-shadow: 0 0 10px rgba(245, 34, 45, 0.8); /* 增强阴影效果 */
 }
 
 .log-selected {
@@ -343,7 +339,7 @@ onUnmounted(() => {
   color: rgba(130, 180, 230, 0.8);
   font-family: 'Consolas', monospace;
   text-shadow: 0 0 5px rgba(32, 160, 255, 0.3);
-  font-size: 13px; /* 明确指定时间字体大小 */
+  font-size: 14px;
 }
 
 .log-type {
@@ -351,7 +347,7 @@ onUnmounted(() => {
   font-weight: bold;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  font-size: 13px;
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -369,7 +365,7 @@ onUnmounted(() => {
   max-width: 100%;
   padding-left: 10px;
   position: relative;
-  font-size: 13px; /* 明确指定消息字体大小 */
+  font-size: 14px;
 }
 
 .log-message::before {
@@ -383,7 +379,7 @@ onUnmounted(() => {
 .expanded .log-time,
 .expanded .log-type,
 .expanded .log-message {
-  font-size: 14px; /* 展开状态下统一使用更大的字体 */
+  font-size: 16px;
 }
 
 .log-message.expanded {
@@ -393,7 +389,7 @@ onUnmounted(() => {
   text-overflow: clip;
   height: auto;
   line-height: 1.5;
-  font-size: 14px; /* 展开的消息内容使用更大的字体 */
+  font-size: 16px;
 }
 
 .expanded-chart .log-type {
