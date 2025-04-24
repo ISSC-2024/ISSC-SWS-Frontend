@@ -300,9 +300,8 @@ onUnmounted(() => {
 .scrolling-log-body {
   flex: 1;
   overflow-y: auto;
-  font-size: 12px;
+  font-size: 13px;
   font-family: 'Consolas', 'Monaco', monospace;
-  /* 添加自定义滚动条样式 */
   scrollbar-width: thin;
   scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
 }
@@ -322,7 +321,7 @@ onUnmounted(() => {
 
 .log-row {
   display: flex;
-  padding: 8px 10px;
+  padding: 9px 10px;
   border-bottom: 1px solid rgba(32, 160, 255, 0.1);
   transition: all 0.25s ease;
   align-items: center;
@@ -377,6 +376,7 @@ onUnmounted(() => {
   color: rgba(130, 180, 230, 0.8);
   font-family: 'Consolas', monospace;
   text-shadow: 0 0 5px rgba(32, 160, 255, 0.3);
+  font-size: 13px; /* 明确指定时间字体大小 */
 }
 
 .log-type {
@@ -384,10 +384,14 @@ onUnmounted(() => {
   font-weight: bold;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: 13px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .log-message {
@@ -398,6 +402,7 @@ onUnmounted(() => {
   max-width: 100%;
   padding-left: 10px;
   position: relative;
+  font-size: 13px; /* 明确指定消息字体大小 */
 }
 
 .log-message::before {
@@ -407,13 +412,21 @@ onUnmounted(() => {
   color: rgba(32, 160, 255, 0.6);
 }
 
+.expanded .scrolling-log-body,
+.expanded .log-time,
+.expanded .log-type,
+.expanded .log-message {
+  font-size: 14px; /* 展开状态下统一使用更大的字体 */
+}
+
 .log-message.expanded {
   white-space: normal;
   word-wrap: break-word;
   overflow: visible;
   text-overflow: clip;
   height: auto;
-  line-height: 1.4;
+  line-height: 1.5;
+  font-size: 14px; /* 展开的消息内容使用更大的字体 */
 }
 
 .expanded-chart .log-type {
