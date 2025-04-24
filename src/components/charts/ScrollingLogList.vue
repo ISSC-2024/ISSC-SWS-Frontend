@@ -439,7 +439,7 @@ onUnmounted(() => {
   transition: all 0.25s ease;
   align-items: center;
   cursor: pointer;
-  background-color: rgba(15, 25, 50, 0.7);
+  background-color: rgba(12, 20, 40, 0.75);
   position: relative;
 }
 
@@ -455,7 +455,7 @@ onUnmounted(() => {
 }
 
 .log-row-alt {
-  background-color: rgba(20, 35, 65, 0.7);
+  background-color: rgba(15, 30, 60, 0.75);
 }
 
 .log-row:hover {
