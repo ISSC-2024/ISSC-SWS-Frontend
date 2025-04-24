@@ -632,27 +632,64 @@ const updateChart = () => {
     legend: {
       data: getLegendNames(),
       orient: 'horizontal',
-      bottom: 0,
+      bottom: isExpanded.value ? 60 : 0,
       itemWidth: isExpanded.value ? 15 : 10,
       itemHeight: isExpanded.value ? 15 : 10,
       textStyle: {
         fontSize: isExpanded.value ? 12 : 10,
+        color: 'rgba(220, 230, 240, 0.9)', // 增加图例文本颜色
       },
+      backgroundColor: 'rgba(12, 24, 48, 0.7)', // 添加图例背景色
+      borderRadius: 4, // 圆角边框
+      padding: 8, // 内边距
+      borderColor: 'rgba(32, 160, 255, 0.2)', // 边框颜色
+      borderWidth: 1, // 边框宽度
       icon: isExpanded.value ? 'roundRect' : 'circle',
     },
     grid: {
       left: '3%',
       right: '4%',
-      bottom: isExpanded.value ? '50px' : '25px',
+      bottom: isExpanded.value ? '120px' : '30px',
       top: '10px',
       containLabel: true,
     },
     xAxis: {
       type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: 'rgba(32, 160, 255, 0.3)', // 轴线颜色
+        },
+      },
+      splitLine: {
+        lineStyle: {
+          color: 'rgba(32, 160, 255, 0.1)', // 网格线颜色
+        },
+      },
+      axisLabel: {
+        color: 'rgba(220, 230, 240, 0.8)', // 轴标签颜色
+      },
     },
     yAxis: {
       type: 'category',
       data: workshops,
+      axisLine: {
+        lineStyle: {
+          color: 'rgba(32, 160, 255, 0.3)', // 轴线颜色
+        },
+      },
+      axisLabel: {
+        color: 'rgba(220, 230, 240, 0.8)', // 轴标签颜色
+        fontSize: 12, // 增加字体大小
+        fontWeight: 'bold', // 加粗
+        rich: {
+          a: {
+            backgroundColor: 'rgba(20, 40, 80, 0.7)', // 轴标签背景色
+            padding: [4, 8], // 内边距
+            borderRadius: 3, // 圆角
+            color: 'rgba(220, 230, 240, 0.9)', // 文本颜色
+          },
+        },
+      },
     },
     series: getSeriesData(),
   }
@@ -660,15 +697,7 @@ const updateChart = () => {
   // 使用类型守卫确保chartInstance不为null
   const chart = chartInstance
   if (chart) {
-    chart.setOption(option, true) // 添加第二个参数true，完全替换之前的配置
-  }
-}
-
-// 获取按钮样式
-const getButtonStyle = (type: number) => {
-  return {
-    backgroundColor: currentChartType.value === type ? '#1976D2' : '#f0f0f0',
-    color: currentChartType.value === type ? '#ffffff' : '#333333',
+    chart.setOption(option, true)
   }
 }
 
@@ -786,13 +815,13 @@ onMounted(() => {
       <div class="resource-distribution-chart" ref="chartRef" :style="chartStyle"></div>
     </transition>
 
-    <!-- 资源类型切换按钮 -->
+    <!-- 资源类型切换按钮 - 改善样式 -->
     <div class="chart-type-buttons">
       <button
         v-for="button in resourceButtons"
         :key="button.type"
         class="chart-type-button"
-        :style="getButtonStyle(button.type)"
+        :class="{ active: currentChartType === button.type }"
         @click="switchChartType(button.type)"
       >
         <span class="button-icon">{{ button.icon }}</span>
@@ -804,25 +833,57 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 标题栏样式 */
+.resource-distribution-chart-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, rgba(15, 30, 60, 0.95), rgba(8, 15, 35, 0.95));
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(32, 160, 255, 0.07);
+  border: 1px solid rgba(32, 160, 255, 0.15);
+}
+
+/* 标题栏 */
 .graph-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(20, 35, 65, 0.85);
+  background: linear-gradient(
+    90deg,
+    rgba(12, 24, 48, 0.95) 0%,
+    rgba(20, 40, 80, 0.95) 50%,
+    rgba(12, 24, 48, 0.95) 100%
+  );
   border-bottom: 1px solid rgba(74, 144, 226, 0.2);
   position: relative;
   z-index: 5;
+}
+
+.graph-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(32, 160, 255, 0), rgba(32, 160, 255, 0.5), rgba(32, 160, 255, 0));
 }
 
 .graph-title {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: rgba(220, 230, 240, 0.9);
+  color: rgba(220, 230, 240, 0.95);
   font-weight: 600;
   font-size: 16px;
+  text-shadow: 0 0 10px rgba(32, 160, 255, 0.3);
+  letter-spacing: 0.5px;
 }
 
 .title-icon {
@@ -830,65 +891,192 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   color: #20a0ff;
+  filter: drop-shadow(0 0 5px rgba(32, 160, 255, 0.5));
 }
 
+/* 图表区域 */
 .resource-distribution-chart {
   width: 100%;
-  height: calc(100% - 80px); /* 减去标题栏高度和按钮高度 */
+  height: calc(100% - 100px);
   margin-top: 5px;
-}
-
-.resource-distribution-chart-container {
-  width: 100%;
-  height: 100%;
   position: relative;
+  backdrop-filter: blur(5px);
+  isolation: isolate;
 }
 
+/* 网格背景效果 */
+.resource-distribution-chart::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to bottom, transparent 49.5%, rgba(32, 160, 255, 0.03) 50%, transparent 50.5%),
+    linear-gradient(90deg, rgba(32, 160, 255, 0.01) 1px, transparent 1px),
+    linear-gradient(rgba(32, 160, 255, 0.01) 1px, transparent 1px);
+  background-size:
+    100% 6px,
+    20px 20px,
+    20px 20px;
+  z-index: -1;
+}
+
+/* 全息投影效果 */
+.resource-distribution-chart::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(64, 120, 255, 0.05) 0%, rgba(64, 120, 255, 0) 70%),
+    radial-gradient(ellipse at 50% 100%, rgba(64, 120, 255, 0.05) 0%, rgba(64, 120, 255, 0) 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 按钮区域 */
 .chart-type-buttons {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 5px;
+  padding: 0 20px;
   position: absolute;
-  bottom: 5px;
+  bottom: 8px;
   left: 0;
   right: 0;
+  z-index: 5;
 }
 
+/* 按钮样式 */
 .chart-type-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   font-size: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: rgba(20, 40, 80, 0.7);
+  color: rgba(220, 230, 240, 0.8);
+  backdrop-filter: blur(4px);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 0 4px rgba(32, 160, 255, 0.1);
+  border: 1px solid rgba(32, 160, 255, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
 .chart-type-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    0 0 8px rgba(32, 160, 255, 0.2);
+  color: rgba(220, 230, 240, 1);
+  border-color: rgba(32, 160, 255, 0.3);
+}
+
+.chart-type-button.active {
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.8), rgba(30, 136, 229, 0.8));
+  color: white;
+  box-shadow:
+    0 3px 10px rgba(25, 118, 210, 0.3),
+    0 0 10px rgba(32, 160, 255, 0.3);
+  border-color: rgba(32, 160, 255, 0.4);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.chart-type-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.chart-type-button:hover::before {
+  opacity: 1;
+}
+
+.chart-type-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
 }
 
 .button-icon {
   margin-right: 5px;
   font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button-label {
   font-weight: 500;
+  letter-spacing: 0.2px;
 }
 
+/* 过渡动画 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+  transform: translateY(10px);
+}
+
+@media (max-width: 768px) {
+  .button-label {
+    font-size: 11px;
+  }
+
+  .button-icon {
+    font-size: 13px;
+  }
+
+  .chart-type-button {
+    padding: 5px 8px;
+  }
+}
+
+/* 高亮元素的悬停状态 */
+.chart-type-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(32, 160, 255, 0.4);
+}
+
+/*  echarts 工具提示样式 */
+:global(.staff-chart-tooltip) {
+  background: rgba(15, 30, 60, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(32, 160, 255, 0.3) !important;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 15px rgba(32, 160, 255, 0.15) !important;
+  padding: 8px 12px !important;
+  color: rgba(220, 230, 240, 0.95) !important;
+  font-family: 'Inter', 'Roboto', sans-serif !important;
 }
 </style>
