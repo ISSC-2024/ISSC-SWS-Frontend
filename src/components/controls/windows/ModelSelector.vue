@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useAlgorithmStore } from '../../../stores/algorithmStore'
 
 /**
@@ -43,11 +43,8 @@ const modelParamsConfig = {
     { id: 'param2', name: '精度', options: ['高', '中', '低'] },
     { id: 'param3', name: '迭代次数', options: ['100', '200', '500', '1000'] },
   ],
-  model3: [
-    { id: 'param1', name: '学习率', options: ['0.001', '0.01', '0.1'] },
-    { id: 'param2', name: '优化器', options: ['Adam', 'SGD', 'RMSprop'] },
-    { id: 'param3', name: '批次大小', options: ['32', '64', '128', '256'] },
-  ],
+  // 模型三动态根据选择的算法配置对应的参数
+  model3: [{ id: 'param1', name: '算法', options: ['xgboost', 'lightGBM', 'TabNet'] }],
   model4: [
     { id: 'param1', name: '算法', options: ['Independent Q-Learning', 'DQN', 'MADDPG', 'MAPPO'] },
     { id: 'param2', name: '收敛阈值', options: ['0.001', '0.005'] },
@@ -61,8 +58,66 @@ const modelParamsConfig = {
  */
 const getCurrentModelParams = () => {
   if (!selectedModel.value) return []
-  return modelParamsConfig[selectedModel.value as keyof typeof modelParamsConfig] || []
+  // 保存返回参数
+  let params = modelParamsConfig[selectedModel.value as keyof typeof modelParamsConfig] || []
+
+  // 对模型三的参数选择根据对应的算法进行显示
+  if (selectedModel.value === 'model3') {
+    const algorithm = modelParams.value.param1
+    if (algorithm === 'xgboost') {
+      params = [
+        ...params,
+        { id: 'param2', name: '学习率', options: ['0.1'] },
+        { id: 'param3', name: '最大深度', options: ['6', '8'] },
+      ]
+    } else if (algorithm === 'lightGBM') {
+      params = [
+        ...params,
+        { id: 'param2', name: '学习率', options: ['0.1'] },
+        { id: 'param3', name: '最大深度', options: ['4', '6'] },
+      ]
+    } else if (algorithm === 'TabNet') {
+      const lr = modelParams.value.param2
+      params = [
+        ...params,
+        {
+          id: 'param2',
+          name: '学习率',
+          options: ['0.01', '0.02'],
+        },
+        {
+          id: 'param3',
+          name: '最大轮次',
+          options: lr === '0.01' ? ['100'] : lr === '0.02' ? ['50'] : [],
+        },
+      ]
+    }
+  }
+  return params
 }
+
+// 监听 param1 的变化
+// 当 modelParams.value.param1 的值发生变化时，
+// 检查当前选择的模型是否是 model3。如果是，并且新值与旧值不同，则清空 param2 和 param3 的值
+watch(
+  () => modelParams.value.param1,
+  (newVal, oldVal) => {
+    if (selectedModel.value === 'model3' && newVal !== oldVal) {
+      modelParams.value.param2 = ''
+      modelParams.value.param3 = ''
+    }
+  },
+)
+
+// 监听 param2 的变化
+watch(
+  () => modelParams.value.param2,
+  (newVal, oldVal) => {
+    if (selectedModel.value === 'model3' && modelParams.value.param1 === 'TabNet' && newVal !== oldVal) {
+      modelParams.value.param3 = ''
+    }
+  },
+)
 
 /**
  * 选择模型

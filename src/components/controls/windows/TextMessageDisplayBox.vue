@@ -1,3 +1,4 @@
+<!--文本框组件-->
 <template>
   <div v-if="visible" class="text-message-display-box">
     <div class="message-box-content">
@@ -32,7 +33,7 @@ import { computed } from 'vue'
 import { useMessageStore } from '../../../stores/message' // 根据实际路径调整
 
 // type StatusType = 'normal' | 'warning' | 'danger'
-
+// 在这里直接读取消息管理中的信息进行显示
 const messageStore = useMessageStore()
 
 // 从store获取状态
