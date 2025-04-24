@@ -12,28 +12,60 @@
    *
    -->
   <div class="scrolling-list-container">
+    <!-- 背景效果 -->
+    <div class="list-background-effects">
+      <div class="list-grid"></div>
+      <div class="list-glow"></div>
+    </div>
+
     <!-- 左上角下拉框 -->
     <div class="dropdown-container">
-      <div class="dropdown">
-        <select v-model="selectedRegion" @change="handleRegionChange">
-          <option value="">选择区域</option>
-          <option value="PRO">PRO</option>
-          <option value="REA">REA</option>
-          <option value="SEP">SEP</option>
-          <option value="UTL">UTL</option>
-          <option value="RMS">RMS</option>
-        </select>
+      <div class="dropdown region-dropdown" @click="toggleRegionDropdown">
+        <div class="select-wrapper">
+          <div class="select-label">
+            <div class="label-content">
+              <svg viewBox="0 0 24 24" width="14" height="14">
+                <path
+                  fill="currentColor"
+                  d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"
+                />
+              </svg>
+              <span>区域</span>
+            </div>
+            <select v-model="selectedRegion" @change="handleRegionChange" class="tech-select">
+              <option value="">全部区域</option>
+              <option value="PRO">PRO</option>
+              <option value="REA">REA</option>
+              <option value="SEP">SEP</option>
+              <option value="UTL">UTL</option>
+              <option value="RMS">RMS</option>
+            </select>
+            <div class="arrow" :class="{ open: regionDropdownOpen }"></div>
+          </div>
+        </div>
       </div>
-      <div class="dropdown">
-        <div class="select-container" @click="toggleAttributeDropdown">
-          <span>选择属性</span>
-          <div class="arrow" :class="{ open: showAttributeDropdown }"></div>
+
+      <div class="dropdown attribute-dropdown">
+        <div class="select-wrapper">
+          <div class="select-container" @click="toggleAttributeDropdown">
+            <div class="label-content">
+              <svg viewBox="0 0 24 24" width="14" height="14">
+                <path
+                  fill="currentColor"
+                  d="M12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2Z"
+                />
+              </svg>
+              <span>属性</span>
+            </div>
+            <div class="arrow" :class="{ open: showAttributeDropdown }"></div>
+          </div>
         </div>
         <div class="dropdown-content" v-if="showAttributeDropdown">
           <div class="attribute-item" v-for="attribute in attributes" :key="attribute.value">
-            <label>
+            <label class="tech-checkbox">
               <input type="checkbox" :value="attribute.value" v-model="selectedAttributes" />
-              {{ attribute.label }}
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-label">{{ attribute.label }}</span>
             </label>
           </div>
         </div>
@@ -41,70 +73,144 @@
     </div>
 
     <div class="scrolling-list-header">
-      <div class="header-item">时间戳</div>
-      <div class="header-item">传感器编号</div>
+      <div class="header-item timestamp">时间戳</div>
+      <div class="header-item sensor-id">传感器编号</div>
       <div class="header-item" v-for="attribute in selectedAttributes" :key="attribute">
         {{ getAttributeName(attribute) }}
       </div>
     </div>
+    <!-- 注意添加.stop阻止事件冒泡 -->
     <div class="scrolling-list-body" ref="listBody">
       <div
         v-for="sensor in visibleSensors"
         :key="sensor.point_id"
         class="list-row"
-        @mouseover="handleHover(sensor)"
+        @mouseenter="handleHover(sensor)"
         @mouseleave="handleHoverEnd"
-        @click="handleClick(sensor)"
+        @click.stop="handleClick(sensor)"
       >
-        <div class="list-item">{{ formatTimestamp(sensor.timestamp) }}</div>
-        <div class="list-item">
-          <button class="btn" v-if="isExpanded" @click="showImage(sensor)">
-            {{ sensor.point_id }}
-          </button>
-          <span v-else>{{ sensor.point_id }}</span>
+        <div class="list-item timestamp">
+          <div class="timestamp-wrapper">
+            <svg viewBox="0 0 24 24" width="12" height="12" class="timestamp-icon">
+              <path
+                fill="currentColor"
+                d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"
+              />
+            </svg>
+            <span>{{ formatTimestamp(sensor.timestamp) }}</span>
+          </div>
         </div>
+
+        <div class="list-item sensor-id">
+          <button
+            v-if="isExpanded"
+            class="sensor-btn"
+            @click.stop="showImage(sensor)"
+            :title="`点击查看${sensor.point_id}预测图表`"
+          >
+            <svg viewBox="0 0 24 24" width="12" height="12" class="sensor-icon">
+              <path
+                fill="currentColor"
+                d="M9,7V9H13V11H9V13H13V15H9V17H13A2,2 0 0,0 15,15V13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 15,10.5V9A2,2 0 0,0 13,7H9M16,7V17H18V7H16Z"
+              />
+            </svg>
+            <span>{{ sensor.point_id }}</span>
+          </button>
+          <div v-else class="sensor-id-text">
+            <svg viewBox="0 0 24 24" width="12" height="12" class="sensor-icon">
+              <path
+                fill="currentColor"
+                d="M9,7V9H13V11H9V13H13V15H9V17H13A2,2 0 0,0 15,15V13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 15,10.5V9A2,2 0 0,0 13,7H9M16,7V17H18V7H16Z"
+              />
+            </svg>
+            <span>{{ sensor.point_id }}</span>
+          </div>
+        </div>
+
         <div class="list-item" v-for="attribute in selectedAttributes" :key="attribute">
           <div
             v-if="attribute === 'temperature'"
-            :class="{
-              'high-value': isHighValue(sensor.temperature, 'temperature', sensor.region),
-            }"
+            class="value-container"
+            :class="{ 'high-value': isHighValue(sensor.temperature, 'temperature', sensor.region) }"
           >
-            {{ formatValue(sensor.temperature) }}°C
+            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+              <path
+                fill="currentColor"
+                d="M15 13V5A3 3 0 0 0 9 5V13A5 5 0 1 0 15 13M12 4A1 1 0 0 1 13 5V8H11V5A1 1 0 0 1 12 4Z"
+              />
+            </svg>
+            <span>{{ formatValue(sensor.temperature) }}°C</span>
           </div>
+
           <div
             v-else-if="attribute === 'pressure'"
-            :class="{
-              'high-value': isHighValue(sensor.pressure, 'pressure', sensor.region),
-            }"
+            class="value-container"
+            :class="{ 'high-value': isHighValue(sensor.pressure, 'pressure', sensor.region) }"
           >
-            {{ formatValue(sensor.pressure) }} kPa
+            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+              <path
+                fill="currentColor"
+                d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,14.4 5,16.5 6.7,18C8.1,16.7 10,16 12,16C14,16 15.9,16.7 17.3,18C19,16.5 20,14.4 20,12A8,8 0 0,0 12,4M14,6A1,1 0 0,1 15,7A1,1 0 0,1 14,8A1,1 0 0,1 13,7A1,1 0 0,1 14,6M10,6A1,1 0 0,1 11,7A1,1 0 0,1 10,8A1,1 0 0,1 9,7A1,1 0 0,1 10,6M6.91,8.94C7.03,8.95 7.15,8.97 7.26,9.04C7.58,9.22 7.74,9.61 7.66,9.97L7.46,10.94C7.39,11.26 7.14,11.5 6.83,11.5C6.74,11.5 6.65,11.47 6.56,11.44C6.12,11.24 5.88,10.8 5.96,10.36C6.04,9.96 6.41,9.53 6.91,8.94M17.09,8.94C17.59,9.53 17.96,9.96 18.04,10.36C18.11,10.8 17.88,11.24 17.43,11.44C17.35,11.47 17.26,11.5 17.17,11.5C16.86,11.5 16.61,11.26 16.54,10.94L16.34,9.97C16.26,9.61 16.42,9.22 16.73,9.04C16.85,8.97 16.97,8.95 17.09,8.94M12,10C13.1,10 14,10.9 14,12C14,13.1 13.1,14 12,14C10.9,14 10,13.1 10,12C10,10.9 10.9,10 12,10M12,17.5C14.11,17.5 16.11,18.15 17.66,19.34L16.46,20.54C15.23,19.8 13.66,19.5 12,19.5C10.34,19.5 8.77,19.8 7.54,20.54L6.34,19.34C7.89,18.15 9.89,17.5 12,17.5Z"
+              />
+            </svg>
+            <span>{{ formatValue(sensor.pressure) }} kPa</span>
           </div>
+
           <div
             v-else-if="attribute === 'flow_rate'"
-            :class="{
-              'high-value': isHighValue(sensor.flow_rate, 'flow_rate', sensor.region),
-            }"
+            class="value-container"
+            :class="{ 'high-value': isHighValue(sensor.flow_rate, 'flow_rate', sensor.region) }"
           >
-            {{ formatValue(sensor.flow_rate) }} m³/h
+            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+              <path
+                fill="currentColor"
+                d="M22 17V19H14V17H22M12 17C12 17.5 11.5 18 11 18H8C7.5 18 7 17.5 7 17V3C7 2.5 7.5 2 8 2H11C11.5 2 12 2.5 12 3V17M12 17V14H14C15.1 14 16 13.1 16 12V10C16 8.9 15.1 8 14 8H12V5H16V3H12V17Z"
+              />
+            </svg>
+            <span>{{ formatValue(sensor.flow_rate) }} m³/h</span>
           </div>
+
           <div
             v-else-if="attribute === 'level'"
-            :class="{
-              'high-value': isHighValue(sensor.level, 'level', sensor.region),
-            }"
+            class="value-container"
+            :class="{ 'high-value': isHighValue(sensor.level, 'level', sensor.region) }"
           >
-            {{ formatValue(sensor.level) }} %
+            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+              <path
+                fill="currentColor"
+                d="M12 3.25C12 3.25 6 10 6 14C6 17.32 8.69 20 12 20S18 17.32 18 14C18 10 12 3.25 12 3.25M14.47 9.97L15.53 11.03L9.53 17.03L8.47 15.97M9.75 10A1.25 1.25 0 0 1 11 11.25A1.25 1.25 0 0 1 9.75 12.5A1.25 1.25 0 0 1 8.5 11.25A1.25 1.25 0 0 1 9.75 10M14.25 14.5A1.25 1.25 0 0 1 15.5 15.75A1.25 1.25 0 0 1 14.25 17A1.25 1.25 0 0 1 13 15.75A1.25 1.25 0 0 1 14.25 14.5Z"
+              />
+            </svg>
+            <span>{{ formatValue(sensor.level) }} %</span>
           </div>
+
+          <div v-else-if="attribute === 'gas_type'" class="value-container gas-type">
+            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+              <path
+                fill="currentColor"
+                d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"
+              />
+            </svg>
+            <span>{{ sensor.gas_type }}</span>
+          </div>
+
           <div
             v-else-if="attribute === 'gas_concentration'"
-            :class="{
-              'high-value': isHighValue(sensor.gas_concentration, 'gas_concentration', sensor.gas_type),
-            }"
+            class="value-container"
+            :class="{ 'high-value': isHighValue(sensor.gas_concentration, 'gas_concentration', sensor.gas_type) }"
           >
-            {{ formatValue(sensor.gas_concentration) }}
+            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+              <path
+                fill="currentColor"
+                d="M13.35 20.13C12.59 20.82 11.42 20.82 10.66 20.12L4.4 14.46C3.42 13.56 3.42 12.03 4.4 11.13L10.66 5.47C11.42 4.77 12.59 4.77 13.35 5.47L19.6 11.13C20.58 12.03 20.58 13.56 19.6 14.46L13.35 20.13M12 7.9L6.76 12.6L12 17.3L17.24 12.6L12 7.9Z"
+              />
+            </svg>
+            <span>{{ formatValue(sensor.gas_concentration) }} ppm</span>
           </div>
-          <div v-else>{{ getAttributeValue(sensor, attribute) }}</div>
+
+          <div v-else class="value-container">
+            {{ getAttributeValue(sensor, attribute) }}
+          </div>
         </div>
       </div>
     </div>
@@ -113,10 +219,31 @@
   <!-- 图片弹窗 -->
   <div v-if="showImageModal" class="image-modal" @click="closeImageModal">
     <div class="modal-content" @click.stop>
-      <img :src="currentImage" :alt="currentSensorId" class="modal-image" />
-      <button class="close-button" @click="closeImageModal">×</button>
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path
+              fill="currentColor"
+              d="M3,17V19H9V17H3M3,5V7H13V5H3M13,21V19H21V17H13V15H21V13H13V11H21V9H13V7H21V5H13V3H21V1H3V3H11V5H3V7H11V9H3V11H11V13H3V15H11V17H3V19H11V21H3"
+            />
+          </svg>
+          传感器预测图表 - {{ currentSensorId }}
+        </h3>
+        <button class="modal-close-button" @click="closeImageModal">
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <path
+              fill="currentColor"
+              d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <img :src="currentImage" :alt="currentSensorId" class="modal-image" />
+      </div>
     </div>
   </div>
+
   <!-- 文本框组件 -->
   <TextMessageDisplayBox />
 </template>
@@ -125,7 +252,7 @@
 import { ref, onMounted, computed, inject, watch, onUnmounted } from 'vue'
 import sensorData from '@/mock/predictions_arima_auto.json'
 import UnityService from '../../services/UnityService'
-import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue' // 根据实际路径调整
+import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
 import { useMessageStore } from '../../stores/message'
 
 // 1. 定义明确的元组类型和接口
@@ -225,11 +352,13 @@ interface Sensor {
 }
 
 const isExpanded = inject('isChartExpanded', ref(false))
+const messageStore = useMessageStore()
 
 // 响应式状态
 const selectedRegion = ref('')
 const selectedAttributes = ref<string[]>([])
 const showAttributeDropdown = ref(false)
+const regionDropdownOpen = ref(false)
 
 // 初始化加载状态
 const initializeState = () => {
@@ -318,6 +447,10 @@ const toggleAttributeDropdown = () => {
   showAttributeDropdown.value = !showAttributeDropdown.value
 }
 
+const toggleRegionDropdown = () => {
+  regionDropdownOpen.value = !regionDropdownOpen.value
+}
+
 const getAttributeName = (attribute: string): string => {
   const map: Record<string, string> = {
     timestamp: '时间戳',
@@ -390,6 +523,7 @@ onUnmounted(() => {
   }
 })
 
+// 添加日志输出帮助调试
 const handleHover = (sensor: Sensor) => {
   // 鼠标悬停时停止滚动
   if (scrollTimer) {
@@ -411,9 +545,6 @@ const handleHoverEnd = () => {
   // 向Unity发送消息，取消高亮传感器
   UnityService.sendMessageToUnity('Sensor', 'SensorHighlightOff')
 }
-
-// 替换原有状态和点击处理函数
-const messageStore = useMessageStore()
 
 const handleClick = (sensor: Sensor) => {
   messageStore.showMessage(
@@ -465,179 +596,579 @@ const closeImageModal = () => {
 </script>
 
 <style scoped>
-/* 样式部分保持不变，同用户提供的原始代码 */
+/* 容器主样式 */
 .scrolling-list-container {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e8e8e8;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
   padding-top: 0;
   position: relative;
   z-index: 0;
+  background: linear-gradient(135deg, rgba(12, 22, 45, 0.95), rgba(15, 28, 55, 0.95));
 }
 
+/* 背景特效 */
+.list-background-effects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.list-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(32, 160, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(32, 160, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: 1;
+  opacity: 0.3;
+}
+
+.list-glow {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 160px;
+  background: radial-gradient(ellipse at center, rgba(32, 160, 255, 0.15) 0%, rgba(32, 160, 255, 0) 70%);
+  z-index: 2;
+}
+
+/* 下拉菜单样式 */
 .dropdown-container {
   position: absolute;
-  top: 5px;
-  left: 5px;
+  top: 8px;
+  left: 10px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   z-index: 10;
 }
 
-.dropdown select {
-  padding: 4px 8px;
-  border: 1px solid #e8e8e8;
-  border-radius: 4px;
-  font-size: 12px;
-  background-color: white;
+.dropdown {
+  position: relative;
+  width: 140px; /* 增加宽度以容纳标签和内容 */
 }
 
-.select-container {
-  padding: 4px 8px;
-  border: 1px solid #e8e8e8;
+/* 修改select包装器样式 */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* 修改标签布局，使其在下拉框内部 */
+.select-label {
+  position: relative;
+  width: 100%;
+  background: rgba(20, 35, 65, 0.9);
+  border: 1px solid rgba(32, 160, 255, 0.3);
   border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s ease;
+  display: flex;
+  height: 30px;
+}
+
+.select-label:hover {
+  border-color: rgba(32, 160, 255, 0.5);
+  background-color: rgba(25, 40, 75, 0.9);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(32, 160, 255, 0.2);
+}
+
+.label-content {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 12px;
-  background-color: white;
+  color: rgba(140, 190, 240, 0.9);
+  padding-left: 8px;
+  white-space: nowrap;
+  min-width: 55px;
+  margin-right: 8px;
+}
+
+/* 修改下拉选择框样式 */
+.tech-select {
+  flex: 1;
+  color: rgba(220, 230, 240, 0.9);
+  background-color: transparent;
+  border: none;
+  outline: none;
+  font-size: 12px;
   cursor: pointer;
+  padding-right: 24px;
+  padding-left: 8px;
+  appearance: none;
+  background-image: none; /* 移除默认的背景箭头 */
+  border-left: 1px solid rgba(32, 160, 255, 0.15);
+}
+
+/* 确保区域下拉框中也能使用箭头元素 */
+.select-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* 调整区域下拉框中的箭头位置 */
+.select-label .arrow {
+  position: absolute;
+  right: 8px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid rgba(32, 160, 255, 0.8);
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+.select-label .arrow.open {
+  transform: rotate(180deg);
+}
+
+.tech-select option {
+  background-color: rgba(15, 28, 55, 0.95);
+  color: rgba(220, 230, 240, 0.9);
+  padding: 8px;
+  font-size: 12px;
+}
+
+.select-label:hover {
+  border-color: rgba(32, 160, 255, 0.5);
+  background-color: rgba(25, 40, 75, 0.9);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(32, 160, 255, 0.2);
+}
+
+/* 优化选项悬停效果 */
+.tech-select option:hover {
+  background-color: rgba(32, 160, 255, 0.3) !important;
+}
+
+/* 修改属性选择容器样式 */
+.select-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 8px 0 0;
+  height: 30px;
+  background: rgba(20, 35, 65, 0.9);
+  border: 1px solid rgba(32, 160, 255, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s ease;
 }
 
+.select-container:hover {
+  border-color: rgba(32, 160, 255, 0.5);
+  background-color: rgba(25, 40, 75, 0.9);
+}
+
+/* 调整下拉箭头位置 */
 .arrow {
   width: 0;
   height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid #333;
-  margin-left: 5px;
-  transition: transform 0.3s;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid rgba(32, 160, 255, 0.8);
+  transition: transform 0.3s ease;
 }
 
 .arrow.open {
   transform: rotate(180deg);
 }
 
+/* 修复下拉内容定位 */
 .dropdown-content {
   position: absolute;
-  top: 100%;
+  top: 32px; /* 紧接着下拉按钮 */
   left: 0;
-  width: 150px;
-  background-color: white;
-  border: 1px solid #e8e8e8;
+  width: 160px;
+  background: rgba(20, 35, 65, 0.95);
+  border: 1px solid rgba(32, 160, 255, 0.3);
   border-radius: 4px;
-  padding: 5px 0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 8px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 100;
+  backdrop-filter: blur(4px);
 }
 
 .attribute-item {
-  padding: 5px 10px;
+  padding: 6px 10px;
+  transition: background 0.2s ease;
 }
 
-.attribute-item label {
+.attribute-item:hover {
+  background-color: rgba(32, 160, 255, 0.1);
+}
+
+/* 自定义复选框 */
+.tech-checkbox {
   display: flex;
   align-items: center;
   cursor: pointer;
+  gap: 8px;
+  color: rgba(220, 230, 240, 0.9);
+  font-size: 12px;
 }
 
-.attribute-item input {
-  margin-right: 5px;
+.tech-checkbox input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
+.checkbox-custom {
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: rgba(15, 28, 55, 0.9);
+  border: 1px solid rgba(32, 160, 255, 0.4);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.tech-checkbox input[type='checkbox']:checked + .checkbox-custom {
+  background: rgba(32, 160, 255, 0.9);
+  border-color: rgba(32, 160, 255, 0.9);
+}
+
+.tech-checkbox input[type='checkbox']:checked + .checkbox-custom::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.tech-checkbox:hover .checkbox-custom {
+  border-color: rgba(32, 160, 255, 0.7);
+  box-shadow: 0 0 0 2px rgba(32, 160, 255, 0.1);
+}
+
+/* 表头样式 */
 .scrolling-list-header {
   display: flex;
-  background-color: #f5f5f5;
-  font-weight: bold;
-  padding: 8px 8px;
-  border-bottom: 1px solid #e8e8e8;
+  background: linear-gradient(90deg, rgba(12, 24, 48, 0.9) 0%, rgba(20, 40, 80, 0.9) 50%, rgba(12, 24, 48, 0.9) 100%);
+  font-weight: 600;
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(32, 160, 255, 0.15);
   font-size: 12px;
   position: sticky;
   top: 0;
   z-index: 5;
-  margin-top: 30px;
+  margin-top: 40px;
+  color: rgba(120, 180, 255, 0.95);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(32, 160, 255, 0.4);
+  align-items: center; /* 添加垂直居中 */
+  height: 40px; /* 设置固定高度 */
 }
 
 .header-item {
   flex: 1;
   text-align: center;
+  padding: 0 5px;
+  display: flex; /* 使用flex布局 */
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+  height: 100%; /* 占满高度 */
 }
 
+.header-item.timestamp {
+  flex: 1.5;
+}
+
+.header-item.sensor-id {
+  flex: 1;
+}
+
+/* 列表主体 */
 .scrolling-list-body {
   flex: 1;
   overflow-y: auto;
   font-size: 12px;
-  height: calc(100% - 50px);
+  height: calc(100% - 90px);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
+}
+
+.scrolling-list-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrolling-list-body::-webkit-scrollbar-track {
+  background: rgba(11, 19, 43, 0.3);
+}
+
+.scrolling-list-body::-webkit-scrollbar-thumb {
+  background-color: rgba(32, 160, 255, 0.6);
+  border-radius: 3px;
 }
 
 .list-row {
   display: flex;
-  padding: 6px 8px;
-  border-bottom: 1px solid #f0f0f0;
-  transition: background-color 0.3s;
+  padding: 8px;
+  border-bottom: 1px solid rgba(32, 160, 255, 0.06);
+  transition: all 0.2s ease;
+  cursor: pointer; /* 确保鼠标样式是指针 */
+  align-items: center;
+  background-color: rgba(12, 20, 40, 0.75);
+  position: relative; /* 添加相对定位 */
+  z-index: 3; /* 确保在背景之上 */
 }
 
 .list-row:hover {
-  background-color: #f9f9f9;
+  background-color: rgba(20, 40, 80, 0.85); /* 加深悬停背景色 */
+  border-bottom-color: rgba(32, 160, 255, 0.25); /* 加深边框颜色 */
+  transform: translateY(-1px); /* 添加轻微上移效果 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* 添加阴影效果 */
+}
+
+.list-row:active {
+  transform: translateY(0); /* 点击时恢复位置 */
 }
 
 .list-item {
   flex: 1;
   text-align: center;
+  padding: 0 5px;
+  color: rgba(220, 230, 240, 0.85);
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.list-item.timestamp {
+  flex: 1.5;
+  color: rgba(140, 190, 240, 0.85);
+  font-family: 'Consolas', monospace;
+  text-shadow: 0 0 5px rgba(32, 160, 255, 0.2);
+}
+
+.list-item.sensor-id {
+  flex: 1;
+}
+
+.timestamp-wrapper,
+.value-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+}
+
+.timestamp-icon,
+.attribute-icon {
+  color: rgba(32, 160, 255, 0.8);
+  flex-shrink: 0;
 }
 
 .high-value {
   color: #ff4d4f;
   font-weight: bold;
-}
-.btn {
-  cursor: pointer;
-  /* border: none;
-  border-radius: 3px; */
-}
-.btn:hover {
-  background-color: #bdc1c4;
+  text-shadow: 0 0 5px rgba(255, 77, 79, 0.3);
 }
 
+.high-value .attribute-icon {
+  color: #ff4d4f;
+}
+
+.gas-type {
+  color: rgba(255, 215, 0, 0.9);
+}
+
+.gas-type .attribute-icon {
+  color: rgba(255, 215, 0, 0.9);
+}
+
+/* 传感器按钮样式 */
+.sensor-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: rgba(32, 160, 255, 0.1);
+  border: 1px solid rgba(32, 160, 255, 0.3);
+  border-radius: 4px;
+  color: rgba(220, 230, 240, 0.9);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  font-family: 'Consolas', monospace;
+}
+
+.sensor-btn:hover {
+  background: rgba(32, 160, 255, 0.2);
+  border-color: rgba(32, 160, 255, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.sensor-btn:active {
+  transform: translateY(0);
+}
+
+.sensor-id-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: 'Consolas', monospace;
+  color: rgba(220, 230, 240, 0.9);
+}
+
+/* 模态框样式 */
 .image-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(5, 10, 25, 0.8);
+  backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
-  background-color: white;
+  background: linear-gradient(135deg, rgba(15, 28, 55, 0.95), rgba(20, 35, 70, 0.95));
+  border: 1px solid rgba(32, 160, 255, 0.2);
+  border-radius: 10px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(32, 160, 255, 0.15);
+  width: 85%;
+  max-width: 900px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalContentZoom 0.3s ease;
+}
+
+@keyframes modalContentZoom {
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(32, 160, 255, 0.2);
+}
+
+.modal-title {
+  margin: 0;
+  color: rgba(220, 230, 240, 0.95);
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-title svg {
+  color: #20a0ff;
+}
+
+.modal-close-button {
+  background: rgba(20, 35, 65, 0.7);
+  color: rgba(220, 230, 240, 0.9);
+  border: 1px solid rgba(32, 160, 255, 0.3);
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.modal-close-button:hover {
+  color: rgba(255, 120, 120, 0.95);
+  background-color: rgba(180, 30, 30, 0.15);
+  border-color: rgba(255, 120, 120, 0.5);
+  box-shadow: 0 2px 8px rgba(255, 100, 100, 0.2);
+  transform: translateY(-1px);
+}
+
+.modal-body {
   padding: 20px;
-  border-radius: 8px;
-  max-width: 85%;
-  max-height: 95%;
-  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-image {
   max-width: 100%;
-  max-height: 100%;
-  border-radius: 8px;
+  border-radius: 6px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: white;
-  border: none;
-  font-size: 80px;
-  cursor: pointer;
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .scrolling-list-header {
+    font-size: 11px;
+    padding: 8px 5px;
+  }
+
+  .list-item {
+    font-size: 11px;
+  }
+
+  .dropdown-container {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .tech-select,
+  .select-container {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
 }
 </style>
