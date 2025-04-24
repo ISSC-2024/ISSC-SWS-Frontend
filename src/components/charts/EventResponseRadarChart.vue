@@ -173,17 +173,6 @@ const removeGlobalStyle = () => {
   }
 }
 
-// 初始化图表
-const initChart = () => {
-  if (!chartRef.value) return
-
-  // 创建图表实例
-  chartInstance = echarts.init(chartRef.value)
-
-  // 更新图表
-  updateChart()
-}
-
 // 更新图表
 const updateChart = () => {
   if (!chartInstance) return
@@ -198,61 +187,170 @@ const updateChart = () => {
       formatter: (params: any) => {
         const { name, value } = params
         const indicators = responseData.indicators
-        let result = `<div style="font-weight:bold;margin-bottom:5px;">${name}</div>`
+        let result = `<div style="font-weight:bold;margin-bottom:8px;font-size:14px;color:#ffffff;">${name}</div>`
+        result += '<div style="display:table;width:100%;">'
         value.forEach((val: number, index: number) => {
-          // 直接使用index作为indicators的索引，不跳过任何值
-          result += `${indicators[index].name}: ${val}<br/>`
+          const formattedValue = Number.isInteger(val) ? val : val.toFixed(2)
+          result += `
+            <div style="display:table-row;">
+              <div style="display:table-cell;padding-right:10px;color:#a9d6ff;">${indicators[index].name}:</div>
+              <div style="display:table-cell;text-align:right;font-weight:bold;color:#ffffff;">${formattedValue}</div>
+            </div>`
         })
+        result += '</div>'
         return result
       },
+      backgroundColor: 'rgba(8, 20, 40, 0.9)',
+      borderColor: 'rgba(32, 160, 255, 0.3)',
+      textStyle: {
+        color: '#ffffff',
+        fontSize: 13,
+      },
+      extraCssText:
+        'border-radius: 8px; backdrop-filter: blur(6px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(32, 160, 255, 0.15);',
     },
     legend: {
       data: responseData.data.map((item) => item.name),
-      bottom: 0,
-      itemWidth: 10,
-      itemHeight: 10,
+      bottom: isExpanded.value ? 15 : 10, // 修改：非展开状态下上移到10px
+      itemWidth: isExpanded.value ? 12 : 10,
+      itemHeight: isExpanded.value ? 12 : 10,
       textStyle: {
-        fontSize: 10,
+        fontSize: isExpanded.value ? 12 : 10,
+        color: 'rgba(220, 230, 240, 0.9)',
       },
+      itemGap: isExpanded.value ? 12 : 6, // 减少非展开状态下的间距
+      backgroundColor: 'rgba(15, 30, 60, 0.7)',
+      borderRadius: 6,
+      padding: isExpanded.value ? 10 : 5,
+      borderColor: 'rgba(32, 160, 255, 0.2)',
+      borderWidth: 1,
     },
     radar: {
       indicator: responseData.indicators.map((indicator) => ({
         name: indicator.name,
         max: indicator.max,
       })),
-      center: ['50%', '50%'],
-      radius: '55%',
+      center: ['50%', isExpanded.value ? '50%' : '42%'], // 修改：非展开状态下上移雷达图中心
+      radius: isExpanded.value ? '60%' : '50%', // 修改：非展开状态下缩小半径
       splitNumber: 5,
+      shape: 'polygon',
+      axisLine: {
+        lineStyle: {
+          color: 'rgba(32, 160, 255, 0.2)',
+        },
+      },
+      splitLine: {
+        lineStyle: {
+          color: 'rgba(32, 160, 255, 0.15)',
+        },
+      },
       splitArea: {
         areaStyle: {
-          color: ['rgba(255, 255, 255, 0.05)', 'rgba(0, 0, 0, 0.02)'],
+          color: ['rgba(32, 160, 255, 0.03)', 'rgba(15, 30, 60, 0.05)'],
         },
       },
       axisName: {
-        fontSize: 12,
-        padding: [1, 3],
+        color: 'rgba(220, 230, 240, 0.9)',
+        fontSize: isExpanded.value ? 13 : 12,
+        padding: [3, 5],
+        backgroundColor: 'rgba(15, 30, 60, 0.7)',
+        borderRadius: 3,
+        shadowColor: 'rgba(0, 0, 0, 0.3)',
+        shadowBlur: 5,
       },
     },
     series: [
       {
         type: 'radar',
-        symbolSize: 4,
+        symbolSize: isExpanded.value ? 6 : 4,
         data: responseData.data.map((item) => ({
           value: item.values,
           name: item.name,
+          symbol: 'circle',
+          // 修改：移除区域填充颜色
           areaStyle: {
-            opacity: 0.1,
+            opacity: 0, // 将透明度设为0，移除填充
           },
+          // 美化线条样式
           lineStyle: {
-            width: 2,
+            width: isExpanded.value ? 2.5 : 2,
+            shadowColor: item.color,
+            shadowBlur: 5,
+            // 添加虚线效果
+            type: 'solid',
+            // 添加渐变效果
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                {
+                  offset: 0,
+                  color: item.color, // 开始颜色
+                },
+                {
+                  offset: 1,
+                  color: item.color + 'cc', // 结束颜色，增加透明度
+                },
+              ],
+              global: false, // 缺省为 false
+            },
+          },
+          emphasis: {
+            lineStyle: {
+              width: isExpanded.value ? 4 : 3,
+              shadowBlur: 8,
+              type: 'solid', // 悬停时显示实线
+            },
+            itemStyle: {
+              shadowColor: item.color,
+              shadowBlur: 10,
+            },
+            // 悬停时也不显示区域填充
+            areaStyle: {
+              opacity: 0.1, // 悬停时轻微显示区域
+              color: item.color,
+            },
           },
         })),
       },
     ],
+    grid: {
+      top: 10,
+      bottom: isExpanded.value ? 80 : 70, // 修改：非展开状态下增加底部间距
+    },
+    animation: true,
+    animationDuration: 1000,
+    animationEasing: 'cubicOut',
   }
 
   // 设置选项
   chartInstance.setOption(option)
+}
+
+// 向图表添加视觉效果
+const addVisualEffects = () => {
+  if (!chartRef.value || !chartInstance) return
+
+  // 添加渐变背景效果
+  chartRef.value.style.background =
+    'radial-gradient(ellipse at center, rgba(20, 40, 80, 0.2) 0%, rgba(10, 20, 40, 0) 70%)'
+}
+
+// 初始化图表
+const initChart = () => {
+  if (!chartRef.value) return
+
+  // 创建图表实例
+  chartInstance = echarts.init(chartRef.value)
+
+  // 更新图表
+  updateChart()
+
+  // 添加视觉效果
+  addVisualEffects()
 }
 
 // 监听容器大小变化
@@ -273,6 +371,10 @@ onMounted(() => {
   // 添加窗口大小变化监听
   window.addEventListener('resize', () => {
     chartInstance?.resize()
+    // 更新效果
+    setTimeout(() => {
+      addVisualEffects()
+    }, 100)
   })
 })
 
@@ -322,34 +424,58 @@ const chartStyle = computed(() => {
 </template>
 
 <style scoped>
-/* 容器样式 */
+/* 容器样式增强 */
 .event-response-radar-container {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
+  background: linear-gradient(135deg, rgba(15, 30, 60, 0.95), rgba(8, 15, 35, 0.95));
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(32, 160, 255, 0.07);
+  border: 1px solid rgba(32, 160, 255, 0.15);
 }
 
-/* 标题栏样式 */
+/* 标题栏样式增强 */
 .graph-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(20, 35, 65, 0.85);
+  background: linear-gradient(
+    90deg,
+    rgba(12, 24, 48, 0.95) 0%,
+    rgba(20, 40, 80, 0.95) 50%,
+    rgba(12, 24, 48, 0.95) 100%
+  );
   border-bottom: 1px solid rgba(74, 144, 226, 0.2);
   position: relative;
   z-index: 5;
+}
+
+.graph-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(32, 160, 255, 0), rgba(32, 160, 255, 0.5), rgba(32, 160, 255, 0));
 }
 
 .graph-title {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: rgba(220, 230, 240, 0.9);
+  color: rgba(220, 230, 240, 0.95);
   font-weight: 600;
   font-size: 16px;
+  text-shadow: 0 0 10px rgba(32, 160, 255, 0.3);
+  letter-spacing: 0.5px;
 }
 
 .title-icon {
@@ -357,11 +483,63 @@ const chartStyle = computed(() => {
   align-items: center;
   justify-content: center;
   color: #20a0ff;
+  filter: drop-shadow(0 0 5px rgba(32, 160, 255, 0.5));
 }
 
-/* 雷达图样式 */
+/* 雷达图样式增强 */
 .event-response-radar-chart {
   width: 100%;
-  flex: 1; /* 让图表填充剩余空间 */
+  flex: 1;
+  position: relative;
+  backdrop-filter: blur(2px);
+}
+
+/* 添加网格背景效果 */
+.event-response-radar-chart::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to bottom, transparent 49.5%, rgba(32, 160, 255, 0.03) 50%, transparent 50.5%),
+    linear-gradient(90deg, rgba(32, 160, 255, 0.01) 1px, transparent 1px),
+    linear-gradient(rgba(32, 160, 255, 0.01) 1px, transparent 1px);
+  background-size:
+    100% 6px,
+    20px 20px,
+    20px 20px;
+  z-index: 0;
+}
+
+/* 全息投影效果 */
+.event-response-radar-chart::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(64, 120, 255, 0.05) 0%, rgba(64, 120, 255, 0) 70%),
+    radial-gradient(ellipse at 50% 100%, rgba(64, 120, 255, 0.05) 0%, rgba(64, 120, 255, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 工具提示样式 - 使用全局样式标签注入 */
+:deep(.event-radar-tooltip) {
+  background: rgba(8, 20, 40, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(64, 169, 255, 0.5) !important;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 15px rgba(32, 160, 255, 0.15) !important;
+  padding: 10px 14px !important;
+  color: rgba(220, 230, 240, 0.95) !important;
+  font-family: 'Inter', 'Roboto', sans-serif !important;
 }
 </style>
