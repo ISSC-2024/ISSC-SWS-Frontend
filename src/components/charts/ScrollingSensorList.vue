@@ -85,6 +85,7 @@
         v-for="sensor in visibleSensors"
         :key="sensor.point_id"
         class="list-row"
+        :class="{ 'row-highlighted': highlightedSensorId === sensor.point_id }"
         @mouseenter="handleHover(sensor)"
         @mouseleave="handleHoverEnd"
         @click.stop="handleClick(sensor)"
@@ -360,6 +361,9 @@ const selectedAttributes = ref<string[]>([])
 const showAttributeDropdown = ref(false)
 const regionDropdownOpen = ref(false)
 
+// 添加高亮状态跟踪变量
+const highlightedSensorId = ref('')
+
 // 初始化加载状态
 const initializeState = () => {
   const savedState = loadSavedState()
@@ -546,7 +550,16 @@ const handleHoverEnd = () => {
   UnityService.sendMessageToUnity('Sensor', 'SensorHighlightOff')
 }
 
+// 修改点击处理函数，添加高亮切换逻辑
 const handleClick = (sensor: Sensor) => {
+  // 切换高亮状态
+  if (highlightedSensorId.value === sensor.point_id) {
+    highlightedSensorId.value = '' // 如果点击的是当前高亮行，则取消高亮
+  } else {
+    highlightedSensorId.value = sensor.point_id // 否则设置新的高亮行
+  }
+
+  // 保持原有逻辑：显示传感器详情消息
   messageStore.showMessage(
     sensor,
     {
@@ -575,6 +588,7 @@ const handleClick = (sensor: Sensor) => {
     },
   )
 
+  // 保持原有逻辑：发送消息到Unity
   UnityService.sendMessageToUnity('Sensor', 'SensorContinuousHighlight', JSON.stringify(sensor))
 }
 
@@ -593,6 +607,12 @@ const showImage = (sensor: Sensor) => {
 const closeImageModal = () => {
   showImageModal.value = false
 }
+
+// 当筛选条件变化时，清除高亮状态
+watch([selectedRegion, selectedAttributes], () => {
+  highlightedSensorId.value = ''
+  startIndex.value = 0
+})
 </script>
 
 <style scoped>
@@ -1170,5 +1190,19 @@ const closeImageModal = () => {
     font-size: 11px;
     padding: 4px 8px;
   }
+}
+
+/* 添加持久高亮样式类，与悬停样式一致 */
+.row-highlighted {
+  background-color: rgba(20, 40, 80, 0.85) !important;
+  border-bottom-color: rgba(32, 160, 255, 0.25) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* 确保高亮行的悬停效果有微妙区别 */
+.row-highlighted:hover {
+  background-color: rgba(25, 45, 85, 0.85) !important;
+  border-bottom-color: rgba(32, 160, 255, 0.3) !important;
 }
 </style>
