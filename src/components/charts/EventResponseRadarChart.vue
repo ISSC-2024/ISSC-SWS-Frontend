@@ -319,7 +319,7 @@ const updateChart = () => {
     ],
     grid: {
       top: 10,
-      bottom: isExpanded.value ? 80 : 70, // 修改：非展开状态下增加底部间距
+      bottom: isExpanded.value ? 80 : 70,
     },
     animation: true,
     animationDuration: 1000,
@@ -424,7 +424,7 @@ const chartStyle = computed(() => {
 </template>
 
 <style scoped>
-/* 容器样式增强 */
+/* 容器样式 */
 .event-response-radar-container {
   width: 100%;
   height: 100%;
@@ -440,7 +440,7 @@ const chartStyle = computed(() => {
   border: 1px solid rgba(32, 160, 255, 0.15);
 }
 
-/* 标题栏样式增强 */
+/* 标题栏 */
 .graph-header {
   display: flex;
   justify-content: space-between;
@@ -486,7 +486,7 @@ const chartStyle = computed(() => {
   filter: drop-shadow(0 0 5px rgba(32, 160, 255, 0.5));
 }
 
-/* 雷达图样式增强 */
+/* 雷达图样式 */
 .event-response-radar-chart {
   width: 100%;
   flex: 1;
@@ -494,7 +494,7 @@ const chartStyle = computed(() => {
   backdrop-filter: blur(2px);
 }
 
-/* 添加网格背景效果 */
+/* 网格背景效果 */
 .event-response-radar-chart::before {
   content: '';
   position: absolute;
@@ -529,7 +529,7 @@ const chartStyle = computed(() => {
   z-index: 0;
 }
 
-/* 工具提示样式 - 使用全局样式标签注入 */
+/* 工具提示样式  */
 :deep(.event-radar-tooltip) {
   background: rgba(8, 20, 40, 0.9) !important;
   backdrop-filter: blur(10px) !important;

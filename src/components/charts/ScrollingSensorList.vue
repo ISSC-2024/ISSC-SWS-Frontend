@@ -656,25 +656,42 @@ watch([selectedRegion, selectedAttributes], () => {
   background: linear-gradient(135deg, rgba(12, 22, 45, 0.95), rgba(15, 28, 55, 0.95));
 }
 
-/* 标题栏样式 */
+/* 标题栏 */
 .graph-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(20, 35, 65, 0.85);
+  background: linear-gradient(
+    90deg,
+    rgba(12, 24, 48, 0.95) 0%,
+    rgba(20, 40, 80, 0.95) 50%,
+    rgba(12, 24, 48, 0.95) 100%
+  );
   border-bottom: 1px solid rgba(74, 144, 226, 0.2);
   position: relative;
   z-index: 5;
+}
+
+.graph-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(32, 160, 255, 0), rgba(32, 160, 255, 0.5), rgba(32, 160, 255, 0));
 }
 
 .graph-title {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: rgba(220, 230, 240, 0.9);
+  color: rgba(220, 230, 240, 0.95);
   font-weight: 600;
   font-size: 16px;
+  text-shadow: 0 0 10px rgba(32, 160, 255, 0.3);
+  letter-spacing: 0.5px;
 }
 
 .title-icon {
@@ -682,6 +699,7 @@ watch([selectedRegion, selectedAttributes], () => {
   align-items: center;
   justify-content: center;
   color: #20a0ff;
+  filter: drop-shadow(0 0 5px rgba(32, 160, 255, 0.5));
 }
 
 /* 背景特效 */
@@ -720,7 +738,7 @@ watch([selectedRegion, selectedAttributes], () => {
   z-index: 2;
 }
 
-/* 下拉菜单样式 */
+/* 下拉菜单 */
 .dropdown-container {
   position: absolute;
   top: 50px;
@@ -732,16 +750,15 @@ watch([selectedRegion, selectedAttributes], () => {
 
 .dropdown {
   position: relative;
-  width: 140px; /* 增加宽度以容纳标签和内容 */
+  width: 140px;
 }
 
-/* 修改select包装器样式 */
+/* select包装器 */
 .select-wrapper {
   position: relative;
   width: 100%;
 }
 
-/* 修改标签布局，使其在下拉框内部 */
 .select-label {
   position: relative;
   width: 100%;
@@ -774,7 +791,7 @@ watch([selectedRegion, selectedAttributes], () => {
   margin-right: 8px;
 }
 
-/* 修改下拉选择框样式 */
+/* 下拉选择框 */
 .tech-select {
   flex: 1;
   color: rgba(220, 230, 240, 0.9);
@@ -786,18 +803,16 @@ watch([selectedRegion, selectedAttributes], () => {
   padding-right: 24px;
   padding-left: 8px;
   appearance: none;
-  background-image: none; /* 移除默认的背景箭头 */
+  background-image: none;
   border-left: 1px solid rgba(32, 160, 255, 0.15);
 }
 
-/* 确保区域下拉框中也能使用箭头元素 */
 .select-label {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-/* 调整区域下拉框中的箭头位置 */
 .select-label .arrow {
   position: absolute;
   right: 8px;
@@ -829,12 +844,12 @@ watch([selectedRegion, selectedAttributes], () => {
     0 0 0 1px rgba(32, 160, 255, 0.2);
 }
 
-/* 优化选项悬停效果 */
+/* 选项悬停效果 */
 .tech-select option:hover {
   background-color: rgba(32, 160, 255, 0.3) !important;
 }
 
-/* 修改属性选择容器样式 */
+/* 属性选择容器样式 */
 .select-container {
   display: flex;
   align-items: center;
@@ -854,7 +869,7 @@ watch([selectedRegion, selectedAttributes], () => {
   background-color: rgba(25, 40, 75, 0.9);
 }
 
-/* 调整下拉箭头位置 */
+/* 下拉箭头位置 */
 .arrow {
   width: 0;
   height: 0;
@@ -868,10 +883,10 @@ watch([selectedRegion, selectedAttributes], () => {
   transform: rotate(180deg);
 }
 
-/* 修复下拉内容定位 */
+/* 下拉内容定位 */
 .dropdown-content {
   position: absolute;
-  top: 32px; /* 紧接着下拉按钮 */
+  top: 32px;
   left: 0;
   width: 160px;
   background: rgba(20, 35, 65, 0.95);
@@ -968,10 +983,10 @@ watch([selectedRegion, selectedAttributes], () => {
   flex: 1;
   text-align: center;
   padding: 0 5px;
-  display: flex; /* 使用flex布局 */
-  align-items: center; /* 垂直居中 */
-  justify-content: center; /* 水平居中 */
-  height: 100%; /* 占满高度 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .header-item.timestamp {
@@ -1010,22 +1025,22 @@ watch([selectedRegion, selectedAttributes], () => {
   padding: 8px;
   border-bottom: 1px solid rgba(32, 160, 255, 0.06);
   transition: all 0.2s ease;
-  cursor: pointer; /* 确保鼠标样式是指针 */
+  cursor: pointer;
   align-items: center;
   background-color: rgba(12, 20, 40, 0.75);
-  position: relative; /* 添加相对定位 */
-  z-index: 3; /* 确保在背景之上 */
+  position: relative;
+  z-index: 3;
 }
 
 .list-row:hover {
-  background-color: rgba(20, 40, 80, 0.85); /* 加深悬停背景色 */
-  border-bottom-color: rgba(32, 160, 255, 0.25); /* 加深边框颜色 */
-  transform: translateY(-1px); /* 添加轻微上移效果 */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* 添加阴影效果 */
+  background-color: rgba(20, 40, 80, 0.85);
+  border-bottom-color: rgba(32, 160, 255, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 .list-row:active {
-  transform: translateY(0); /* 点击时恢复位置 */
+  transform: translateY(0);
 }
 
 .list-item {
@@ -1081,7 +1096,7 @@ watch([selectedRegion, selectedAttributes], () => {
   color: rgba(255, 215, 0, 0.9);
 }
 
-/* 传感器按钮样式 */
+/* 传感器按钮 */
 .sensor-btn {
   display: flex;
   align-items: center;

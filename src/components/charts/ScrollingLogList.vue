@@ -302,25 +302,42 @@ onUnmounted(() => {
   box-shadow: 0 0 15px rgba(0, 100, 255, 0.1);
 }
 
-/* 标题栏样式 */
+/* 标题栏 */
 .graph-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(20, 35, 65, 0.85);
+  background: linear-gradient(
+    90deg,
+    rgba(12, 24, 48, 0.95) 0%,
+    rgba(20, 40, 80, 0.95) 50%,
+    rgba(12, 24, 48, 0.95) 100%
+  );
   border-bottom: 1px solid rgba(74, 144, 226, 0.2);
   position: relative;
   z-index: 5;
+}
+
+.graph-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(32, 160, 255, 0), rgba(32, 160, 255, 0.5), rgba(32, 160, 255, 0));
 }
 
 .graph-title {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: rgba(220, 230, 240, 0.9);
+  color: rgba(220, 230, 240, 0.95);
   font-weight: 600;
   font-size: 16px;
+  text-shadow: 0 0 10px rgba(32, 160, 255, 0.3);
+  letter-spacing: 0.5px;
 }
 
 .title-icon {
@@ -328,6 +345,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   color: #20a0ff;
+  filter: drop-shadow(0 0 5px rgba(32, 160, 255, 0.5));
 }
 
 /* 表头样式 */
