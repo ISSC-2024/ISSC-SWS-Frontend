@@ -12,7 +12,7 @@
    * 6. 非展开状态下，消息内容过长会被截断并显示省略号
    *
    -->
-  <div class="scrolling-log-container">
+  <div class="scrolling-log-container" :class="{ expanded: isExpanded }">
     <!-- 添加标题栏 -->
     <div class="graph-header">
       <div class="graph-title">
@@ -367,7 +367,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-left: 7px;
+  margin-left: 12px;
 }
 
 .header-type {
@@ -376,7 +376,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  margin-left: 4.5px;
+  margin-left: 10px;
 }
 
 .log-time {
@@ -429,7 +429,49 @@ onUnmounted(() => {
 }
 
 .scrolling-log-body {
+  flex: 1;
   height: calc(100% - 86px);
+  overflow-y: auto;
+  font-size: 14px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  background: radial-gradient(ellipse at center, rgba(20, 40, 80, 0.3) 0%, rgba(8, 15, 35, 0.3) 100%);
+  scrollbar-width: thin; /* Firefox 滚动条样式 */
+  scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
+}
+
+/* WebKit/Chrome滚动条样式 */
+.scrolling-log-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrolling-log-body::-webkit-scrollbar-track {
+  background: rgba(11, 19, 43, 0.3);
+}
+
+.scrolling-log-body::-webkit-scrollbar-thumb {
+  background-color: rgba(32, 160, 255, 0.6);
+  border-radius: 3px;
+}
+
+/* 非展开状态时隐藏滚动条 */
+.scrolling-log-container:not(.expanded) .scrolling-log-body {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrolling-log-container:not(.expanded) .scrolling-log-body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* 在展开状态下显示滚动条 */
+.expanded .scrolling-log-body {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
+  -ms-overflow-style: auto; /* IE and Edge */
+}
+
+.expanded .scrolling-log-body::-webkit-scrollbar {
+  display: block; /* Chrome, Safari, Opera */
 }
 
 .log-row {
@@ -466,17 +508,17 @@ onUnmounted(() => {
 
 .log-info::before {
   background: linear-gradient(to bottom, #52c41a, #52c41a80);
-  box-shadow: 0 0 10px rgba(82, 196, 26, 0.8); /* 增强阴影效果 */
+  box-shadow: 0 0 10px rgba(82, 196, 26, 0.8);
 }
 
 .log-warning::before {
   background: linear-gradient(to bottom, #faad14, #faad1480);
-  box-shadow: 0 0 10px rgba(250, 173, 20, 0.8); /* 增强阴影效果 */
+  box-shadow: 0 0 10px rgba(250, 173, 20, 0.8);
 }
 
 .log-danger::before {
   background: linear-gradient(to bottom, #f5222d, #f5222d80);
-  box-shadow: 0 0 10px rgba(245, 34, 45, 0.8); /* 增强阴影效果 */
+  box-shadow: 0 0 10px rgba(245, 34, 45, 0.8);
 }
 
 .log-selected {
