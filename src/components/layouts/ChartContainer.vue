@@ -126,7 +126,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 修改主容器样式 - 使用外边框方式 */
+/* 主容器样式  */
 .chart-container {
   background: linear-gradient(135deg, rgba(13, 25, 50, 0.95), rgba(16, 30, 60, 0.95));
   box-shadow:
@@ -135,18 +135,17 @@ onMounted(() => {
   border-radius: 8px;
   margin-bottom: 10px;
   overflow: hidden;
-  height: calc(33.33% - 8px); /* 略微增加高度 */
+  height: calc(33.33% - 8px);
   display: flex;
   flex-direction: column;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(5px);
-  /* 使用outline代替border，outline不占用盒模型空间 */
   outline: 2px solid rgba(32, 160, 255, 0.4);
   outline-offset: 0px;
 }
 
-/* 修改悬停效果 */
+/* 悬停效果 */
 .chart-container:hover {
   outline-color: rgba(64, 169, 255, 0.6);
   box-shadow:
@@ -154,7 +153,7 @@ onMounted(() => {
     0 0 25px rgba(32, 160, 255, 0.3);
 }
 
-/* 添加脉动边框效果 - 使用outline */
+/* 脉动边框效果 */
 @keyframes border-pulse {
   0% {
     outline-color: rgba(32, 160, 255, 0.4);
@@ -180,7 +179,7 @@ onMounted(() => {
   animation: border-pulse 4s ease-in-out infinite;
 }
 
-/* 容器进入动画 - 保持不变 */
+/* 容器进入动画 */
 .chart-container-enter {
   opacity: 0;
   transform: translateY(20px);
@@ -194,7 +193,7 @@ onMounted(() => {
     transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-/* 背景特效 - 保持不变 */
+/* 背景特效 */
 .chart-background-effects {
   position: absolute;
   top: 0;
@@ -230,13 +229,13 @@ onMounted(() => {
   z-index: 2;
 }
 
-/* 优化角落边框特效 - 更精致的设计 */
+/* 角落边框特效 */
 .chart-border-effect {
   position: absolute;
   width: 16px;
   height: 16px;
   z-index: 10;
-  pointer-events: none; /* 确保不干扰事件 */
+  pointer-events: none;
 }
 
 .top-left {
@@ -279,7 +278,7 @@ onMounted(() => {
   filter: drop-shadow(0 0 3px rgba(64, 169, 255, 0.3));
 }
 
-/* 添加角点发光点 */
+/* 角点发光点 */
 .chart-border-effect::after {
   content: '';
   position: absolute;
@@ -310,7 +309,7 @@ onMounted(() => {
   right: 0;
 }
 
-/* 头部样式 - 保持不变 */
+/* 头部样式 */
 .chart-header {
   display: flex;
   justify-content: flex-end;
@@ -349,7 +348,7 @@ onMounted(() => {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* 内容区域 - 保持不变 */
+/* 内容区域 */
 .chart-content {
   padding: 0;
   flex: 1;
@@ -359,7 +358,7 @@ onMounted(() => {
   z-index: 5;
 }
 
-/* 展开浮层样式 - 保持不变 */
+/* 展开浮层样式 */
 .overlay-fade-enter-active,
 .overlay-fade-leave-active {
   transition: opacity 0.3s ease;
@@ -414,7 +413,7 @@ onMounted(() => {
   }
 }
 
-/* 浮层容器 - 增强边框 */
+/* 浮层容器 */
 .expanded-container {
   background: linear-gradient(135deg, rgba(15, 28, 55, 0.95), rgba(20, 35, 70, 0.95));
   outline: 2px solid rgba(64, 169, 255, 0.5);
@@ -434,7 +433,7 @@ onMounted(() => {
   overflow: hidden;
 }
 
-/* 展开容器背景特效 - 保持不变 */
+/* 展开容器背景特效 */
 .expanded-background-effects {
   position: absolute;
   top: 0;
@@ -470,7 +469,7 @@ onMounted(() => {
   z-index: 2;
 }
 
-/* 优化展开容器边框特效 */
+/* 展开容器边框特效 */
 .expanded-border-effect {
   position: absolute;
   width: 30px;
@@ -519,7 +518,7 @@ onMounted(() => {
   filter: drop-shadow(0 0 4px rgba(64, 169, 255, 0.3));
 }
 
-/* 添加角点发光点到展开容器 */
+/* 角点发光点-展开容器 */
 .expanded-border-effect::after {
   content: '';
   position: absolute;
@@ -550,7 +549,7 @@ onMounted(() => {
   right: 0;
 }
 
-/* 头部样式 - 保持不变 */
+/* 头部样式 */
 .expanded-header {
   display: flex;
   justify-content: space-between;

@@ -11,7 +11,7 @@
    * 5. 带有固定表头的数据列表
    *
    -->
-  <div class="scrolling-list-container">
+  <div :class="{ 'scrolling-list-container expanded': isExpanded, 'scrolling-list-container': !isExpanded }">
     <!-- 标题栏 -->
     <div class="graph-header">
       <div class="graph-title">
@@ -504,7 +504,6 @@ const filteredSensors = computed(() => {
   return sensors.value.filter((sensor) => sensor.region === selectedRegion.value.toUpperCase())
 })
 
-// 修改 visibleSensors 计算属性，参考 ScrollingRegionList 的实现
 const visibleSensors = computed(() => {
   if (filteredSensors.value.length === 0) return []
 
@@ -521,19 +520,15 @@ const visibleSensors = computed(() => {
   }
 })
 
-// 修改 scrollList 函数，参考 ScrollingRegionList 的实现
 const scrollList = () => {
   if (filteredSensors.value.length > 0) {
     startIndex.value = (startIndex.value + 1) % filteredSensors.value.length
   }
 }
 
-// 移除或修改当前对 startIndex 的重置逻辑
-// 修改监听函数，让它只在必要时才重置 startIndex
+// 只在必要时才重置 startIndex
 watch([filteredSensors], () => (startIndex.value = 0))
-// 删除或修改 watch(isExpanded, initializeState) 的调用
 
-// 修改 onMounted，确保正确初始化
 onMounted(() => {
   sensors.value = processSensorData(sensorData)
 
@@ -553,7 +548,6 @@ onUnmounted(() => {
   }
 })
 
-// 添加日志输出帮助调试
 const handleHover = (sensor: Sensor) => {
   // 鼠标悬停时停止滚动
   if (scrollTimer) {
@@ -576,7 +570,7 @@ const handleHoverEnd = () => {
   UnityService.sendMessageToUnity('Sensor', 'SensorHighlightOff')
 }
 
-// 修改点击处理函数，添加高亮切换逻辑
+// 点击处理函数，添加高亮切换逻辑
 const handleClick = (sensor: Sensor) => {
   // 切换高亮状态
   if (highlightedSensorId.value === sensor.point_id) {
@@ -585,7 +579,7 @@ const handleClick = (sensor: Sensor) => {
     highlightedSensorId.value = sensor.point_id // 否则设置新的高亮行
   }
 
-  // 保持原有逻辑：显示传感器详情消息
+  // 显示传感器详情消息
   messageStore.showMessage(
     sensor,
     {
@@ -614,7 +608,7 @@ const handleClick = (sensor: Sensor) => {
     },
   )
 
-  // 保持原有逻辑：发送消息到Unity
+  // 发送消息到Unity
   UnityService.sendMessageToUnity('Sensor', 'SensorContinuousHighlight', JSON.stringify(sensor))
 }
 
@@ -1262,12 +1256,10 @@ watch([selectedRegion, selectedAttributes], () => {
   }
 }
 
-/* 添加交替行样式 */
 .row-alt {
-  background-color: rgba(15, 30, 60, 0.75); /* 稍微亮一点的背景色 */
+  background-color: rgba(15, 30, 60, 0.75);
 }
 
-/* 添加持久高亮样式类，与悬停样式一致 */
 .row-highlighted {
   background-color: rgba(20, 40, 80, 0.85) !important;
   border-bottom-color: rgba(32, 160, 255, 0.25) !important;
@@ -1275,9 +1267,175 @@ watch([selectedRegion, selectedAttributes], () => {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
-/* 确保高亮行的悬停效果有微妙区别 */
 .row-highlighted:hover {
   background-color: rgba(25, 45, 85, 0.85) !important;
   border-bottom-color: rgba(32, 160, 255, 0.3) !important;
+}
+
+.expanded .graph-title {
+  font-size: 21px !important;
+}
+
+.expanded .title-icon svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.expanded .dropdown {
+  width: 175px !important;
+}
+
+.expanded .select-wrapper {
+  margin-top: 4px !important;
+}
+
+.expanded .select-label {
+  height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.expanded .select-container {
+  height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 8px 0 0 !important;
+}
+
+.expanded .label-content {
+  font-size: 15px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-width: 65px !important;
+}
+
+.expanded .arrow {
+  border-width: 6px 6px 0 6px !important;
+  margin-top: 0 !important;
+  position: absolute !important;
+  right: 10px !important;
+}
+
+.expanded .label-content svg {
+  width: 20px !important;
+  height: 20px !important;
+  flex-shrink: 0 !important;
+}
+
+.expanded .tech-select {
+  font-size: 15px !important;
+  height: 100% !important;
+  padding-right: 28px !important;
+  flex: 1 !important;
+}
+
+.expanded .dropdown-content {
+  width: 195px !important;
+  top: 41px !important;
+}
+
+.expanded .dropdown-container {
+  gap: 18px !important;
+  margin-top: 2px !important;
+}
+
+.expanded .attribute-item {
+  padding: 9px 14px !important;
+}
+
+.expanded .tech-checkbox {
+  font-size: 15px !important;
+}
+
+.expanded .checkbox-custom {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.expanded .tech-checkbox {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.expanded .checkbox-label {
+  line-height: 1.4 !important;
+}
+
+.expanded .scrolling-list-header {
+  font-size: 16px !important;
+  padding: 14px 12px !important;
+  height: 50px !important;
+  margin-top: 45px !important;
+}
+
+.expanded .list-row {
+  padding: 12px !important;
+}
+
+.expanded .list-item {
+  font-size: 15px !important;
+  padding: 0 8px !important;
+}
+
+.expanded .timestamp-wrapper,
+.expanded .value-container {
+  font-size: 15px !important;
+  gap: 8px !important;
+}
+
+.expanded .timestamp-icon,
+.expanded .attribute-icon,
+.expanded .sensor-icon {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.expanded .sensor-btn {
+  padding: 5px 12px !important;
+  font-size: 15px !important;
+  gap: 8px !important;
+}
+
+.expanded .scrolling-list-body {
+  height: calc(100% - 145px) !important;
+}
+
+.expanded .modal-title {
+  font-size: 20px !important;
+}
+
+.expanded .modal-title svg {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+.expanded .modal-close-button {
+  width: 34px !important;
+  height: 34px !important;
+}
+
+.expanded .modal-close-button svg {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+.expanded .tech-checkbox input[type='checkbox']:checked + .checkbox-custom::after {
+  top: 3px !important;
+  left: 6px !important;
+  width: 6px !important;
+  height: 10px !important;
+  border-width: 0 2px 2px 0 !important;
+}
+
+.expanded .scrolling-list-body::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+.expanded .list-row:hover,
+.expanded .row-highlighted {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) !important;
 }
 </style>
