@@ -13,6 +13,37 @@
    *
    -->
   <div class="scrolling-log-container">
+    <!-- 添加标题栏 -->
+    <div class="graph-header">
+      <div class="graph-title">
+        <div class="title-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path
+              fill="currentColor"
+              d="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M7,7H17V5H19V19H5V5H7V7M17,11H7V9H17V11M15,15H7V13H15V15Z"
+            />
+          </svg>
+        </div>
+        <span>系统运行日志</span>
+      </div>
+    </div>
+
+    <!-- 添加表头 -->
+    <div class="log-header">
+      <div class="header-time">
+        <clock-circle-outlined />
+        <span>时间戳</span>
+      </div>
+      <div class="header-type">
+        <environment-outlined />
+        <span>区域</span>
+      </div>
+      <div class="header-message">
+        <message-outlined />
+        <span>消息内容</span>
+      </div>
+    </div>
+
     <div class="scrolling-log-body" ref="logBody">
       <div
         v-for="(log, index) in visibleLogs"
@@ -29,9 +60,19 @@
         @mouseenter="handleLogHover(log)"
         @mouseleave="handleLogLeave(log)"
       >
-        <div class="log-time">{{ formatTime(log.timestamp) }}</div>
-        <div class="log-type">{{ log.region }}</div>
+        <!-- 添加图标到时间戳 -->
+        <div class="log-time">
+          <clock-circle-outlined />
+          <span>{{ formatTime(log.timestamp) }}</span>
+        </div>
+        <!-- 添加图标到区域 -->
+        <div class="log-type">
+          <environment-outlined />
+          <span>{{ log.region }}</span>
+        </div>
+        <!-- 添加图标到消息，替换原来的 > 符号 -->
         <div class="log-message" :class="{ expanded: isExpanded }" :title="log.message">
+          <message-outlined />
           {{ log.message }}
         </div>
       </div>
@@ -47,6 +88,7 @@ import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
 import { useMessageStore } from '../../stores/message'
+import { ClockCircleOutlined, EnvironmentOutlined, MessageOutlined } from '@ant-design/icons-vue'
 
 // 定义新的日志数据结构接口
 interface LogEntry {
@@ -260,26 +302,116 @@ onUnmounted(() => {
   box-shadow: 0 0 15px rgba(0, 100, 255, 0.1);
 }
 
-.scrolling-log-body {
-  flex: 1;
-  overflow-y: auto;
+/* 标题栏样式 */
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(20, 35, 65, 0.85);
+  border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+  position: relative;
+  z-index: 5;
+}
+
+.graph-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(220, 230, 240, 0.9);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #20a0ff;
+}
+
+/* 表头样式 */
+.log-header {
+  display: flex;
+  background: linear-gradient(90deg, rgba(12, 24, 48, 0.9) 0%, rgba(20, 40, 80, 0.9) 50%, rgba(12, 24, 48, 0.9) 100%);
+  font-weight: 600;
+  padding: 10px;
+  border-bottom: 1px solid rgba(32, 160, 255, 0.15);
   font-size: 14px;
-  font-family: 'Consolas', 'Monaco', monospace;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
+  color: rgba(120, 180, 255, 0.95);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(32, 160, 255, 0.4);
 }
 
-.scrolling-log-body::-webkit-scrollbar {
-  width: 6px;
+.header-time {
+  flex: 0 0 70px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 7px;
 }
 
-.scrolling-log-body::-webkit-scrollbar-track {
-  background: rgba(11, 19, 43, 0.3);
+.header-type {
+  flex: 0 0 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-left: 4.5px;
 }
 
-.scrolling-log-body::-webkit-scrollbar-thumb {
-  background-color: rgba(32, 160, 255, 0.6);
-  border-radius: 3px;
+.log-time {
+  flex: 0 0 70px;
+  color: rgba(130, 180, 230, 0.8);
+  font-family: 'Consolas', monospace;
+  text-shadow: 0 0 5px rgba(32, 160, 255, 0.3);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
+.log-type {
+  flex: 0 0 70px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.log-message {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  padding-left: 10px;
+  position: relative;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.header-message {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.scrolling-log-body {
+  height: calc(100% - 86px);
 }
 
 .log-row {
@@ -334,47 +466,6 @@ onUnmounted(() => {
   border-right: 1px solid rgba(32, 160, 255, 0.3);
 }
 
-.log-time {
-  flex: 0 0 70px;
-  color: rgba(130, 180, 230, 0.8);
-  font-family: 'Consolas', monospace;
-  text-shadow: 0 0 5px rgba(32, 160, 255, 0.3);
-  font-size: 14px;
-}
-
-.log-type {
-  flex: 0 0 70px;
-  font-weight: bold;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  font-size: 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.log-message {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-  padding-left: 10px;
-  position: relative;
-  font-size: 14px;
-}
-
-.log-message::before {
-  content: '>';
-  position: absolute;
-  left: 0;
-  color: rgba(32, 160, 255, 0.6);
-}
-
 .expanded .scrolling-log-body,
 .expanded .log-time,
 .expanded .log-type,
@@ -396,19 +487,16 @@ onUnmounted(() => {
   flex: 0 0 100px;
 }
 
-.log-info .log-type {
+.log-info .anticon {
   color: rgba(82, 196, 26, 0.9);
-  text-shadow: 0 0 5px rgba(82, 196, 26, 0.4);
 }
 
-.log-warning .log-type {
+.log-warning .anticon {
   color: rgba(250, 173, 20, 0.9);
-  text-shadow: 0 0 5px rgba(250, 173, 20, 0.4);
 }
 
-.log-danger .log-type {
+.log-danger .anticon {
   color: rgba(245, 34, 45, 0.9);
-  text-shadow: 0 0 5px rgba(245, 34, 45, 0.4);
 }
 
 /* 轻微扫描线效果 */

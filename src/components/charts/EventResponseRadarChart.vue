@@ -300,12 +300,68 @@ const chartStyle = computed(() => {
 </script>
 
 <template>
-  <div class="event-response-radar-chart" ref="chartRef" :style="chartStyle"></div>
+  <div class="event-response-radar-container">
+    <!-- 标题栏 -->
+    <div class="graph-header">
+      <div class="graph-title">
+        <div class="title-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path
+              fill="currentColor"
+              d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,10.5A1.5,1.5 0 0,0 10.5,12A1.5,1.5 0 0,0 12,13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 12,10.5M7.5,12A1.5,1.5 0 0,0 6,13.5A1.5,1.5 0 0,0 7.5,15A1.5,1.5 0 0,0 9,13.5A1.5,1.5 0 0,0 7.5,12M16.5,12A1.5,1.5 0 0,0 15,13.5A1.5,1.5 0 0,0 16.5,15A1.5,1.5 0 0,0 18,13.5A1.5,1.5 0 0,0 16.5,12Z"
+            />
+          </svg>
+        </div>
+        <span>系统响应性能分析</span>
+      </div>
+    </div>
+
+    <!-- 雷达图 -->
+    <div class="event-response-radar-chart" ref="chartRef" :style="chartStyle"></div>
+  </div>
 </template>
 
 <style scoped>
-.event-response-radar-chart {
+/* 容器样式 */
+.event-response-radar-container {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* 标题栏样式 */
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(20, 35, 65, 0.85);
+  border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+  position: relative;
+  z-index: 5;
+}
+
+.graph-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(220, 230, 240, 0.9);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #20a0ff;
+}
+
+/* 雷达图样式 */
+.event-response-radar-chart {
+  width: 100%;
+  flex: 1; /* 让图表填充剩余空间 */
 }
 </style>

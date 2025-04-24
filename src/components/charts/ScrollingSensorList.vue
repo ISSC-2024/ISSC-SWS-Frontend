@@ -12,6 +12,21 @@
    *
    -->
   <div class="scrolling-list-container">
+    <!-- 标题栏 -->
+    <div class="graph-header">
+      <div class="graph-title">
+        <div class="title-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path
+              fill="currentColor"
+              d="M19.35,10.04C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.04C2.34,8.36 0,10.91 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.04Z"
+            />
+          </svg>
+        </div>
+        <span>传感器数据实时监控</span>
+      </div>
+    </div>
+
     <!-- 背景效果 -->
     <div class="list-background-effects">
       <div class="list-grid"></div>
@@ -79,13 +94,16 @@
         {{ getAttributeName(attribute) }}
       </div>
     </div>
-    <!-- 注意添加.stop阻止事件冒泡 -->
+    <!-- 注意添加.stop阻止事件冒泡，并明暗交替 -->
     <div class="scrolling-list-body" ref="listBody">
       <div
-        v-for="sensor in visibleSensors"
+        v-for="(sensor, index) in visibleSensors"
         :key="sensor.point_id"
         class="list-row"
-        :class="{ 'row-highlighted': highlightedSensorId === sensor.point_id }"
+        :class="{
+          'row-highlighted': highlightedSensorId === sensor.point_id,
+          'row-alt': index % 2 === 1,
+        }"
         @mouseenter="handleHover(sensor)"
         @mouseleave="handleHoverEnd"
         @click.stop="handleClick(sensor)"
@@ -638,6 +656,34 @@ watch([selectedRegion, selectedAttributes], () => {
   background: linear-gradient(135deg, rgba(12, 22, 45, 0.95), rgba(15, 28, 55, 0.95));
 }
 
+/* 标题栏样式 */
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(20, 35, 65, 0.85);
+  border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+  position: relative;
+  z-index: 5;
+}
+
+.graph-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(220, 230, 240, 0.9);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #20a0ff;
+}
+
 /* 背景特效 */
 .list-background-effects {
   position: absolute;
@@ -677,7 +723,7 @@ watch([selectedRegion, selectedAttributes], () => {
 /* 下拉菜单样式 */
 .dropdown-container {
   position: absolute;
-  top: 8px;
+  top: 50px;
   left: 10px;
   display: flex;
   gap: 12px;
@@ -898,6 +944,7 @@ watch([selectedRegion, selectedAttributes], () => {
 }
 
 /* 表头样式 */
+/* 调整表头样式，防止与下拉框重叠 */
 .scrolling-list-header {
   display: flex;
   background: linear-gradient(90deg, rgba(12, 24, 48, 0.9) 0%, rgba(20, 40, 80, 0.9) 50%, rgba(12, 24, 48, 0.9) 100%);
@@ -908,13 +955,13 @@ watch([selectedRegion, selectedAttributes], () => {
   position: sticky;
   top: 0;
   z-index: 5;
-  margin-top: 40px;
+  margin-top: 38px; /* 增加上边距，为下拉框留出空间 */
   color: rgba(120, 180, 255, 0.95);
   text-transform: uppercase;
   letter-spacing: 1px;
   text-shadow: 0 0 8px rgba(32, 160, 255, 0.4);
-  align-items: center; /* 添加垂直居中 */
-  height: 40px; /* 设置固定高度 */
+  align-items: center;
+  height: 40px;
 }
 
 .header-item {
@@ -940,7 +987,7 @@ watch([selectedRegion, selectedAttributes], () => {
   flex: 1;
   overflow-y: auto;
   font-size: 12px;
-  height: calc(100% - 90px);
+  height: calc(100% - 135px); /* 调整高度，考虑标题栏、下拉框和表头 */
   scrollbar-width: thin;
   scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
 }
@@ -1198,6 +1245,11 @@ watch([selectedRegion, selectedAttributes], () => {
     font-size: 11px;
     padding: 4px 8px;
   }
+}
+
+/* 添加交替行样式 */
+.row-alt {
+  background-color: rgba(15, 30, 60, 0.75); /* 稍微亮一点的背景色 */
 }
 
 /* 添加持久高亮样式类，与悬停样式一致 */

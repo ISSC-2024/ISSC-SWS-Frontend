@@ -655,14 +655,6 @@ const updateChart = () => {
       data: workshops,
     },
     series: getSeriesData(),
-    title: {
-      text: resourceTitles[currentChartType.value],
-      left: 'center',
-      top: 0,
-      textStyle: {
-        fontSize: isExpanded.value ? 14 : 12,
-      },
-    },
   }
 
   // 使用类型守卫确保chartInstance不为null
@@ -775,6 +767,21 @@ onMounted(() => {
 
 <template>
   <div class="resource-distribution-chart-container">
+    <!-- 标题栏 -->
+    <div class="graph-header">
+      <div class="graph-title">
+        <div class="title-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path
+              fill="currentColor"
+              d="M16,13C15.71,13 15.38,13 15.03,13.05C16.19,13.89 17,15 17,16.5V19H23V16.5C23,14.17 18.33,13 16,13M8,13C5.67,13 1,14.17 1,16.5V19H15V16.5C15,14.17 10.33,13 8,13M8,11A3,3 0 0,0 11,8A3,3 0 0,0 8,5A3,3 0 0,0 5,8A3,3 0 0,0 8,11M16,11A3,3 0 0,0 19,8A3,3 0 0,0 16,5A3,3 0 0,0 13,8A3,3 0 0,0 16,11Z"
+            />
+          </svg>
+        </div>
+        <span>化工车间资源分布</span>
+      </div>
+    </div>
+
     <transition name="fade" mode="out-in">
       <div class="resource-distribution-chart" ref="chartRef" :style="chartStyle"></div>
     </transition>
@@ -797,15 +804,44 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.resource-distribution-chart-container {
-  width: 100%;
-  height: 100%;
+/* 标题栏样式 */
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(20, 35, 65, 0.85);
+  border-bottom: 1px solid rgba(74, 144, 226, 0.2);
   position: relative;
+  z-index: 5;
+}
+
+.graph-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(220, 230, 240, 0.9);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #20a0ff;
 }
 
 .resource-distribution-chart {
   width: 100%;
-  height: calc(100% - 40px);
+  height: calc(100% - 80px); /* 减去标题栏高度和按钮高度 */
+  margin-top: 5px;
+}
+
+.resource-distribution-chart-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 .chart-type-buttons {

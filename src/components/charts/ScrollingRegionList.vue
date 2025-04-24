@@ -635,13 +635,38 @@ onUnmounted(() => {
   align-items: center;
 }
 
+/* 状态指示器内图标颜色 */
 .status-indicator svg {
   font-size: 14px;
 }
 
-/* 展开状态下的图标调整 */
+/* 展开状态下的图标 */
 .expanded .item-icon,
 .expanded .status-indicator svg {
   font-size: 16px;
+}
+
+/* 图标颜色随风险等级变化 */
+.row-selected .item-icon,
+.list-row:hover .item-icon {
+  color: rgba(220, 230, 240, 0.9);
+}
+
+/* 安全状态图标颜色 */
+.list-row .status-safe ~ .list-item .item-icon,
+.list-row:has(.status-safe) .item-icon {
+  color: rgba(82, 196, 26, 0.9);
+}
+
+/* 警告状态图标颜色 */
+.list-row .status-warning ~ .list-item .item-icon,
+.list-row:has(.status-warning) .item-icon {
+  color: rgba(250, 173, 20, 0.9);
+}
+
+/* 危险状态图标颜色 */
+.list-row .status-danger ~ .list-item .item-icon,
+.list-row:has(.status-danger) .item-icon {
+  color: rgba(245, 34, 45, 0.9);
 }
 </style>
