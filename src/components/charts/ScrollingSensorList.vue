@@ -1062,7 +1062,7 @@ watch([selectedRegion, selectedAttributes], () => {
 .value-container {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 3px;
   font-size: 12px;
 }
 

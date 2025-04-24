@@ -367,7 +367,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-left: 12px;
+  margin-left: 8px;
 }
 
 .header-type {
@@ -376,7 +376,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .log-time {
@@ -531,6 +531,11 @@ onUnmounted(() => {
 .expanded .log-type,
 .expanded .log-message {
   font-size: 16px;
+}
+
+.expanded .header-time,
+.expanded .header-type {
+  margin-left: 11px;
 }
 
 .log-message.expanded {
