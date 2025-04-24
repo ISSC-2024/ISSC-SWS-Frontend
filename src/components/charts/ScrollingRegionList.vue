@@ -53,6 +53,7 @@ import { ref, onMounted, computed, inject, onUnmounted, type InjectionKey, type 
 import sensorData from '../../mock/riskRegionSummary.json'
 import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
+// 导入文本框组件和消息管理
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
 import { useMessageStore } from '../../stores/message'
 
@@ -193,7 +194,10 @@ const textFieldConfig = {
   },
 }
 
+// 鼠标点击的时候触发文本框显示功能
+// 引入消息管理
 const messageStore = useMessageStore()
+
 const handleRegionClick = (region: Region) => {
   // 检查Unity是否已加载
   if (!unityService.isUnityLoaded()) {
@@ -217,7 +221,7 @@ const handleRegionClick = (region: Region) => {
   // 发送消息给文本框
   messageStore.showMessage(unityData, textFieldConfig, {
     source: 'region', // 可选的消息来源标识
-    title: `区域-${region.region}`, // 设置特定标题
+    title: `区域风险预测-${region.region}`, // 设置特定标题
   })
 }
 
