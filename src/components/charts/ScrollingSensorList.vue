@@ -372,7 +372,6 @@ const initializeState = () => {
 }
 
 onMounted(initializeState)
-watch(isExpanded, initializeState)
 
 const attributes = [
   { value: 'temperature', label: '温度' },
@@ -487,43 +486,52 @@ const filteredSensors = computed(() => {
   return sensors.value.filter((sensor) => sensor.region === selectedRegion.value.toUpperCase())
 })
 
+// 修改 visibleSensors 计算属性，参考 ScrollingRegionList 的实现
 const visibleSensors = computed(() => {
-  const all = [...filteredSensors.value]
-  return isExpanded.value ? all : all.slice(startIndex.value, startIndex.value + visibleCount)
+  if (filteredSensors.value.length === 0) return []
+
+  if (isExpanded.value) {
+    // 展开状态下，显示所有数据，不滚动
+    return filteredSensors.value
+  } else {
+    // 非展开状态下，显示部分数据并滚动
+    const total = filteredSensors.value.length
+    const start = startIndex.value % total
+
+    // 双段拼接保证视觉连续性
+    return [...filteredSensors.value.slice(start), ...filteredSensors.value.slice(0, start)].slice(0, visibleCount)
+  }
 })
 
+// 修改 scrollList 函数，参考 ScrollingRegionList 的实现
 const scrollList = () => {
-  if (isExpanded.value || filteredSensors.value.length === 0) return
-
-  if (startIndex.value + visibleCount >= filteredSensors.value.length) {
-    startIndex.value = 0
-  } else {
-    startIndex.value += 1
+  if (filteredSensors.value.length > 0) {
+    startIndex.value = (startIndex.value + 1) % filteredSensors.value.length
   }
 }
 
-const toggleScrolling = (expanded: boolean) => {
-  if (expanded) {
-    if (scrollTimer) {
-      clearInterval(scrollTimer)
-    }
-    scrollTimer = null
-  } else {
-    scrollTimer = setInterval(scrollList, 2000) as unknown as number
-  }
-}
+// 移除或修改当前对 startIndex 的重置逻辑
+// 修改监听函数，让它只在必要时才重置 startIndex
+watch([filteredSensors], () => (startIndex.value = 0))
+// 删除或修改 watch(isExpanded, initializeState) 的调用
 
-watch(isExpanded, toggleScrolling)
-watch([filteredSensors, selectedAttributes], () => (startIndex.value = 0))
-
+// 修改 onMounted，确保正确初始化
 onMounted(() => {
   sensors.value = processSensorData(sensorData)
-  toggleScrolling(isExpanded.value)
+
+  // 设置定时器，每2秒滚动一次
+  scrollTimer = setInterval(scrollList, 2000) as unknown as number
+
+  // 初始化选择状态
+  const savedState = loadSavedState()
+  selectedRegion.value = savedState.region
+  selectedAttributes.value = savedState.attributes
 })
 
 onUnmounted(() => {
   if (scrollTimer) {
     clearInterval(scrollTimer)
+    scrollTimer = null
   }
 })
 
