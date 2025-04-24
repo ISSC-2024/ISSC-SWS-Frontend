@@ -12,13 +12,36 @@
    * 6. 与Unity交互：鼠标悬停高亮区域，离开取消高亮，点击持续高亮/再次点击取消高亮
    *
    -->
-  <!-- 添加展开状态的类绑定 -->
   <div class="scrolling-list-container" :class="{ expanded: isExpanded }">
-    <div class="scrolling-list-header">
-      <div class="header-item">时间戳</div>
-      <div class="header-item">区域</div>
-      <div class="header-item">安全预警</div>
+    <div class="graph-header">
+      <div class="graph-title">
+        <div class="title-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path
+              fill="currentColor"
+              d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"
+            />
+          </svg>
+        </div>
+        <span>区域状态实时监控</span>
+      </div>
     </div>
+
+    <div class="scrolling-list-header">
+      <div class="header-item">
+        <clock-circle-outlined />
+        <span>时间戳</span>
+      </div>
+      <div class="header-item">
+        <environment-outlined />
+        <span>区域</span>
+      </div>
+      <div class="header-item">
+        <safety-outlined />
+        <span>安全预警</span>
+      </div>
+    </div>
+
     <div class="scrolling-list-body" ref="listBody">
       <div
         v-for="(region, index) in visibleRegions"
@@ -32,8 +55,14 @@
         @mouseleave="handleRegionLeave(region)"
         @click="handleRegionClick(region)"
       >
-        <div class="list-item list-time">{{ region.timestamp }}</div>
-        <div class="list-item list-region">{{ region.region }}</div>
+        <div class="list-item list-time">
+          <clock-circle-outlined class="item-icon" />
+          <span>{{ region.timestamp }}</span>
+        </div>
+        <div class="list-item list-region">
+          <environment-outlined class="item-icon" />
+          <span>{{ region.region }}</span>
+        </div>
         <div class="list-item">
           <div
             class="status-indicator"
@@ -43,7 +72,10 @@
               'status-danger': region.risk_level === 'danger',
             }"
           >
-            {{ getRiskLevelText(region.risk_level) }}
+            <check-circle-outlined v-if="region.risk_level === 'safe'" />
+            <warning-outlined v-else-if="region.risk_level === 'warning'" />
+            <exclamation-circle-outlined v-else-if="region.risk_level === 'danger'" />
+            <span>{{ getRiskLevelText(region.risk_level) }}</span>
           </div>
         </div>
       </div>
@@ -59,6 +91,14 @@ import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
 import { useMessageStore } from '../../stores/message'
+import {
+  ClockCircleOutlined,
+  EnvironmentOutlined,
+  SafetyOutlined,
+  CheckCircleOutlined,
+  WarningOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons-vue'
 
 interface Region {
   timestamp: string
@@ -259,13 +299,40 @@ onUnmounted(() => {
   isolation: isolate;
 }
 
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(20, 35, 65, 0.85);
+  border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+  position: relative;
+  z-index: 5;
+}
+
+.graph-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(220, 230, 240, 0.9);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #20a0ff;
+}
+
 .scrolling-list-header {
   display: flex;
   background: linear-gradient(90deg, rgba(12, 24, 48, 0.9) 0%, rgba(20, 40, 80, 0.9) 50%, rgba(12, 24, 48, 0.9) 100%);
   font-weight: 600;
   padding: 10px 8px;
   border-bottom: 1px solid rgba(32, 160, 255, 0.15);
-  font-size: 14px; /* 从12px增加到14px */
+  font-size: 14px;
   position: sticky;
   top: 0;
   z-index: 5;
@@ -279,6 +346,10 @@ onUnmounted(() => {
   flex: 1;
   text-align: center;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .header-item::after {
@@ -298,7 +369,6 @@ onUnmounted(() => {
   font-size: 14px;
   font-family: 'Consolas', 'Monaco', monospace;
   background: radial-gradient(ellipse at center, rgba(20, 40, 80, 0.3) 0%, rgba(8, 15, 35, 0.3) 100%);
-
   scrollbar-width: thin; /* Firefox */
   scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
 }
@@ -361,7 +431,7 @@ onUnmounted(() => {
 }
 
 .row-selected {
-  background: linear-gradient(90deg, rgba(20, 60, 130, 0.5), rgba(30, 80, 160, 0.5)) !important; /* 提高不透明度 */
+  background: linear-gradient(90deg, rgba(20, 60, 130, 0.5), rgba(30, 80, 160, 0.5)) !important;
   border-right: 1px solid rgba(64, 180, 255, 0.35);
   box-shadow: 0 0 15px rgba(32, 160, 255, 0.2);
 }
@@ -369,6 +439,10 @@ onUnmounted(() => {
 .list-item {
   flex: 1;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .list-time {
@@ -403,7 +477,7 @@ onUnmounted(() => {
   width: 40%;
 }
 
-/* 全新设计的状态指示器 */
+/* 状态指示器样式 */
 .status-indicator {
   display: inline-flex;
   align-items: center;
@@ -411,14 +485,15 @@ onUnmounted(() => {
   padding: 3px 10px;
   border-radius: 10px;
   font-size: 13px;
-  min-width: 70px;
+  min-width: 90px;
   font-weight: 600;
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
   letter-spacing: 0.5px;
-  height: 20px;
+  height: 24px;
   border: 1px solid rgba(255, 255, 255, 0.15);
+  gap: 6px;
 }
 
 /* 发光效果 */
@@ -523,21 +598,6 @@ onUnmounted(() => {
   z-index: 0;
 }
 
-/* 行内信息前缀符号 */
-.list-time::before {
-  content: '⏱';
-  margin-right: 3px;
-  font-size: 11px;
-  opacity: 0.7;
-}
-
-.list-region::before {
-  content: '◉';
-  margin-right: 3px;
-  font-size: 11px;
-  opacity: 0.7;
-}
-
 /* 状态脉动动画 */
 @keyframes pulse {
   0% {
@@ -564,12 +624,24 @@ onUnmounted(() => {
 }
 
 .expanded .status-indicator {
-  height: 26px;
-  padding: 4px 12px;
+  height: 28px;
+  padding: 4px 14px;
 }
 
-.expanded .list-time::before,
-.expanded .list-region::before {
-  font-size: 13px;
+/* 图标样式 */
+.item-icon {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.status-indicator svg {
+  font-size: 14px;
+}
+
+/* 展开状态下的图标调整 */
+.expanded .item-icon,
+.expanded .status-indicator svg {
+  font-size: 16px;
 }
 </style>
