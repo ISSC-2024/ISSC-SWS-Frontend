@@ -24,24 +24,27 @@
     <!-- 中间列 -->
     <div class="middle-column">
       <div class="webgl-container tech-container">
+        <div class="container-border"></div>
+        <div class="container-border-corner top-left"></div>
+        <div class="container-border-corner top-right"></div>
+        <div class="container-border-corner bottom-left"></div>
+        <div class="container-border-corner bottom-right"></div>
         <slot name="webgl-content"></slot>
       </div>
-
       <div class="controls-container tech-container">
-        <!-- 四角元素 -->
-        <div class="corner corner-top-left"></div>
-        <div class="corner corner-top-right"></div>
-        <div class="corner corner-bottom-left"></div>
-        <div class="corner corner-bottom-right"></div>
+        <div class="container-border"></div>
+        <div class="container-border-corner top-left"></div>
+        <div class="container-border-corner top-right"></div>
+        <div class="container-border-corner bottom-left"></div>
+        <div class="container-border-corner bottom-right"></div>
         <slot name="controls"></slot>
       </div>
-
       <div class="resources-container tech-container">
-        <!-- 四角元素 -->
-        <div class="corner corner-top-left"></div>
-        <div class="corner corner-top-right"></div>
-        <div class="corner corner-bottom-left"></div>
-        <div class="corner corner-bottom-right"></div>
+        <div class="container-border"></div>
+        <div class="container-border-corner top-left"></div>
+        <div class="container-border-corner top-right"></div>
+        <div class="container-border-corner bottom-left"></div>
+        <div class="container-border-corner bottom-right"></div>
         <slot name="resources"></slot>
       </div>
     </div>
@@ -61,7 +64,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(8, 16, 35, 0.97), rgba(12, 24, 48, 0.97));
+  background: linear-gradient(135deg, rgba(11, 19, 43, 0.97), rgba(15, 30, 60, 0.97));
   position: relative;
 }
 
@@ -90,17 +93,18 @@
 .right-column {
   width: 20%;
   height: 100%;
-  padding: 10px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   position: relative;
+  z-index: 1;
 }
 
 .column-content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   height: 100%;
 }
 
@@ -109,89 +113,112 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 10px 0;
-  gap: 12px;
+  padding: 8px 0;
+  gap: 8px;
   position: relative;
   z-index: 1;
 }
 
-/* 主要容器通用样式 */
+/* 技术感容器通用样式 */
 .tech-container {
   position: relative;
+  border: 1px solid rgba(64, 169, 255, 0.3);
   border-radius: 8px;
   overflow: hidden;
-  background-color: rgba(15, 25, 50, 0.7);
+  background-color: rgba(15, 25, 50, 0.6);
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(32, 160, 255, 0.05);
+  backdrop-filter: blur(4px);
   transition: all 0.3s ease;
-  box-sizing: border-box;
 }
 
-/* WebGL 容器样式 - 边框最亮 */
+.tech-container:hover {
+  border-color: rgba(64, 169, 255, 0.5);
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.25),
+    0 0 30px rgba(32, 160, 255, 0.1);
+}
+
+/* 科技感边框 */
+.container-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+  border: 1px solid rgba(64, 169, 255, 0.3);
+  border-radius: 8px;
+  box-shadow: inset 0 0 15px rgba(32, 160, 255, 0.05);
+}
+
+/* 科技感角落装饰 */
+.container-border-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  z-index: 11;
+  pointer-events: none;
+}
+
+.top-left {
+  top: 0;
+  left: 0;
+  border-top: 2px solid rgba(64, 169, 255, 0.8);
+  border-left: 2px solid rgba(64, 169, 255, 0.8);
+  border-top-left-radius: 4px;
+}
+
+.top-right {
+  top: 0;
+  right: 0;
+  border-top: 2px solid rgba(64, 169, 255, 0.8);
+  border-right: 2px solid rgba(64, 169, 255, 0.8);
+  border-top-right-radius: 4px;
+}
+
+.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-bottom: 2px solid rgba(64, 169, 255, 0.8);
+  border-left: 2px solid rgba(64, 169, 255, 0.8);
+  border-bottom-left-radius: 4px;
+}
+
+.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid rgba(64, 169, 255, 0.8);
+  border-right: 2px solid rgba(64, 169, 255, 0.8);
+  border-bottom-right-radius: 4px;
+}
+
 .webgl-container {
   flex: 1;
   min-height: 65%;
   position: relative;
-  margin: 0 10px;
+  margin: 0 8px;
   margin-bottom: 0;
   display: flex;
   flex-direction: column;
-  border: 3px solid rgba(64, 169, 255, 0.8);
-  box-shadow:
-    0 0 0 1px rgba(100, 200, 255, 0.3),
-    0 0 20px rgba(64, 169, 255, 0.4),
-    inset 0 0 15px rgba(64, 169, 255, 0.1);
-  animation: pulse-border-primary 4s ease-in-out infinite;
 }
 
 .webgl-container::before {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: 5px;
-  padding: 1px;
-  background: linear-gradient(45deg, rgba(64, 169, 255, 0.8), rgba(100, 200, 255, 0.9), rgba(64, 169, 255, 0.8));
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.webgl-container::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border-radius: 5px;
-  box-shadow:
-    inset 0 0 10px rgba(64, 169, 255, 0.5),
-    inset 0 0 5px rgba(100, 200, 255, 0.3);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.webgl-container:hover {
-  border-color: rgba(100, 200, 255, 0.9);
-  box-shadow:
-    0 0 0 1px rgba(100, 200, 255, 0.4),
-    0 0 25px rgba(64, 169, 255, 0.5),
-    inset 0 0 20px rgba(64, 169, 255, 0.15);
-}
-
-/* 控制按钮和资源面板容器样式 - 次要边框 */
-.controls-container,
-.resources-container {
-  position: relative;
-  margin: 0 10px;
-  border: 2px solid rgba(64, 169, 255, 0.4);
-  box-shadow:
-    0 0 0 1px rgba(100, 200, 255, 0.15),
-    0 0 15px rgba(64, 169, 255, 0.2),
-    inset 0 0 10px rgba(64, 169, 255, 0.05);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(32, 160, 255, 0), rgba(64, 169, 255, 0.8), rgba(32, 160, 255, 0));
+  z-index: 12;
 }
 
 .controls-container {
   height: 8%;
+  margin: 0 8px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -199,116 +226,10 @@
 
 .resources-container {
   height: 27%;
+  margin: 0 8px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-/* 为控制按钮和资源面板添加四角元素 */
-.controls-container::before,
-.resources-container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 6px;
-  padding: 1px;
-  background: linear-gradient(45deg, rgba(64, 169, 255, 0.5), rgba(100, 200, 255, 0.6), rgba(64, 169, 255, 0.5));
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0.7;
-}
-
-/* 四角元素样式 */
-.corner {
-  position: absolute;
-  pointer-events: none;
-  width: 16px;
-  height: 16px;
-}
-
-/* L形角装饰 */
-.corner-top-left {
-  top: 3px;
-  left: 3px;
-  background:
-    linear-gradient(to right, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 0 / 10px 2px,
-    linear-gradient(to bottom, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 0 / 2px 10px;
-  filter: drop-shadow(0 0 3px rgba(64, 169, 255, 0.4));
-}
-
-.corner-top-right {
-  top: 3px;
-  right: 3px;
-  background:
-    linear-gradient(to left, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 100% 0 / 10px 2px,
-    linear-gradient(to bottom, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 100% 0 / 2px 10px;
-  filter: drop-shadow(0 0 3px rgba(64, 169, 255, 0.4));
-}
-
-.corner-bottom-left {
-  bottom: 3px;
-  left: 3px;
-  background:
-    linear-gradient(to right, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 100% / 10px 2px,
-    linear-gradient(to top, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 0 100% / 2px 10px;
-  filter: drop-shadow(0 0 3px rgba(64, 169, 255, 0.4));
-}
-
-.corner-bottom-right {
-  bottom: 3px;
-  right: 3px;
-  background:
-    linear-gradient(to left, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 100% 100% / 10px 2px,
-    linear-gradient(to top, rgba(64, 169, 255, 0.7) 2px, transparent 2px) no-repeat 100% 100% / 2px 10px;
-  filter: drop-shadow(0 0 3px rgba(64, 169, 255, 0.4));
-}
-
-/* 添加角点效果 */
-.corner::after {
-  content: '';
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background-color: rgba(100, 200, 255, 0.9);
-  border-radius: 50%;
-  box-shadow: 0 0 4px 1px rgba(64, 169, 255, 0.7);
-}
-
-.corner-top-left::after {
-  top: -1px;
-  left: -1px;
-}
-
-.corner-top-right::after {
-  top: -1px;
-  right: -1px;
-}
-
-.corner-bottom-left::after {
-  bottom: -1px;
-  left: -1px;
-}
-
-.corner-bottom-right::after {
-  bottom: -1px;
-  right: -1px;
-}
-
-/* 控制按钮和资源面板的四角装饰发光效果增强 */
-.controls-container:hover .corner,
-.resources-container:hover .corner {
-  filter: drop-shadow(0 0 5px rgba(64, 169, 255, 0.6));
-}
-
-.controls-container:hover .corner::after,
-.resources-container:hover .corner::after {
-  background-color: rgba(128, 220, 255, 1);
-  box-shadow: 0 0 6px 2px rgba(64, 169, 255, 0.8);
 }
 
 /* 自定义滚动条 */
@@ -323,104 +244,39 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(64, 169, 255, 0.7);
+  background-color: rgba(32, 160, 255, 0.6);
   border-radius: 3px;
   border: 1px solid rgba(15, 25, 50, 0.2);
-  box-shadow: inset 0 0 5px rgba(32, 160, 255, 0.3);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(100, 200, 255, 0.9);
-}
-
-/* 主要容器边框脉冲动画 */
-@keyframes pulse-border-primary {
-  0% {
-    border-color: rgba(64, 169, 255, 0.8);
-    box-shadow:
-      0 0 0 1px rgba(100, 200, 255, 0.3),
-      0 0 20px rgba(64, 169, 255, 0.4),
-      inset 0 0 15px rgba(64, 169, 255, 0.1);
-  }
-  50% {
-    border-color: rgba(100, 200, 255, 0.9);
-    box-shadow:
-      0 0 0 1px rgba(100, 200, 255, 0.5),
-      0 0 25px rgba(100, 200, 255, 0.5),
-      inset 0 0 20px rgba(100, 200, 255, 0.2);
-  }
-  100% {
-    border-color: rgba(64, 169, 255, 0.8);
-    box-shadow:
-      0 0 0 1px rgba(100, 200, 255, 0.3),
-      0 0 20px rgba(64, 169, 255, 0.4),
-      inset 0 0 15px rgba(64, 169, 255, 0.1);
-  }
-}
-
-/* 次要容器边框脉冲动画 - 更加柔和 */
-@keyframes pulse-border-secondary {
-  0% {
-    border-color: rgba(64, 169, 255, 0.4);
-    box-shadow:
-      0 0 0 1px rgba(100, 200, 255, 0.15),
-      0 0 15px rgba(64, 169, 255, 0.2),
-      inset 0 0 10px rgba(64, 169, 255, 0.05);
-  }
-  50% {
-    border-color: rgba(64, 169, 255, 0.6);
-    box-shadow:
-      0 0 0 1px rgba(100, 200, 255, 0.2),
-      0 0 20px rgba(64, 169, 255, 0.3),
-      inset 0 0 15px rgba(64, 169, 255, 0.1);
-  }
-  100% {
-    border-color: rgba(64, 169, 255, 0.4);
-    box-shadow:
-      0 0 0 1px rgba(100, 200, 255, 0.15),
-      0 0 15px rgba(64, 169, 255, 0.2),
-      inset 0 0 10px rgba(64, 169, 255, 0.05);
-  }
-}
-
-.controls-container,
-.resources-container {
-  animation: pulse-border-secondary 4s ease-in-out infinite;
+  background-color: rgba(64, 169, 255, 0.8);
 }
 
 /* 响应式调整 */
 @media (max-width: 1200px) {
+  .container-border-corner {
+    width: 8px;
+    height: 8px;
+  }
+
   .left-column,
   .right-column {
-    padding: 8px;
+    padding: 5px;
   }
 
   .column-content {
-    gap: 10px;
+    gap: 5px;
   }
 
   .middle-column {
-    gap: 8px;
+    gap: 5px;
   }
 
   .webgl-container,
   .controls-container,
   .resources-container {
-    margin: 0 8px;
-  }
-
-  .corner {
-    width: 12px;
-    height: 12px;
-  }
-
-  .corner-top-left,
-  .corner-top-right,
-  .corner-bottom-left,
-  .corner-bottom-right {
-    background-size:
-      8px 2px,
-      2px 8px;
+    margin: 0 5px;
   }
 }
 </style>
