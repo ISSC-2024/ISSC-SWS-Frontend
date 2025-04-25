@@ -40,9 +40,9 @@ const modelParamsConfig = {
     { id: 'param4', name: '传感器编号', options: ['RMS001', 'RMS002', 'RMS003'] },
   ],
   model2: [
-    { id: 'param1', name: '阈值', options: ['0.1', '0.2', '0.3', '0.4'] },
-    { id: 'param2', name: '精度', options: ['高', '中', '低'] },
-    { id: 'param3', name: '迭代次数', options: ['100', '200', '500', '1000'] },
+    { id: 'param1', name: '决策树数量', options: ['100', '150', '200'] },
+    { id: 'param2', name: '树最大深度', options: ['4', '6', '8'] },
+    { id: 'param3', name: '偏离敏感度', options: ['0.8', '1.0', '1.2'] },
   ],
   // 模型三动态根据选择的算法配置对应的参数
   model3: [{ id: 'param1', name: '算法', options: ['xgboost', 'lightGBM', 'TabNet'] }],
@@ -190,12 +190,20 @@ const close = () => {
   <transition name="fade">
     <div class="overlay" @click="close">
       <div class="floating-window" @click.stop>
-        <button class="close-btn" @click="close">×</button>
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+        <div class="corner bottom-left"></div>
+        <div class="corner bottom-right"></div>
+
+        <button class="close-btn" @click="close">
+          <span class="close-icon">×</span>
+        </button>
 
         <div class="window-content">
           <!-- 模型选择内容 -->
           <div class="model-window">
             <h2 class="window-title">模型选择</h2>
+            <div class="title-underline"></div>
 
             <div class="model-container">
               <div class="model-sidebar">
@@ -208,7 +216,8 @@ const close = () => {
                     :class="{ active: selectedModel === model.id }"
                     @click="selectModel(model.id)"
                   >
-                    {{ model.name }}
+                    <span class="btn-text">{{ model.name }}</span>
+                    <span class="btn-glow" v-if="selectedModel === model.id"></span>
                   </button>
                 </div>
               </div>
@@ -219,23 +228,34 @@ const close = () => {
                   <div v-if="selectedModel" class="param-form">
                     <div v-for="param in getCurrentModelParams()" :key="param.id" class="param-item">
                       <div class="param-label">{{ param.name }}</div>
-                      <select v-model="modelParams[param.id]" class="param-select">
-                        <option value="">请选择</option>
-                        <option v-for="option in param.options" :key="option" :value="option">
-                          {{ option }}
-                        </option>
-                      </select>
+                      <div class="select-wrapper">
+                        <select v-model="modelParams[param.id]" class="param-select">
+                          <option value="">请选择参数值</option>
+                          <option v-for="option in param.options" :key="option" :value="option">
+                            {{ option }}
+                          </option>
+                        </select>
+                        <div class="select-arrow"></div>
+                      </div>
                     </div>
                   </div>
-                  <div v-else class="no-model-selected">请先选择左侧的模型</div>
+                  <div v-else class="no-model-selected">
+                    <span class="hint-icon">⚙️</span>
+                    <span class="hint-text">请先选择左侧的模型</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- 按钮组 -->
             <div class="button-group">
-              <button class="submit-btn" @click="submitModelSelection">提交</button>
-              <button class="reset-btn" @click="resetModelParams">重置</button>
+              <button class="submit-btn" @click="submitModelSelection">
+                <span class="btn-text">提交</span>
+                <span class="btn-shine"></span>
+              </button>
+              <button class="reset-btn" @click="resetModelParams">
+                <span>重置</span>
+              </button>
             </div>
           </div>
         </div>
@@ -252,7 +272,8 @@ const close = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(5, 15, 30, 0.7);
+  backdrop-filter: blur(4px);
   z-index: 99;
   display: flex;
   justify-content: center;
@@ -262,95 +283,149 @@ const close = () => {
 /* 浮窗样式 */
 .floating-window {
   position: relative;
-  top: -10%;
+  top: -5%;
   width: 80%;
   max-width: 800px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, rgba(20, 30, 50, 0.95), rgba(12, 22, 40, 0.95));
+  border: 1px solid rgba(64, 169, 255, 0.3);
+  border-radius: 12px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(32, 160, 255, 0.2);
   z-index: 100;
   overflow: hidden;
-  padding: 40px 20px 20px;
+  padding: 45px 25px 30px;
+  backdrop-filter: blur(10px);
 }
 
+/* 装饰性角落 */
+.corner {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  z-index: 2;
+}
+
+.top-left {
+  top: 0;
+  left: 0;
+  border-top: 2px solid rgba(64, 169, 255, 0.6);
+  border-left: 2px solid rgba(64, 169, 255, 0.6);
+  border-top-left-radius: 8px;
+}
+
+.top-right {
+  top: 0;
+  right: 0;
+  border-top: 2px solid rgba(64, 169, 255, 0.6);
+  border-right: 2px solid rgba(64, 169, 255, 0.6);
+  border-top-right-radius: 8px;
+}
+
+.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-bottom: 2px solid rgba(64, 169, 255, 0.6);
+  border-left: 2px solid rgba(64, 169, 255, 0.6);
+  border-bottom-left-radius: 8px;
+}
+
+.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid rgba(64, 169, 255, 0.6);
+  border-right: 2px solid rgba(64, 169, 255, 0.6);
+  border-bottom-right-radius: 8px;
+}
+
+/* 关闭按钮 */
 .close-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  color: #333;
-  font-size: 20px;
+  top: 15px;
+  right: 15px;
+  background: rgba(32, 160, 255, 0.15);
+  border: 1px solid rgba(64, 169, 255, 0.3);
+  color: rgba(220, 240, 255, 0.9);
+  font-size: 18px;
   cursor: pointer;
-  padding: 0 4px;
-  line-height: 1;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s;
+  z-index: 3;
+}
+
+.close-btn:hover {
+  background: rgba(32, 160, 255, 0.3);
+  transform: rotate(90deg);
+  box-shadow: 0 0 10px rgba(32, 160, 255, 0.4);
+}
+
+.close-icon {
+  display: block;
+  line-height: 0.8;
 }
 
 .window-content {
   max-height: 70vh;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(64, 169, 255, 0.5) rgba(20, 30, 50, 0.2);
+}
+
+.window-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.window-content::-webkit-scrollbar-track {
+  background: rgba(20, 30, 50, 0.2);
+  border-radius: 3px;
+}
+
+.window-content::-webkit-scrollbar-thumb {
+  background-color: rgba(64, 169, 255, 0.5);
+  border-radius: 3px;
 }
 
 /* 窗口标题 */
 .window-title {
   text-align: center;
   margin-top: 0;
-  margin-bottom: 40px;
-  font-size: 24px;
-  color: #333;
+  margin-bottom: 15px;
+  font-size: 26px;
+  font-weight: 500;
+  color: rgba(220, 240, 255, 0.95);
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(64, 169, 255, 0.5);
 }
 
-/* 按钮组 */
-.button-group {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 10px; /* 模型选择窗口特有的margin-top */
+.title-underline {
+  width: 120px;
+  height: 2px;
+  margin: 0 auto 40px;
+  background: linear-gradient(to right, rgba(32, 160, 255, 0), rgba(64, 169, 255, 0.7) 50%, rgba(32, 160, 255, 0));
+  position: relative;
 }
 
-.submit-btn,
-.reset-btn {
-  min-width: 100px;
-  padding: 10px 25px;
-  border-radius: 20px;
-  font-size: 14px;
-  cursor: pointer;
-  border: 1px solid #ddd;
-  transition: all 0.3s;
-}
-
-.submit-btn {
-  background-color: #2c3e50;
-  color: white;
-  border-color: #2c3e50;
-}
-
-.reset-btn {
-  background-color: white;
-  color: #333;
-}
-
-.submit-btn:hover {
-  background-color: #1e2a36;
-}
-
-.reset-btn:hover {
-  background-color: #f5f5f5;
-}
-
-/* 模型窗口特定样式 */
-.model-window {
-  min-height: 450px;
+.title-underline::after {
+  content: '';
+  position: absolute;
+  width: 40%;
+  height: 2px;
+  left: 30%;
+  bottom: -3px;
+  background: rgba(64, 169, 255, 0.3);
+  filter: blur(1px);
 }
 
 /* 模型选择窗口样式 */
 .model-container {
   display: flex;
   min-height: 350px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .model-sidebar {
@@ -369,31 +444,60 @@ const close = () => {
 }
 
 .model-btn {
+  position: relative;
   width: 100%;
   padding: 15px 20px;
   text-align: center;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(64, 169, 255, 0.2);
   border-radius: 20px;
-  background-color: white;
+  background: rgba(20, 40, 70, 0.4);
   cursor: pointer;
   transition: all 0.3s;
   font-size: 16px;
+  color: rgba(220, 240, 255, 0.8);
+  overflow: hidden;
 }
 
 .model-btn:hover {
-  background-color: #f5f5f5;
-  border-color: #ccc;
+  background: rgba(30, 60, 100, 0.4);
+  border-color: rgba(64, 169, 255, 0.5);
+  box-shadow: 0 0 15px rgba(32, 160, 255, 0.15);
+  transform: translateY(-2px);
 }
 
 .model-btn.active {
-  background-color: #2c3e50;
-  color: white;
-  border-color: #2c3e50;
+  background: linear-gradient(135deg, rgba(32, 160, 255, 0.2), rgba(64, 169, 255, 0.4));
+  color: rgba(240, 250, 255, 1);
+  border-color: rgba(64, 169, 255, 0.6);
+  box-shadow:
+    0 0 15px rgba(32, 160, 255, 0.3),
+    inset 0 0 10px rgba(64, 169, 255, 0.15);
 }
 
+.btn-text {
+  position: relative;
+  z-index: 2;
+}
+
+.btn-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(64, 169, 255, 0.3) 0%, rgba(64, 169, 255, 0) 70%);
+  animation: btnGlow 2s infinite alternate;
+  z-index: 1;
+}
+
+/* 模型参数区域 */
 .model-params {
-  padding: 10px;
+  padding: 20px;
   min-height: 350px;
+  background: rgba(15, 25, 45, 0.3);
+  border: 1px solid rgba(64, 169, 255, 0.2);
+  border-radius: 10px;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
 .param-form {
@@ -409,39 +513,189 @@ const close = () => {
 }
 
 .param-label {
-  flex: 0 0 70px;
+  flex: 0 0 90px;
   text-align: right;
   margin-right: 20px;
   font-size: 16px;
+  color: rgba(220, 240, 255, 0.85);
+  white-space: nowrap;
+  min-width: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .param-label {
+    font-size: 14px; /* 在小屏幕上减小字体大小 */
+  }
+}
+
+.param-item:hover .param-label {
+  overflow: visible;
+  z-index: 5;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+/* 下拉框容器 */
+.select-wrapper {
+  flex: 1;
+  position: relative;
 }
 
 .param-select {
-  flex: 1;
-  height: 40px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0 10px;
-  font-size: 14px;
-  background-color: white;
+  width: 100%;
+  height: 44px;
+  background: rgba(20, 40, 70, 0.5);
+  border: 1px solid rgba(64, 169, 255, 0.3);
+  border-radius: 6px;
+  padding: 0 15px;
+  font-size: 15px;
+  color: rgba(220, 240, 255, 0.9);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.param-select:focus {
+  outline: none;
+  border-color: rgba(64, 169, 255, 0.6);
+  box-shadow:
+    0 0 12px rgba(32, 160, 255, 0.3),
+    inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.param-select:hover {
+  border-color: rgba(64, 169, 255, 0.5);
+}
+
+/* 自定义下拉箭头 */
+.select-arrow {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid rgba(64, 169, 255, 0.6);
+  border-bottom: 2px solid rgba(64, 169, 255, 0.6);
+  transform: translateY(-50%) rotate(45deg);
+  pointer-events: none;
+  transition: all 0.3s;
+}
+
+.select-wrapper:hover .select-arrow {
+  border-color: rgba(100, 200, 255, 0.8);
+}
+
+/* 下拉选项样式 */
+.param-select option {
+  background-color: rgba(20, 30, 50, 0.95);
+  color: rgba(220, 240, 255, 0.9);
+  padding: 10px;
 }
 
 .no-model-selected {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 200px;
-  color: #999;
+  height: 250px;
+  color: rgba(220, 240, 255, 0.5);
   font-size: 16px;
-  border: 1px dashed #ddd;
-  border-radius: 4px;
+  border: 1px dashed rgba(64, 169, 255, 0.3);
+  border-radius: 8px;
+}
+
+.hint-icon {
+  font-size: 32px;
+  margin-bottom: 15px;
+  opacity: 0.7;
+}
+
+.hint-text {
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
+
+/* 按钮组 */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-top: 40px;
+}
+
+.submit-btn,
+.reset-btn {
+  min-width: 120px;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #1890ff, #40a9ff);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 15px rgba(32, 160, 255, 0.3);
+}
+
+.reset-btn {
+  background: rgba(20, 40, 70, 0.5);
+  color: rgba(220, 240, 255, 0.85);
+  border: 1px solid rgba(64, 169, 255, 0.4);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(32, 160, 255, 0.5);
+}
+
+.submit-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(32, 160, 255, 0.3);
+}
+
+.reset-btn:hover {
+  background: rgba(30, 50, 80, 0.6);
+  border-color: rgba(64, 169, 255, 0.6);
+}
+
+/* 提交按钮光晕 */
+.btn-shine {
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  animation: btnShine 3s infinite;
+}
+
+/* 模型窗口特定样式 */
+.model-window {
+  min-height: 450px;
 }
 
 /* 过渡动画 */
 .fade-enter-active,
 .fade-leave-active {
   transition:
-    opacity 0.3s,
-    transform 0.3s;
+    opacity 0.4s,
+    transform 0.4s;
 }
 
 .fade-enter-from,
@@ -451,6 +705,28 @@ const close = () => {
 
 .fade-enter-from .floating-window,
 .fade-leave-to .floating-window {
-  transform: scale(0.95);
+  transform: scale(0.95) translateY(20px);
+}
+
+/* 动画效果 */
+@keyframes btnGlow {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes btnShine {
+  0% {
+    left: -120%;
+  }
+  20% {
+    left: 120%;
+  }
+  100% {
+    left: 120%;
+  }
 }
 </style>

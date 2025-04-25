@@ -1,3 +1,493 @@
+<template>
+  <div class="knowledge-graph-container">
+    <div class="graph-header">
+      <div class="graph-title">
+        <div class="title-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path
+              fill="currentColor"
+              d="M12,2C17.5,2 22,6.5 22,12C22,17.5 17.5,22 12,22C6.5,22 2,17.5 2,12C2,6.5 6.5,2 12,2M12,4C7.58,4 4,7.58 4,12C4,16.42 7.58,20 12,20C16.42,20 20,16.42 20,12C20,7.58 16.42,4 12,4M12,6C15.31,6 18,8.69 18,12C18,15.31 15.31,18 12,18C8.69,18 6,15.31 6,12C6,8.69 8.69,6 12,6M12,8C9.79,8 8,9.79 8,12C8,14.21 9.79,16 12,16C14.21,16 16,14.21 16,12C16,9.79 14.21,8 12,8Z"
+            />
+          </svg>
+        </div>
+        <span>工厂监控点知识图谱</span>
+      </div>
+      <div v-if="graphStore.focusedArea" class="focus-indicator" :class="{ compact: !isChartExpanded }">
+        <div class="pulse-dot"></div>
+        <span>已聚焦: {{ graphStore.focusedArea }}</span>
+        <button class="clear-focus-btn" @click="restoreFullGraph" title="清除聚焦">
+          <svg viewBox="0 0 24 24" width="14" height="14">
+            <path
+              fill="currentColor"
+              d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div ref="chartRef" class="chart"></div>
+
+    <!-- 仅在展开状态下显示控制面板 -->
+    <div v-if="isChartExpanded" class="graph-controls">
+      <button
+        class="control-btn toggle-labels-btn"
+        @click="toggleLabels"
+        :disabled="!!graphStore.focusedArea"
+        :class="{ disabled: !!graphStore.focusedArea }"
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" class="btn-icon">
+          <path
+            fill="currentColor"
+            d="M9.5,7A1.5,1.5 0 0,1 11,8.5A1.5,1.5 0 0,1 9.5,10A1.5,1.5 0 0,1 8,8.5A1.5,1.5 0 0,1 9.5,7M14,4.5A1.5,1.5 0 0,1 15.5,6A1.5,1.5 0 0,1 14,7.5A1.5,1.5 0 0,1 12.5,6A1.5,1.5 0 0,1 14,4.5M17,2A2,2 0 0,1 19,4A2,2 0 0,1 17,6A2,2 0 0,1 15,4A2,2 0 0,1 17,2M19.5,9A1.5,1.5 0 0,1 21,10.5A1.5,1.5 0 0,1 19.5,12A1.5,1.5 0 0,1 18,10.5A1.5,1.5 0 0,1 19.5,9M17,20A2,2 0 0,1 15,18A2,2 0 0,1 17,16A2,2 0 0,1 19,18A2,2 0 0,1 17,20M7,18A2,2 0 0,1 5,16A2,2 0 0,1 7,14A2,2 0 0,1 9,16A2,2 0 0,1 7,18M7,4A2,2 0 0,1 9,6A2,2 0 0,1 7,8A2,2 0 0,1 5,6A2,2 0 0,1 7,4M9.5,17A1.5,1.5 0 0,1 8,15.5A1.5,1.5 0 0,1 9.5,14A1.5,1.5 0 0,1 11,15.5A1.5,1.5 0 0,1 9.5,17M14,12.5A1.5,1.5 0 0,1 15.5,14A1.5,1.5 0 0,1 14,15.5A1.5,1.5 0 0,1 12.5,14A1.5,1.5 0 0,1 14,12.5M9.5,20.5A0.5,0.5 0 0,1 9,20A0.5,0.5 0 0,1 9.5,19.5A0.5,0.5 0 0,1 10,20A0.5,0.5 0 0,1 9.5,20.5M4.5,19.5A0.5,0.5 0 0,1 4,19A0.5,0.5 0 0,1 4.5,18.5A0.5,0.5 0 0,1 5,19A0.5,0.5 0 0,1 4.5,19.5M19.5,19.5A0.5,0.5 0 0,1 19,19A0.5,0.5 0 0,1 19.5,18.5A0.5,0.5 0 0,1 20,19A0.5,0.5 0 0,1 19.5,19.5M14.5,19.5A0.5,0.5 0 0,1 14,19A0.5,0.5 0 0,1 14.5,18.5A0.5,0.5 0 0,1 15,19A0.5,0.5 0 0,1 14.5,19.5M4.5,14.5A0.5,0.5 0 0,1 4,14A0.5,0.5 0 0,1 4.5,13.5A0.5,0.5 0 0,1 5,14A0.5,0.5 0 0,1 4.5,14.5M19.5,14.5A0.5,0.5 0 0,1 19,14A0.5,0.5 0 0,1 19.5,13.5A0.5,0.5 0 0,1 20,14A0.5,0.5 0 0,1 19.5,14.5M4.5,9.5A0.5,0.5 0 0,1 4,9A0.5,0.5 0 0,1 4.5,8.5A0.5,0.5 0 0,1 5,9A0.5,0.5 0 0,1 4.5,9.5M19.5,9.5A0.5,0.5 0 0,1 19,9A0.5,0.5 0 0,1 19.5,8.5A0.5,0.5 0 0,1 20,9A0.5,0.5 0 0,1 19.5,9.5M4.5,4.5A0.5,0.5 0 0,1 4,4A0.5,0.5 0 0,1 4.5,3.5A0.5,0.5 0 0,1 5,4A0.5,0.5 0 0,1 4.5,4.5M14.5,4.5A0.5,0.5 0 0,1 14,4A0.5,0.5 0 0,1 14.5,3.5A0.5,0.5 0 0,1 15,4A0.5,0.5 0 0,1 14.5,4.5M19.5,4.5A0.5,0.5 0 0,1 19,4A0.5,0.5 0 0,1 19.5,3.5A0.5,0.5 0 0,1 20,4A0.5,0.5 0 0,1 19.5,4.5M9.5,4.5A0.5,0.5 0 0,1 9,4A0.5,0.5 0 0,1 9.5,3.5A0.5,0.5 0 0,1 10,4A0.5,0.5 0 0,1 9.5,4.5Z"
+          />
+        </svg>
+        <span>{{ graphStore.focusedArea ? '标签已显示' : graphStore.showLabels ? '隐藏标签' : '显示标签' }}</span>
+      </button>
+
+      <div class="graph-legend">
+        <div class="legend-item" v-for="(category, index) in graphData.categories" :key="category.name">
+          <div class="legend-color" :style="{ backgroundColor: categoryColors[index] }"></div>
+          <div class="legend-label">{{ category.name }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 仅在展开状态下显示操作指南 -->
+    <div v-if="isChartExpanded" class="graph-info-panel">
+      <div class="info-title">操作指南</div>
+      <div class="info-content">
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path fill="currentColor" d="M9,5H15V9H9V5M7,3V11H17V3H7M11,13H13V17H11V13M7,21H17V11H7V21Z" />
+            </svg>
+          </div>
+          <span>双击区域节点以聚焦该区域</span>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V13H17V11H13V7Z"
+              />
+            </svg>
+          </div>
+          <span>双击已聚焦的区域可恢复全图</span>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"
+              />
+            </svg>
+          </div>
+          <span>悬停在节点上查看详细信息</span>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                fill="currentColor"
+                d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13"
+              />
+            </svg>
+          </div>
+          <span>点击右上角图例可显示/隐藏不同类型节点</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 非展开状态下的提示  -->
+    <div v-if="!isChartExpanded" class="mini-tip">
+      <div class="mini-tip-icon">
+        <svg viewBox="0 0 24 24" width="14" height="14">
+          <path
+            fill="currentColor"
+            d="M13,9H11V7H13M13,17H11V11H13V17M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+          />
+        </svg>
+      </div>
+      <span>展开查看更多</span>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.knowledge-graph-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: linear-gradient(135deg, rgba(11, 19, 43, 0.95), rgba(12, 25, 55, 0.95));
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+/* 标题栏 */
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(12, 24, 48, 0.95) 0%,
+    rgba(20, 40, 80, 0.95) 50%,
+    rgba(12, 24, 48, 0.95) 100%
+  );
+  border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+  position: relative;
+  z-index: 5;
+}
+
+.graph-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(32, 160, 255, 0), rgba(32, 160, 255, 0.5), rgba(32, 160, 255, 0));
+}
+
+.graph-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(220, 230, 240, 0.95);
+  font-weight: 600;
+  font-size: 16px;
+  text-shadow: 0 0 10px rgba(32, 160, 255, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #20a0ff;
+  filter: drop-shadow(0 0 5px rgba(32, 160, 255, 0.5));
+}
+
+.focus-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(32, 160, 255, 0.15);
+  padding: 5px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(32, 160, 255, 0.3);
+  color: rgba(220, 230, 240, 0.9);
+  font-size: 13px;
+  margin-left: 15px; /* 与左侧保持一定距离 */
+}
+
+/* 非展开状态下的聚焦提示更紧凑 */
+.focus-indicator.compact {
+  gap: 5px;
+  padding: 3px 8px;
+  font-size: 11px;
+  max-width: 140px; /* 限制最大宽度 */
+  border-radius: 12px;
+}
+
+.focus-indicator.compact .pulse-dot {
+  width: 6px;
+  height: 6px;
+}
+
+/* 在紧凑模式下使区域名称可能会出现省略号 */
+.focus-indicator.compact span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #20a0ff;
+  position: relative;
+}
+
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  background-color: rgba(32, 160, 255, 0.5);
+  animation: pulse 1.5s infinite;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+.clear-focus-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(220, 230, 240, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  margin-left: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.clear-focus-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(220, 230, 240, 0.9);
+}
+
+.chart {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+.graph-controls {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+}
+
+.control-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: rgba(20, 35, 65, 0.85);
+  border: 1px solid rgba(74, 144, 226, 0.3);
+  color: rgba(220, 230, 240, 0.9);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.control-btn:hover:not(.disabled) {
+  background: rgba(32, 50, 90, 0.9);
+  border-color: rgba(74, 144, 226, 0.5);
+  transform: translateY(-1px);
+}
+
+.control-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-icon {
+  color: #20a0ff;
+  opacity: 0.9;
+}
+
+.graph-legend {
+  background: rgba(20, 35, 65, 0.85);
+  border: 1px solid rgba(74, 144, 226, 0.3);
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(220, 230, 240, 0.8);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.graph-info-panel {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  background: rgba(20, 35, 65, 0.85);
+  border: 1px solid rgba(74, 144, 226, 0.3);
+  border-radius: 6px;
+  padding: 12px;
+  width: 220px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.info-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(220, 230, 240, 0.9);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(220, 230, 240, 0.8);
+}
+
+.info-icon {
+  color: #20a0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 为图表添加网格背景 */
+.knowledge-graph-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(32, 160, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(32, 160, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 添加光晕效果 */
+.knowledge-graph-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 10%, rgba(32, 160, 255, 0.1) 0%, rgba(32, 160, 255, 0) 70%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .graph-info-panel {
+    display: none;
+  }
+
+  .graph-title {
+    font-size: 14px;
+  }
+
+  .control-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+/* 添加非展开状态下的迷你提示样式 */
+.mini-tip {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(20, 35, 65, 0.85);
+  border: 1px solid rgba(74, 144, 226, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: rgba(220, 230, 240, 0.7);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.mini-tip:hover {
+  opacity: 1;
+}
+
+.mini-tip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #20a0ff;
+}
+
+/* 修复右上角图例文字样式 */
+:deep(.echarts-tooltip) {
+  background: rgba(20, 35, 65, 0.9) !important;
+  border: 1px solid rgba(32, 160, 255, 0.3) !important;
+  border-radius: 4px !important;
+  padding: 8px !important;
+  color: rgba(220, 230, 240, 0.9) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+:deep(.echarts-legend) {
+  color: rgba(220, 230, 240, 0.9) !important;
+}
+
+:deep(.echarts-legend-item) {
+  color: rgba(220, 230, 240, 0.9) !important;
+}
+
+:deep(.echarts-legend-text) {
+  color: rgba(220, 230, 240, 0.9) !important;
+}
+
+/* 对ECharts生成的图例进行样式覆盖 */
+:deep(g.echarts-legend text) {
+  fill: rgba(220, 230, 240, 0.9) !important;
+}
+
+/* 对ECharts tooltip内容样式覆盖 */
+:deep(.echarts-tooltip-content) {
+  color: rgba(220, 230, 240, 0.9) !important;
+}
+</style>
+
 <script setup lang="ts">
 /**
  * @description 工厂监控点知识图谱组件
@@ -91,6 +581,9 @@ const initChart = () => {
 
   // 创建新实例
   chart = echarts.init(chartRef.value)
+
+  // 确保在初始化时，判断展开状态并应用对应的图例样式
+  const expanded = isChartExpanded.value
 
   // 深拷贝节点数据和连接数据，确保不修改原始数据
   const processedNodes = JSON.parse(JSON.stringify(graphData.nodes)).map((node: NodeData) => {
@@ -191,9 +684,9 @@ const initChart = () => {
   // 保存原始连接以便后续恢复
   originalLinks.value = JSON.parse(JSON.stringify(processedLinks))
 
+  // 根据当前状态决定显示内容
   let displayNodes: NodeData[], displayLinks: LinkData[], zoomLevel: number, shouldShowLabels: boolean
 
-  // 根据当前状态决定显示内容
   if (graphStore.focusedArea) {
     // 如果已聚焦，使用过滤后的数据
     if (graphStore.filteredNodes.length === 0) {
@@ -215,7 +708,7 @@ const initChart = () => {
     shouldShowLabels = graphStore.showLabels // 根据全局标签设置决定
   }
 
-  // 设置图表选项
+  // 设置图表选项 - 确保即使在初始化时也应用正确的图例样式
   const option = {
     tooltip: {
       trigger: 'item',
@@ -256,25 +749,30 @@ const initChart = () => {
       },
     },
     legend: {
-      data: graphData.categories.map((a: { name: string }) => a.name),
+      type: 'scroll',
       orient: 'vertical',
-      right: 10,
-      top: 20,
+      right: expanded ? 10 : 5,
+      top: expanded ? 20 : 10,
       textStyle: {
-        color: '#333',
+        fontSize: expanded ? 12 : 10,
+        color: 'rgba(220, 230, 240, 0.9)',
       },
-      itemWidth: 25,
-      itemHeight: 14,
-      itemStyle: {
-        borderWidth: 0,
-      },
-      textGap: 8,
-      selected: {
-        安全: true,
-        警告: true,
-        危险: true,
-        传感器: true,
-        区域: true,
+      itemWidth: expanded ? 25 : 15,
+      itemHeight: expanded ? 14 : 8,
+      itemGap: expanded ? 10 : 5,
+      padding: expanded ? [5, 10] : [2, 5],
+      backgroundColor: 'rgba(20, 35, 65, 0.8)',
+      borderColor: 'rgba(32, 160, 255, 0.3)',
+      borderWidth: expanded ? 1 : 0,
+      borderRadius: 4,
+      shadowColor: 'rgba(0, 0, 0, 0.3)',
+      shadowBlur: expanded ? 10 : 0,
+      formatter: function (name: any) {
+        // 在非展开状态下截断过长的名称
+        if (!expanded && name.length > 6) {
+          return name.substring(0, 5) + '...'
+        }
+        return name
       },
     },
     animationDuration: 1500,
@@ -656,6 +1154,25 @@ const applyCurrentState = (): void => {
 // 监听窗口大小变化
 const handleResize = (): void => {
   if (chart) {
+    const expanded = isChartExpanded.value
+
+    // 调整图例样式
+    chart.setOption({
+      legend: {
+        right: expanded ? 10 : 5,
+        top: expanded ? 20 : 10,
+        textStyle: {
+          fontSize: expanded ? 12 : 10,
+        },
+        itemWidth: expanded ? 25 : 15,
+        itemHeight: expanded ? 14 : 8,
+        itemGap: expanded ? 10 : 5,
+        padding: expanded ? [5, 10] : [2, 5],
+        borderWidth: expanded ? 1 : 0,
+        shadowBlur: expanded ? 10 : 0,
+      },
+    })
+
     chart.resize()
 
     // 调整大小后重新应用当前状态
@@ -665,12 +1182,8 @@ const handleResize = (): void => {
   }
 }
 
-// 关键修复: 监听展开状态变化，保持当前状态
-watch(isChartExpanded, () => {
-  // 同步本地状态和Pinia状态
-  focusedArea.value = graphStore.focusedArea
-  showAllLabels.value = graphStore.showLabels
-
+// 监听展开状态变化，同时调整图例大小
+watch(isChartExpanded, (expanded) => {
   // 延迟执行以等待DOM更新
   setTimeout(() => {
     // 如果图表实例不存在，初始化图表
@@ -678,6 +1191,24 @@ watch(isChartExpanded, () => {
       initChart()
       return
     }
+
+    // 调整图例样式
+    chart.setOption({
+      legend: {
+        right: expanded ? 10 : 5,
+        top: expanded ? 20 : 10,
+        textStyle: {
+          fontSize: expanded ? 12 : 10, // 非展开时使用更小的字体
+          color: 'rgba(220, 230, 240, 0.9)',
+        },
+        itemWidth: expanded ? 25 : 15, // 非展开时使用更小的图例标记
+        itemHeight: expanded ? 14 : 8,
+        itemGap: expanded ? 10 : 5, // 减小项目间距
+        padding: expanded ? [5, 10] : [2, 5], // 减小内边距
+        borderWidth: expanded ? 1 : 0, // 非展开时移除边框
+        shadowBlur: expanded ? 10 : 0, // 非展开时移除阴影
+      },
+    })
 
     // 调整图表大小
     chart.resize()
@@ -702,79 +1233,3 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
 })
 </script>
-
-<template>
-  <div class="knowledge-graph-container">
-    <div class="controls bottom-right">
-      <button
-        class="toggle-labels-btn"
-        @click="toggleLabels"
-        :disabled="!!graphStore.focusedArea"
-        :class="{ disabled: !!graphStore.focusedArea }"
-      >
-        {{ graphStore.focusedArea ? '标签已显示' : graphStore.showLabels ? '隐藏标签' : '显示标签' }}
-      </button>
-    </div>
-    <div ref="chartRef" class="chart"></div>
-    <div v-if="graphStore.focusedArea" class="focus-indicator">已聚焦区域: {{ graphStore.focusedArea }}</div>
-  </div>
-</template>
-
-<style scoped>
-.knowledge-graph-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.chart {
-  flex: 1;
-  min-height: 600px;
-}
-
-.controls {
-  position: absolute;
-  z-index: 10;
-}
-
-.bottom-right {
-  right: 20px;
-  bottom: 20px;
-}
-
-.toggle-labels-btn {
-  padding: 6px 12px;
-  font-size: 14px;
-  background-color: #409eff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: background-color 0.3s;
-}
-
-.toggle-labels-btn:hover:not(.disabled) {
-  background-color: #66b1ff;
-}
-
-.toggle-labels-btn.disabled {
-  background-color: #a0cfff;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.focus-indicator {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  z-index: 10;
-}
-</style>
