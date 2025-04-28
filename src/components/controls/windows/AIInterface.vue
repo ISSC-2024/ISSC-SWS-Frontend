@@ -100,6 +100,52 @@ const inputText = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
+// 对话历史数据
+const chatHistory = ref([
+  { id: 1, title: '天气预报和生活问题', active: true, date: '2023-11-25' },
+  { id: 2, title: '编程学习路径和建议', active: false, date: '2023-11-24' },
+  { id: 3, title: 'React虚拟DOM工作原理', active: false, date: '2023-11-23' },
+  { id: 4, title: '化工生产流程优化', active: false, date: '2023-11-22' },
+  { id: 5, title: '催化剂选择与反应条件', active: false, date: '2023-11-21' },
+  { id: 6, title: '热力学与化学平衡', active: false, date: '2023-11-20' },
+])
+
+// 当前对话标题
+const currentChatTitle = ref('天气预报和生活问题')
+
+// 切换对话历史
+const switchChat = (id: number) => {
+  chatHistory.value.forEach((chat) => {
+    chat.active = chat.id === id
+  })
+  // 在实际应用中，这里需要加载对应的聊天记录
+  // 此处仅做样式演示
+  const selectedChat = chatHistory.value.find((chat) => chat.id === id)
+  if (selectedChat) {
+    currentChatTitle.value = selectedChat.title
+  }
+}
+
+// 新建对话
+const createNewChat = () => {
+  // 实际应用中这里需要创建新对话并切换到新对话
+  // 此处仅做样式演示
+  const newId = chatHistory.value.length + 1
+  chatHistory.value.forEach((chat) => {
+    chat.active = false
+  })
+
+  const newChat = {
+    id: newId,
+    title: '新对话 ' + newId,
+    active: true,
+    date: new Date().toISOString().split('T')[0],
+  }
+
+  chatHistory.value.unshift(newChat)
+  currentChatTitle.value = newChat.title
+}
+
 // 切换思考内容的展开/收起状态
 const toggleThinking = (index: number) => {
   if (messages.value[index]) {
@@ -288,187 +334,43 @@ onMounted(() => {
           </button>
         </div>
 
-        <div class="ai-content">
-          <!-- 消息列表 -->
-          <div class="message-list" ref="messagesContainer">
-            <div v-if="messages.length === 0" class="empty-state">
-              <div class="empty-icon">
+        <div class="ai-body">
+          <!-- 左侧对话历史面板 -->
+          <div class="chat-history">
+            <div class="history-header">
+              <h3>对话历史</h3>
+              <button class="new-chat-button" @click="createNewChat">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="80"
-                  height="80"
+                  width="16"
+                  height="16"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="1.2"
+                  stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  class="empty-state-svg"
                 >
-                  <path
-                    d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44A2.5 2.5 0 0 1 2 17.5v-11a2.5 2.5 0 0 1 2.5-2.5h5.5"
-                  ></path>
-                  <path
-                    d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44A2.5 2.5 0 0 0 22 17.5v-11a2.5 2.5 0 0 0-2.5-2.5h-5.5"
-                  ></path>
-                  <circle cx="12" cy="12" r="2"></circle>
-                  <path d="M12 9v1"></path>
-                  <path d="M12 14v1"></path>
-                  <path d="M14 12h1"></path>
-                  <path d="M9 12h1"></path>
-                  <path d="M6 8.5a6.5 6.5 0 0 1 12 0" stroke-dasharray="1 2"></path>
-                  <circle cx="6" cy="8.5" r=".5" fill="currentColor"></circle>
-                  <circle cx="18" cy="8.5" r=".5" fill="currentColor"></circle>
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
-              </div>
-              <div class="empty-text">准备就绪</div>
-              <div class="empty-desc">您的化工AI助手可以回答各种问题</div>
-              <div class="empty-suggestions">
-                <p>试试这些问题:</p>
-                <ul>
-                  <li @click="fillQuestion('今天天气如何?')"><span class="suggestion-tag">问候</span> 今天天气如何?</li>
-                  <li @click="fillQuestion('如何学习编程?')"><span class="suggestion-tag">学习</span> 如何学习编程?</li>
-                  <li @click="fillQuestion('帮我解释React中的虚拟DOM')">
-                    <span class="suggestion-tag">技术</span> 帮我解释React中的虚拟DOM
-                  </li>
-                </ul>
-              </div>
+                新对话
+              </button>
             </div>
 
-            <div
-              v-for="(message, index) in messages"
-              :key="index"
-              class="message"
-              :class="{ 'user-message': message.role === 'user', 'ai-message': message.role === 'assistant' }"
-            >
-              <div class="message-container">
-                <div class="message-avatar-container">
-                  <div
-                    class="message-avatar"
-                    :class="{ 'user-avatar': message.role === 'user', 'ai-avatar': message.role === 'assistant' }"
-                  >
-                    <template v-if="message.role === 'user'">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                      </svg>
-                    </template>
-                    <template v-else>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path
-                          d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"
-                        ></path>
-                        <circle cx="7.5" cy="14.5" r="1.5"></circle>
-                        <circle cx="16.5" cy="14.5" r="1.5"></circle>
-                      </svg>
-                    </template>
-                  </div>
-                  <div class="message-sender">
-                    {{ message.role === 'user' ? '您' : 'AI助手' }}
-                  </div>
-                </div>
-
-                <div class="message-bubble">
-                  <!-- 思考内容 -->
-                  <div v-if="message.role === 'assistant' && message.thinking" class="thinking-box">
-                    <div class="thinking-header" @click="toggleThinking(index)">
-                      <div class="thinking-title">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <path d="M12 16v-4"></path>
-                          <path d="M12 8h.01"></path>
-                        </svg>
-                        思考过程
-                      </div>
-                      <div class="thinking-toggle">
-                        {{ message.isThinkingExpanded ? '收起' : '展开' }}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          :class="{ 'toggle-rotated': message.isThinkingExpanded }"
-                        >
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      </div>
-                    </div>
-
-                    <div class="thinking-content" v-show="message.isThinkingExpanded">
-                      {{ message.thinking }}
-                    </div>
-                  </div>
-
-                  <!-- 消息内容 -->
-                  <div class="message-text" v-html="renderMarkdown(message.content)"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 输入区域 -->
-          <div class="input-area">
-            <div class="input-container">
-              <!-- 必须阻止keydown的冒泡，否则会被不明拦截 -->
-              <a-textarea
-                ref="textareaRef"
-                v-model:value="inputText"
-                placeholder="输入您的问题..."
-                @keydown.stop="handleEnter"
-                :disabled="isLoading"
-                :auto-size="{ minRows: 1, maxRows: 5 }"
-                class="ai-textarea"
-              />
-
-              <!-- 按钮部分保持不变 -->
-              <a-button
-                type="primary"
-                class="send-button"
-                @click="sendMessage"
-                :disabled="isLoading || !inputText.trim()"
-                :loading="isLoading"
-                shape="circle"
+            <div class="history-list">
+              <div
+                v-for="chat in chatHistory"
+                :key="chat.id"
+                class="history-item"
+                :class="{ active: chat.active }"
+                @click="switchChat(chat.id)"
               >
-                <template #icon>
+                <div class="history-item-icon">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
+                    width="16"
+                    height="16"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -476,24 +378,273 @@ onMounted(() => {
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   >
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                   </svg>
-                </template>
-              </a-button>
+                </div>
+                <div class="history-item-content">
+                  <div class="history-item-title">{{ chat.title }}</div>
+                  <div class="history-item-date">{{ chat.date }}</div>
+                </div>
+              </div>
             </div>
-            <div class="input-hint">按Enter发送，Shift+Enter换行</div>
+
+            <div class="history-footer">
+              <button class="settings-button">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                  ></path>
+                </svg>
+                设置
+              </button>
+            </div>
           </div>
 
-          <!-- 底部装饰线 -->
-          <div class="window-bottom-line"></div>
+          <div class="ai-content">
+            <!-- 当前对话标题 -->
+            <div class="chat-title">
+              <h3>{{ currentChatTitle }}</h3>
+              <div class="title-actions">
+                <button class="title-action-button">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                  重命名
+                </button>
+              </div>
+            </div>
+
+            <!-- 消息列表 -->
+            <div class="message-list" ref="messagesContainer">
+              <div v-if="messages.length === 0" class="empty-state">
+                <div class="empty-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="80"
+                    height="80"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="empty-state-svg"
+                  >
+                    <path
+                      d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44A2.5 2.5 0 0 1 2 17.5v-11a2.5 2.5 0 0 1 2.5-2.5h5.5"
+                    ></path>
+                    <path
+                      d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44A2.5 2.5 0 0 0 22 17.5v-11a2.5 2.5 0 0 0-2.5-2.5h-5.5"
+                    ></path>
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <path d="M12 9v1"></path>
+                    <path d="M12 14v1"></path>
+                    <path d="M14 12h1"></path>
+                    <path d="M9 12h1"></path>
+                    <path d="M6 8.5a6.5 6.5 0 0 1 12 0" stroke-dasharray="1 2"></path>
+                    <circle cx="6" cy="8.5" r=".5" fill="currentColor"></circle>
+                    <circle cx="18" cy="8.5" r=".5" fill="currentColor"></circle>
+                  </svg>
+                </div>
+                <div class="empty-text">准备就绪</div>
+                <div class="empty-desc">您的化工AI助手可以回答各种问题</div>
+                <div class="empty-suggestions">
+                  <p>试试这些问题:</p>
+                  <ul>
+                    <li @click="fillQuestion('今天天气如何?')">
+                      <span class="suggestion-tag">问候</span> 今天天气如何?
+                    </li>
+                    <li @click="fillQuestion('如何学习编程?')">
+                      <span class="suggestion-tag">学习</span> 如何学习编程?
+                    </li>
+                    <li @click="fillQuestion('帮我解释React中的虚拟DOM')">
+                      <span class="suggestion-tag">技术</span> 帮我解释React中的虚拟DOM
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div
+                v-for="(message, index) in messages"
+                :key="index"
+                class="message"
+                :class="{ 'user-message': message.role === 'user', 'ai-message': message.role === 'assistant' }"
+              >
+                <div class="message-container">
+                  <div class="message-avatar-container">
+                    <div
+                      class="message-avatar"
+                      :class="{ 'user-avatar': message.role === 'user', 'ai-avatar': message.role === 'assistant' }"
+                    >
+                      <template v-if="message.role === 'user'">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                      </template>
+                      <template v-else>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path
+                            d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"
+                          ></path>
+                          <circle cx="7.5" cy="14.5" r="1.5"></circle>
+                          <circle cx="16.5" cy="14.5" r="1.5"></circle>
+                        </svg>
+                      </template>
+                    </div>
+                    <div class="message-sender">
+                      {{ message.role === 'user' ? '您' : 'AI助手' }}
+                    </div>
+                  </div>
+
+                  <div class="message-bubble">
+                    <!-- 思考内容 -->
+                    <div v-if="message.role === 'assistant' && message.thinking" class="thinking-box">
+                      <div class="thinking-header" @click="toggleThinking(index)">
+                        <div class="thinking-title">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4"></path>
+                            <path d="M12 8h.01"></path>
+                          </svg>
+                          思考过程
+                        </div>
+                        <div class="thinking-toggle">
+                          {{ message.isThinkingExpanded ? '收起' : '展开' }}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            :class="{ 'toggle-rotated': message.isThinkingExpanded }"
+                          >
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                          </svg>
+                        </div>
+                      </div>
+
+                      <div class="thinking-content" v-show="message.isThinkingExpanded">
+                        {{ message.thinking }}
+                      </div>
+                    </div>
+
+                    <!-- 消息内容 -->
+                    <div class="message-text" v-html="renderMarkdown(message.content)"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="input-area">
+              <div class="input-container">
+                <!-- 必须阻止keydown的冒泡，否则会被不明拦截 -->
+                <a-textarea
+                  ref="textareaRef"
+                  v-model:value="inputText"
+                  placeholder="输入您的问题..."
+                  @keydown.stop="handleEnter"
+                  :disabled="isLoading"
+                  :auto-size="{ minRows: 1, maxRows: 5 }"
+                  class="ai-textarea"
+                />
+
+                <!-- 按钮部分保持不变 -->
+                <a-button
+                  type="primary"
+                  class="send-button"
+                  @click="sendMessage"
+                  :disabled="isLoading || !inputText.trim()"
+                  :loading="isLoading"
+                  shape="circle"
+                >
+                  <template #icon>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <line x1="22" y1="2" x2="11" y2="13"></line>
+                      <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                  </template>
+                </a-button>
+              </div>
+              <div class="input-hint">按Enter发送，Shift+Enter换行</div>
+            </div>
+
+            <!-- 底部装饰线 -->
+            <div class="window-bottom-line"></div>
+          </div>
         </div>
       </div>
     </div>
   </transition>
 </template>
 
-<!-- v-html渲染内容，使用全局样式，以免CSS被覆盖 -->
 <style>
 /* 确保重置样式应用到所有相关元素 */
 .ai-window * {
@@ -703,9 +854,9 @@ onMounted(() => {
 
 .ai-window {
   position: relative;
-  width: 85%;
-  max-width: 900px;
-  height: 80vh;
+  width: 90%;
+  max-width: 1200px;
+  height: 85vh;
   background-color: var(--ai-bg-dark);
   border-radius: 12px;
   box-shadow:
@@ -813,16 +964,205 @@ onMounted(() => {
   transform: rotate(90deg);
 }
 
-/* 内容区域 */
-.ai-content {
+/* 内容区域调整 */
+.ai-body {
+  display: flex;
   flex: 1;
+  overflow: hidden;
+}
+
+/* 对话历史面板 */
+.chat-history {
+  width: 240px;
+  min-width: 240px;
+  background-color: var(--ai-bg-darker);
+  border-right: 1px solid rgba(97, 218, 251, 0.15);
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.history-header {
+  padding: 16px;
+  border-bottom: 1px solid rgba(97, 218, 251, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-header h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ai-text-primary);
+}
+
+.new-chat-button {
+  display: flex;
+  align-items: center;
+  background-color: rgba(97, 218, 251, 0.1);
+  color: var(--ai-accent);
+  border: 1px solid rgba(97, 218, 251, 0.2);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.new-chat-button svg {
+  margin-right: 4px;
+}
+
+.new-chat-button:hover {
+  background-color: rgba(97, 218, 251, 0.2);
+  border-color: rgba(97, 218, 251, 0.3);
+}
+
+/* 历史记录列表 */
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.history-item:hover {
+  background-color: rgba(97, 218, 251, 0.05);
+}
+
+.history-item.active {
+  background-color: rgba(97, 218, 251, 0.1);
+  border-color: rgba(97, 218, 251, 0.2);
+}
+
+.history-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background-color: rgba(97, 218, 251, 0.08);
+  margin-right: 10px;
+  color: var(--ai-accent);
+}
+
+.history-item-content {
+  flex: 1;
   overflow: hidden;
-  position: relative;
-  background-image:
-    radial-gradient(circle at 10% 20%, rgba(97, 218, 251, 0.03) 0%, transparent 70%),
-    radial-gradient(circle at 90% 80%, rgba(97, 218, 251, 0.03) 0%, transparent 70%);
+}
+
+.history-item-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ai-text-secondary);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-item.active .history-item-title {
+  color: var(--ai-accent);
+}
+
+.history-item-date {
+  font-size: 0.7rem;
+  color: var(--ai-text-dim);
+}
+
+/* 历史面板底部 */
+.history-footer {
+  padding: 12px;
+  border-top: 1px solid rgba(97, 218, 251, 0.1);
+}
+
+.settings-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: var(--ai-text-tertiary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-button svg {
+  margin-right: 8px;
+}
+
+.settings-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--ai-text-secondary);
+}
+
+/* 对话区域，让其占据剩余空间 */
+.ai-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0; /* 确保flexbox可以正常收缩 */
+  overflow: hidden; /* 防止溢出 */
+}
+
+/* 对话标题 */
+.chat-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background-color: rgba(11, 16, 27, 0.5);
+  border-bottom: 1px solid rgba(97, 218, 251, 0.1);
+}
+
+.chat-title h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ai-accent);
+}
+
+.title-actions {
+  display: flex;
+}
+
+.title-action-button {
+  display: flex;
+  align-items: center;
+  background-color: rgba(97, 218, 251, 0.05);
+  color: var(--ai-text-tertiary);
+  border: 1px solid rgba(97, 218, 251, 0.1);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.title-action-button svg {
+  margin-right: 4px;
+}
+
+.title-action-button:hover {
+  background-color: rgba(97, 218, 251, 0.1);
+  color: var(--ai-accent);
+  border-color: rgba(97, 218, 251, 0.2);
 }
 
 /* 消息列表 - 改善背景与内容区分 */
@@ -835,35 +1175,17 @@ onMounted(() => {
   background-image:
     linear-gradient(to bottom, rgba(18, 24, 38, 0.3), rgba(11, 16, 27, 0.4)),
     url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2361dafb' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  display: flex;
+  flex-direction: column;
 }
 
-/* 自定义滚动条 */
-.message-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.message-list::-webkit-scrollbar-track {
-  background: rgba(11, 16, 27, 0.3);
-  border-radius: 3px;
-}
-
-.message-list::-webkit-scrollbar-thumb {
-  background-color: rgba(97, 218, 251, 0.2);
-  border-radius: 3px;
-  border: 1px solid rgba(97, 218, 251, 0.1);
-}
-
-.message-list::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(97, 218, 251, 0.4);
-}
-
-/* 空状态 */
+/* 空状态占满高度 */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  flex: 1;
   color: var(--ai-text-tertiary);
   text-align: center;
   padding: 20px;
