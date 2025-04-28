@@ -35,8 +35,7 @@ const models = [
 const modelParamsConfig = {
   model1: [
     { id: 'param1', name: '算法', options: ['TimesNet', 'TimeMixer'] },
-    { id: 'param2', name: '序列长度', options: ['30', '60', '90'] },
-    { id: 'param3', name: '预测长度', options: ['10', '20', '30'] },
+    { id: 'param2', name: '任务', options: ['short_term_forecast', 'anomaly_detection'] },
     { id: 'param4', name: '传感器编号', options: ['RMS001', 'RMS002', 'RMS003'] },
   ],
   model2: [
