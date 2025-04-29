@@ -87,46 +87,6 @@ const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const conversations = ref<Conversation[]>([
   {
     id: 1,
-    title: '天气预报和生活问题',
-    createdAt: '2023-11-25T10:30:00Z',
-    updatedAt: '2023-11-25T10:45:00Z',
-    active: true,
-    messages: [
-      { id: 1, conversationId: 1, role: 'user', content: '今天天气如何?', timestamp: '2023-11-25T10:30:00Z' },
-      {
-        id: 2,
-        conversationId: 1,
-        role: 'assistant',
-        content:
-          '我无法获取实时的天气数据，因为我没有连接到实时天气服务。\n\n建议您：\n- 查看本地天气应用或网站\n- 使用天气预报服务如天气通、Weather Channel等\n- 或者直接在搜索引擎中搜索"[您所在城市]天气"',
-        thinking:
-          '让我思考一下如何回答关于天气的问题。\n我应该提醒用户我无法获取实时天气数据，但可以提供一些关于天气描述的一般信息。\n我也可以建议用户查看天气预报应用或网站。',
-        timestamp: '2023-11-25T10:30:05Z',
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: '编程学习路径和建议',
-    createdAt: '2023-11-24T15:20:00Z',
-    updatedAt: '2023-11-24T15:35:00Z',
-    active: false,
-    messages: [
-      { id: 3, conversationId: 2, role: 'user', content: '如何学习编程?', timestamp: '2023-11-24T15:20:00Z' },
-      {
-        id: 4,
-        conversationId: 2,
-        role: 'assistant',
-        content:
-          '# 学习编程的路径\n\n## 第一步：选择一门语言\n- 初学者友好：Python, JavaScript\n- 移动开发：Swift (iOS), Kotlin (Android)\n- 网站开发：HTML/CSS/JavaScript\n- 游戏开发：C#, C++\n\n## 学习资源\n- 在线平台：Codecademy, freeCodeCamp, Coursera\n- 视频教程：B站, YouTube上的编程频道\n- 交互式学习：LeetCode, HackerRank\n\n## 实践项目\n建立个人项目是巩固知识的最佳方式！\n\n## 保持学习\n编程领域不断发展，持续学习至关重要。',
-        thinking:
-          '这是一个关于学习编程的宽泛问题。\n我应该提供一个结构化的回答，包括：\n1. 选择编程语言\n2. 学习资源推荐\n3. 实践项目的重要性\n4. 持续学习的建议',
-        timestamp: '2023-11-24T15:20:10Z',
-      },
-    ],
-  },
-  {
-    id: 3,
     title: 'React虚拟DOM工作原理',
     createdAt: '2023-11-23T09:15:00Z',
     updatedAt: '2023-11-23T09:25:00Z',
@@ -150,27 +110,6 @@ const conversations = ref<Conversation[]>([
         timestamp: '2023-11-23T09:15:12Z',
       },
     ],
-  },
-  {
-    id: 4,
-    title: '化工生产流程优化',
-    createdAt: '2023-11-22T14:10:00Z',
-    updatedAt: '2023-11-22T14:25:00Z',
-    active: false,
-  },
-  {
-    id: 5,
-    title: '催化剂选择与反应条件',
-    createdAt: '2023-11-21T11:05:00Z',
-    updatedAt: '2023-11-21T11:30:00Z',
-    active: false,
-  },
-  {
-    id: 6,
-    title: '热力学与化学平衡',
-    createdAt: '2023-11-20T16:40:00Z',
-    updatedAt: '2023-11-20T17:10:00Z',
-    active: false,
   },
 ])
 
@@ -299,23 +238,17 @@ const renameCurrentChat = () => {
 
 // 预设的响应映射 - 在实际项目中应该通过API获取
 const presetResponses: Record<string, APIResponse> = {
-  '今天天气如何?': {
-    thinking:
-      '让我思考一下如何回答关于天气的问题。\n我应该提醒用户我无法获取实时天气数据，但可以提供一些关于天气描述的一般信息。\n我也可以建议用户查看天气预报应用或网站。',
-    response:
-      '我无法获取实时的天气数据，因为我没有连接到实时天气服务。\n\n建议您：\n- 查看本地天气应用或网站\n- 使用天气预报服务如天气通、Weather Channel等\n- 或者直接在搜索引擎中搜索"[您所在城市]天气"',
-  },
-  '如何学习编程?': {
-    thinking:
-      '这是一个关于学习编程的宽泛问题。\n我应该提供一个结构化的回答，包括：\n1. 选择编程语言\n2. 学习资源推荐\n3. 实践项目的重要性\n4. 持续学习的建议',
-    response:
-      '# 学习编程的路径\n\n## 第一步：选择一门语言\n- 初学者友好：Python, JavaScript\n- 移动开发：Swift (iOS), Kotlin (Android)\n- 网站开发：HTML/CSS/JavaScript\n- 游戏开发：C#, C++\n\n## 学习资源\n- 在线平台：Codecademy, freeCodeCamp, Coursera\n- 视频教程：B站, YouTube上的编程频道\n- 交互式学习：LeetCode, HackerRank\n\n## 实践项目\n建立个人项目是巩固知识的最佳方式！\n\n## 保持学习\n编程领域不断发展，持续学习至关重要。',
-  },
   帮我解释React中的虚拟DOM: {
     thinking:
       '这个问题是关于React中虚拟DOM的概念。\n我需要解释:\n1. 什么是虚拟DOM\n2. 为什么React使用虚拟DOM\n3. 它如何工作\n4. 它的优势是什么\n5. 可能的缺点',
     response:
       '# React中的虚拟DOM\n\n## 什么是虚拟DOM？\n虚拟DOM(Virtual DOM)是React在内存中维护的UI表示，本质上是一个轻量级的JavaScript对象树，是实际DOM的副本。\n\n## 工作原理\n1. **初始渲染**：React创建整个虚拟DOM树\n2. **状态更新**：创建新的虚拟DOM树\n3. **对比(Diffing)**：比较新旧树差异\n4. **批量更新**：只将差异部分应用到实际DOM\n\n## 优势\n- **性能优化**：减少直接操作DOM\n- **跨平台能力**：抽象化DOM便于支持其他平台\n- **声明式编程**：让开发者专注于状态而非DOM操作\n\n```jsx\n// 使用React时我们只需声明UI状态\nfunction Counter() {\n  const [count, setCount] = useState(0);\n  return <div>{count}</div>;\n}\n```',
+  },
+  请展示Markdown表格功能: {
+    thinking:
+      '用户希望测试Markdown表格功能。我将创建一个简单的人员信息表格，包含姓名、年龄和城市三个字段，并添加一些关于Markdown表格的说明。',
+    response:
+      '# Markdown表格渲染测试\n\n下面是一个简单的人员信息表格：\n\n| 姓名   | 年龄 | 城市    |\n|--------|------|--------|\n| 张三   | 25   | 北京    |\n| 李四   | 30   | 上海    |\n| 王五   | 28   | 广州    |\n\n## 表格功能说明\n\n- Markdown表格使用`|`和`-`字符构建\n- 可以通过`:`控制对齐方式\n- 表格支持在各种Markdown环境中使用',
   },
 }
 
@@ -323,7 +256,7 @@ const presetResponses: Record<string, APIResponse> = {
 const defaultResponse: APIResponse = {
   thinking: '我需要考虑如何回应这个问题。\n看起来这个问题不在我的预设回复中。\n我应该提供一个通用但有帮助的回答。',
   response:
-    '感谢您的提问！这似乎是一个我没有预设回复的问题。在实际应用中，AI会根据您的问题生成相关回复。\n\n您可以尝试以下预设问题以查看完整效果：\n- "今天天气如何?"\n- "如何学习编程?"\n- "帮我解释React中的虚拟DOM"',
+    '感谢您的提问！这似乎是一个我没有预设回复的问题。在实际应用中，AI会根据您的问题生成相关回复。\n\n您可以尝试以下预设问题以查看完整效果：\n- "今天天气如何?"\n- "如何学习编程?"\n- "帮我解释React中的虚拟DOM"\n- "请展示Markdown表格功能"',
 }
 
 // 模拟 API 响应
@@ -712,6 +645,9 @@ onMounted(() => {
                     </li>
                     <li @click="fillQuestion('帮我解释React中的虚拟DOM')">
                       <span class="suggestion-tag">技术</span> 帮我解释React中的虚拟DOM
+                    </li>
+                    <li @click="fillQuestion('请展示Markdown表格功能')">
+                      <span class="suggestion-tag">测试</span> 请展示Markdown表格功能
                     </li>
                   </ul>
                 </div>
@@ -1733,7 +1669,8 @@ onMounted(() => {
 .message-text ul,
 .message-text ol {
   padding-left: 2.5em !important; /* 增加左内边距使列表更靠右 */
-  margin: 12px 0 !important; /* 增加上下外边距 */
+  margin: 12px 0 !important;
+  /* 增加上下外边距 */
   list-style-position: outside !important; /* 确保列表标记在内容框外 */
 }
 
