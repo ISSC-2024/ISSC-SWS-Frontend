@@ -6,7 +6,7 @@
  * 2. 采用高级暗色科技风格设计
  * 3. 使用Ant Design Vue组件
  */
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, watch, nextTick, computed } from 'vue'
 import { Marked } from 'marked'
 import { markedHighlight } from 'marked-highlight'
 import DOMPurify from 'dompurify'
@@ -46,18 +46,260 @@ const renderMarkdown = (content: string): string => {
   return DOMPurify.sanitize(html as string)
 }
 
+// 对话数据库模型相关定义 //
+
 // 消息类型定义
 interface Message {
+  id?: number
+  conversationId?: number
   role: 'user' | 'assistant'
   content: string
+  timestamp?: string
   isThinking?: boolean
   thinking?: string
   isThinkingExpanded?: boolean // 控制思考内容的展开/收起状态
 }
 
-// 预设的响应映射
-const presetResponses: Record<string, { thinking: string; response: string }> = {
-  '# 今天天气如何?': {
+// 对话类型定义
+interface Conversation {
+  id: number
+  title: string
+  createdAt: string
+  updatedAt: string
+  active?: boolean // UI状态，不需要存储到数据库
+  messages?: Message[] // 关联的消息
+}
+
+// API响应类型定义
+interface APIResponse {
+  thinking: string
+  response: string
+}
+
+// 状态
+const messages = ref<Message[]>([])
+const isLoading = ref(false)
+const inputText = ref('')
+const messagesContainer = ref<HTMLElement | null>(null)
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
+
+// 对话历史数据
+const conversations = ref<Conversation[]>([
+  {
+    id: 1,
+    title: '天气预报和生活问题',
+    createdAt: '2023-11-25T10:30:00Z',
+    updatedAt: '2023-11-25T10:45:00Z',
+    active: true,
+    messages: [
+      { id: 1, conversationId: 1, role: 'user', content: '今天天气如何?', timestamp: '2023-11-25T10:30:00Z' },
+      {
+        id: 2,
+        conversationId: 1,
+        role: 'assistant',
+        content:
+          '我无法获取实时的天气数据，因为我没有连接到实时天气服务。\n\n建议您：\n- 查看本地天气应用或网站\n- 使用天气预报服务如天气通、Weather Channel等\n- 或者直接在搜索引擎中搜索"[您所在城市]天气"',
+        thinking:
+          '让我思考一下如何回答关于天气的问题。\n我应该提醒用户我无法获取实时天气数据，但可以提供一些关于天气描述的一般信息。\n我也可以建议用户查看天气预报应用或网站。',
+        timestamp: '2023-11-25T10:30:05Z',
+      },
+    ],
+  },
+  {
+    id: 2,
+    title: '编程学习路径和建议',
+    createdAt: '2023-11-24T15:20:00Z',
+    updatedAt: '2023-11-24T15:35:00Z',
+    active: false,
+    messages: [
+      { id: 3, conversationId: 2, role: 'user', content: '如何学习编程?', timestamp: '2023-11-24T15:20:00Z' },
+      {
+        id: 4,
+        conversationId: 2,
+        role: 'assistant',
+        content:
+          '# 学习编程的路径\n\n## 第一步：选择一门语言\n- 初学者友好：Python, JavaScript\n- 移动开发：Swift (iOS), Kotlin (Android)\n- 网站开发：HTML/CSS/JavaScript\n- 游戏开发：C#, C++\n\n## 学习资源\n- 在线平台：Codecademy, freeCodeCamp, Coursera\n- 视频教程：B站, YouTube上的编程频道\n- 交互式学习：LeetCode, HackerRank\n\n## 实践项目\n建立个人项目是巩固知识的最佳方式！\n\n## 保持学习\n编程领域不断发展，持续学习至关重要。',
+        thinking:
+          '这是一个关于学习编程的宽泛问题。\n我应该提供一个结构化的回答，包括：\n1. 选择编程语言\n2. 学习资源推荐\n3. 实践项目的重要性\n4. 持续学习的建议',
+        timestamp: '2023-11-24T15:20:10Z',
+      },
+    ],
+  },
+  {
+    id: 3,
+    title: 'React虚拟DOM工作原理',
+    createdAt: '2023-11-23T09:15:00Z',
+    updatedAt: '2023-11-23T09:25:00Z',
+    active: false,
+    messages: [
+      {
+        id: 5,
+        conversationId: 3,
+        role: 'user',
+        content: '帮我解释React中的虚拟DOM',
+        timestamp: '2023-11-23T09:15:00Z',
+      },
+      {
+        id: 6,
+        conversationId: 3,
+        role: 'assistant',
+        content:
+          '# React中的虚拟DOM\n\n## 什么是虚拟DOM？\n虚拟DOM(Virtual DOM)是React在内存中维护的UI表示，本质上是一个轻量级的JavaScript对象树，是实际DOM的副本。\n\n## 工作原理\n1. **初始渲染**：React创建整个虚拟DOM树\n2. **状态更新**：创建新的虚拟DOM树\n3. **对比(Diffing)**：比较新旧树差异\n4. **批量更新**：只将差异部分应用到实际DOM\n\n## 优势\n- **性能优化**：减少直接操作DOM\n- **跨平台能力**：抽象化DOM便于支持其他平台\n- **声明式编程**：让开发者专注于状态而非DOM操作\n\n```jsx\n// 使用React时我们只需声明UI状态\nfunction Counter() {\n  const [count, setCount] = useState(0);\n  return <div>{count}</div>;\n}\n```',
+        thinking:
+          '这个问题是关于React中虚拟DOM的概念。\n我需要解释:\n1. 什么是虚拟DOM\n2. 为什么React使用虚拟DOM\n3. 它如何工作\n4. 它的优势是什么\n5. 可能的缺点',
+        timestamp: '2023-11-23T09:15:12Z',
+      },
+    ],
+  },
+  {
+    id: 4,
+    title: '化工生产流程优化',
+    createdAt: '2023-11-22T14:10:00Z',
+    updatedAt: '2023-11-22T14:25:00Z',
+    active: false,
+  },
+  {
+    id: 5,
+    title: '催化剂选择与反应条件',
+    createdAt: '2023-11-21T11:05:00Z',
+    updatedAt: '2023-11-21T11:30:00Z',
+    active: false,
+  },
+  {
+    id: 6,
+    title: '热力学与化学平衡',
+    createdAt: '2023-11-20T16:40:00Z',
+    updatedAt: '2023-11-20T17:10:00Z',
+    active: false,
+  },
+])
+
+// 当前对话ID
+const currentConversationId = ref(1)
+
+// 当前对话 - 通过计算属性获取
+const currentConversation = computed(() => {
+  return conversations.value.find((conversation) => conversation.id === currentConversationId.value) || null
+})
+
+// 当前对话标题
+const currentChatTitle = computed(() => {
+  return currentConversation.value?.title || '新对话'
+})
+
+// 初始化对话历史中的active状态
+const initializeActiveState = () => {
+  conversations.value.forEach((conversation) => {
+    conversation.active = conversation.id === currentConversationId.value
+  })
+}
+
+// 切换对话历史
+const switchChat = (id: number) => {
+  // 保存当前对话的消息
+  saveCurrentMessages()
+
+  // 更新当前对话ID
+  currentConversationId.value = id
+
+  // 更新激活状态
+  initializeActiveState()
+
+  // 加载对应对话的消息
+  loadConversationMessages(id)
+}
+
+// 保存当前对话的消息
+const saveCurrentMessages = () => {
+  if (!currentConversation.value) return
+
+  // 如果当前有消息，则保存到对应对话
+  if (messages.value.length > 0) {
+    const conversation = conversations.value.find((c) => c.id === currentConversationId.value)
+    if (conversation) {
+      conversation.messages = [...messages.value]
+      conversation.updatedAt = new Date().toISOString()
+
+      // 实际项目中，这里应该调用API保存到数据库
+      console.log('保存对话消息:', conversation)
+    }
+  }
+}
+
+// 加载特定对话的消息
+const loadConversationMessages = (conversationId: number) => {
+  const conversation = conversations.value.find((c) => c.id === conversationId)
+
+  if (conversation && conversation.messages && conversation.messages.length > 0) {
+    messages.value = [...conversation.messages]
+  } else {
+    // 如果没有消息，清空消息列表
+    messages.value = []
+
+    // 实际项目中，这里应该调用API获取消息
+    console.log('从API加载对话消息，对话ID:', conversationId)
+  }
+}
+
+// 新建对话
+const createNewChat = () => {
+  // 保存当前对话
+  saveCurrentMessages()
+
+  // 生成新ID (实际项目中应由后端生成)
+  const newId = Math.max(...conversations.value.map((c) => c.id)) + 1
+
+  // 当前时间
+  const now = new Date().toISOString()
+
+  // 创建新对话
+  const newChat: Conversation = {
+    id: newId,
+    title: '新对话 ' + newId,
+    createdAt: now,
+    updatedAt: now,
+    active: true,
+    messages: [],
+  }
+
+  // 更新对话列表
+  conversations.value.forEach((chat) => {
+    chat.active = false
+  })
+  conversations.value.unshift(newChat)
+
+  // 更新当前对话ID
+  currentConversationId.value = newId
+
+  // 清空消息
+  messages.value = []
+
+  // 实际项目中，这里应该调用API创建新对话
+  console.log('创建新对话:', newChat)
+}
+
+// 重命名当前对话
+const renameCurrentChat = () => {
+  if (!currentConversation.value) return
+
+  // 在实际项目中，这里应该弹出对话框让用户输入新名称
+  const newTitle = prompt('请输入新的对话标题:', currentConversation.value.title)
+
+  if (newTitle && newTitle.trim() !== '') {
+    const conversation = conversations.value.find((c) => c.id === currentConversationId.value)
+    if (conversation) {
+      conversation.title = newTitle.trim()
+      conversation.updatedAt = new Date().toISOString()
+
+      // 实际项目中，这里应该调用API更新对话标题
+      console.log('更新对话标题:', conversation)
+    }
+  }
+}
+
+// 预设的响应映射 - 在实际项目中应该通过API获取
+const presetResponses: Record<string, APIResponse> = {
+  '今天天气如何?': {
     thinking:
       '让我思考一下如何回答关于天气的问题。\n我应该提醒用户我无法获取实时天气数据，但可以提供一些关于天气描述的一般信息。\n我也可以建议用户查看天气预报应用或网站。',
     response:
@@ -78,72 +320,19 @@ const presetResponses: Record<string, { thinking: string; response: string }> = 
 }
 
 // 默认回复
-const defaultResponse = {
+const defaultResponse: APIResponse = {
   thinking: '我需要考虑如何回应这个问题。\n看起来这个问题不在我的预设回复中。\n我应该提供一个通用但有帮助的回答。',
   response:
-    '感谢您的提问！这似乎是一个我没有预设回复的问题。在实际应用中，AI会根据您的问题生成相关回复。\n\n您可以尝试以下预设问题以查看完整效果：\n- "# 今天天气如何?"\n- "如何学习编程?"\n- "帮我解释React中的虚拟DOM"',
+    '感谢您的提问！这似乎是一个我没有预设回复的问题。在实际应用中，AI会根据您的问题生成相关回复。\n\n您可以尝试以下预设问题以查看完整效果：\n- "今天天气如何?"\n- "如何学习编程?"\n- "帮我解释React中的虚拟DOM"',
 }
 
 // 模拟 API 响应
-const simulateResponse = async (message: string) => {
+const simulateResponse = async (message: string): Promise<APIResponse> => {
   // 模拟网络延迟
   await new Promise((resolve) => setTimeout(resolve, 800))
 
   // 查找预设回复或使用默认回复
   return presetResponses[message] || defaultResponse
-}
-
-// 状态
-const messages = ref<Message[]>([])
-const isLoading = ref(false)
-const inputText = ref('')
-const messagesContainer = ref<HTMLElement | null>(null)
-const textareaRef = ref<HTMLTextAreaElement | null>(null)
-
-// 对话历史数据
-const chatHistory = ref([
-  { id: 1, title: '天气预报和生活问题', active: true, date: '2023-11-25' },
-  { id: 2, title: '编程学习路径和建议', active: false, date: '2023-11-24' },
-  { id: 3, title: 'React虚拟DOM工作原理', active: false, date: '2023-11-23' },
-  { id: 4, title: '化工生产流程优化', active: false, date: '2023-11-22' },
-  { id: 5, title: '催化剂选择与反应条件', active: false, date: '2023-11-21' },
-  { id: 6, title: '热力学与化学平衡', active: false, date: '2023-11-20' },
-])
-
-// 当前对话标题
-const currentChatTitle = ref('天气预报和生活问题')
-
-// 切换对话历史
-const switchChat = (id: number) => {
-  chatHistory.value.forEach((chat) => {
-    chat.active = chat.id === id
-  })
-  // 在实际应用中，这里需要加载对应的聊天记录
-  // 此处仅做样式演示
-  const selectedChat = chatHistory.value.find((chat) => chat.id === id)
-  if (selectedChat) {
-    currentChatTitle.value = selectedChat.title
-  }
-}
-
-// 新建对话
-const createNewChat = () => {
-  // 实际应用中这里需要创建新对话并切换到新对话
-  // 此处仅做样式演示
-  const newId = chatHistory.value.length + 1
-  chatHistory.value.forEach((chat) => {
-    chat.active = false
-  })
-
-  const newChat = {
-    id: newId,
-    title: '新对话 ' + newId,
-    active: true,
-    date: new Date().toISOString().split('T')[0],
-  }
-
-  chatHistory.value.unshift(newChat)
-  currentChatTitle.value = newChat.title
 }
 
 // 切换思考内容的展开/收起状态
@@ -217,11 +406,23 @@ const sendMessage = async () => {
   const content = inputText.value.trim()
   if (!content || isLoading.value) return
 
+  // 确保有一个有效的对话
+  if (!currentConversation.value) {
+    createNewChat()
+  }
+
+  // 为消息生成时间戳
+  const timestamp = new Date().toISOString()
+
   // 添加用户消息
-  messages.value.push({
+  const userMessage: Message = {
+    conversationId: currentConversationId.value,
     role: 'user',
     content,
-  })
+    timestamp,
+  }
+
+  messages.value.push(userMessage)
 
   // 清空输入框
   clearInput()
@@ -235,17 +436,32 @@ const sendMessage = async () => {
 
   // 添加思考中的助手消息
   const thinkingMessageIndex = messages.value.length
-  messages.value.push({
+  const assistantMessage: Message = {
+    conversationId: currentConversationId.value,
     role: 'assistant',
     content: '',
     isThinking: true,
     thinking: '',
     isThinkingExpanded: true, // 思考过程中默认展开
-  })
+    timestamp: new Date().toISOString(),
+  }
+
+  messages.value.push(assistantMessage)
 
   try {
     // 模拟获取 AI 回复
     const { thinking, response } = await simulateResponse(content)
+
+    // 如果对话标题是默认的'新对话 x'，则尝试更新为更有意义的标题
+    if (currentConversation.value && currentConversation.value.title.startsWith('新对话 ')) {
+      // 实际项目中，这可能由后端生成或使用提取的关键词
+      const newTitle = content.length > 20 ? content.substring(0, 20) + '...' : content
+      currentConversation.value.title = newTitle
+      currentConversation.value.updatedAt = new Date().toISOString()
+
+      // 实际项目中，这里应该调用API更新对话标题
+      console.log('自动更新对话标题:', currentConversation.value)
+    }
 
     // 模拟流式输出思考过程
     let displayedThinking = ''
@@ -268,6 +484,14 @@ const sendMessage = async () => {
 
     // 完成后保留思考内容，但保持收起状态
     messages.value[thinkingMessageIndex].isThinking = false
+
+    // 更新对话的最后更新时间
+    if (currentConversation.value) {
+      currentConversation.value.updatedAt = new Date().toISOString()
+    }
+
+    // 保存对话消息
+    saveCurrentMessages()
   } catch (error) {
     console.error('Error getting AI response:', error)
     messages.value[thinkingMessageIndex].content = '抱歉，发生了错误，请稍后再试。'
@@ -279,6 +503,13 @@ const sendMessage = async () => {
 }
 
 onMounted(() => {
+  // 初始化激活状态
+  initializeActiveState()
+
+  // 加载当前对话的消息
+  loadConversationMessages(currentConversationId.value)
+
+  // 滚动到底部
   scrollToBottom()
 })
 </script>
@@ -360,7 +591,7 @@ onMounted(() => {
 
             <div class="history-list">
               <div
-                v-for="chat in chatHistory"
+                v-for="chat in conversations"
                 :key="chat.id"
                 class="history-item"
                 :class="{ active: chat.active }"
@@ -383,7 +614,7 @@ onMounted(() => {
                 </div>
                 <div class="history-item-content">
                   <div class="history-item-title">{{ chat.title }}</div>
-                  <div class="history-item-date">{{ chat.date }}</div>
+                  <div class="history-item-date">{{ new Date(chat.updatedAt).toLocaleDateString() }}</div>
                 </div>
               </div>
             </div>
@@ -416,7 +647,7 @@ onMounted(() => {
             <div class="chat-title">
               <h3>{{ currentChatTitle }}</h3>
               <div class="title-actions">
-                <button class="title-action-button">
+                <button class="title-action-button" @click="renameCurrentChat">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -536,6 +767,9 @@ onMounted(() => {
                     </div>
                     <div class="message-sender">
                       {{ message.role === 'user' ? '您' : 'AI助手' }}
+                      <span class="message-time" v-if="message.timestamp">
+                        {{ new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+                      </span>
                     </div>
                   </div>
 
