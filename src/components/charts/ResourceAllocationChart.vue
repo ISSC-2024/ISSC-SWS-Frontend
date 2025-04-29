@@ -14,7 +14,7 @@
 import { ref, onMounted, inject, computed, watch, onBeforeUnmount } from 'vue'
 import type { Ref } from 'vue'
 import * as echarts from 'echarts'
-import optimizationReport from '../../mock/optimization_report.json'
+import optimizationReport from '@/mock/optimization_report.json'
 
 // 注入展开状态
 const isExpanded = inject<Ref<boolean>>('isChartExpanded', ref(false))

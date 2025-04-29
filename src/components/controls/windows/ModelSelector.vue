@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useAlgorithmStore } from '../../../stores/algorithmStore'
+import { useAlgorithmStore } from '@/stores/algorithmStore'
 
 /**
  * ModelSelector.vue - 模型选择组件

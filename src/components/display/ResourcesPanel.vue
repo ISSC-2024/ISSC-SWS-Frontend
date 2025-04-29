@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import unityService from '../../services/UnityService' // 请确保路径正确
-import { useMessageStore } from '../../stores/messageStore'
+import unityService from '@/services/UnityService' // 请确保路径正确
+import { useMessageStore } from '@/stores/messageStore'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue' // 引入文本框组件
 
 const messageStore = useMessageStore()

@@ -86,12 +86,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, inject, onUnmounted } from 'vue'
-import sensorData from '../../mock/riskRegionSummary.json'
-import unityService from '../../services/UnityService'
+import sensorData from '@/mock/riskRegionSummary.json'
+import unityService from '@/services/UnityService'
 import { message } from 'ant-design-vue'
 // 导入文本框组件和消息管理
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-import { useMessageStore } from '../../stores/messageStore'
+import { useMessageStore } from '@/stores/messageStore'
 import {
   ClockCircleOutlined,
   EnvironmentOutlined,

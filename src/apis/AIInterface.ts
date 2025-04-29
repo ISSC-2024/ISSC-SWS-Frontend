@@ -25,18 +25,19 @@ export default class AIInterfaceAPI {
    */
   static async queryLLM(model: AIModelType, userQuestion: string): Promise<AIResponse> {
     try {
-      const responseText = await http.get<string>(
+      const resp = await http.get(
         `/llm/query/${model}`,
         { user_question: userQuestion },
         {
           // 添加唯一请求ID以支持取消
           requestId: `ai-query-${model}-${Date.now()}`,
+          returnRaw: true,
         },
       )
-
+      console.log(`查询模型 ${model} 成功:`, resp)
       //! 包装为AIResponse格式返回，thinking设为空字符串
       return {
-        response: responseText,
+        response: resp,
         thinking: '',
       }
     } catch (error) {

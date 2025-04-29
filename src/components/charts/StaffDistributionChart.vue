@@ -18,13 +18,13 @@
 import { ref, onMounted, inject, computed, watch, onBeforeUnmount } from 'vue'
 import type { Ref } from 'vue'
 import * as echarts from 'echarts'
-import { useAlgorithmStore } from '../../stores/algorithmStore'
-import unityService from '../../services/UnityService'
-import { useMessageStore } from '../../stores/messageStore'
+import { useAlgorithmStore } from '@/stores/algorithmStore'
+import unityService from '@/services/UnityService'
+import { useMessageStore } from '@/stores/messageStore'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
 
 // 默认数据
-import defaultReport from '../../mock/report.json'
+import defaultReport from '@/mock/report.json'
 
 // 获取算法状态管理
 const algorithmStore = useAlgorithmStore()
@@ -42,7 +42,7 @@ const loadReportData = async () => {
       const fileName = algorithmStore.getDataFileName()
       console.log('加载数据文件:', fileName)
       // 动态导入JSON文件
-      const module = await import(`../../mock/${fileName}`)
+      const module = await import(`@/mock/${fileName}`)
       reportData.value = module.default
       console.log('成功加载算法数据')
       // 更新图表数据

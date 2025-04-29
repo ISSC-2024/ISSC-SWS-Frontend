@@ -10,7 +10,7 @@
  * 5. 动态视觉效果
  */
 import { ref, onMounted } from 'vue'
-import AuthService from '../../services/AuthService'
+import AuthService from '@/services/AuthService'
 
 // 时间显示逻辑
 const currentTime = ref(new Date().toLocaleTimeString())

@@ -17,6 +17,8 @@ export interface RequestConfig extends AxiosRequestConfig {
   showError?: boolean
   // 自定义请求标识
   requestId?: string
+  // 是否直接返回原始响应，不进行封装处理
+  returnRaw?: boolean
 }
 
 /**
@@ -106,7 +108,7 @@ export default class AxiosClient {
 
     // 响应拦截器
     this.instance.interceptors.response.use(
-      (response: AxiosResponse<HttpResponse>) => {
+      (response: AxiosResponse) => {
         // 获取请求ID并清理取消Token
         const config = response.config as any
         const requestId = config.requestId || config.url || ''
@@ -117,25 +119,37 @@ export default class AxiosClient {
           // 隐藏全局loading效果
         }
 
-        // 处理业务状态码
-        const res = response.data
-
-        if (res.code !== 200 && res.success !== true) {
-          // 处理业务错误
-          if (config.showError !== false) {
-            this.handleError(res)
-          }
-
-          // 根据状态码处理特定情况
-          if (res.code === 401) {
-            // 处理未授权情况
-            return Promise.reject(new Error('未授权，请重新登录'))
-          }
-
-          return Promise.reject(new Error(res.message || '请求失败'))
+        // 如果配置了直接返回原始后端响应，则不进行封装处理
+        if (config.returnRaw) {
+          return response.data
         }
 
-        return response
+        // 处理不同格式的响应
+        const data = response.data
+
+        // 检查是否是标准格式的响应
+        if (data && typeof data === 'object' && 'code' in data) {
+          // 标准格式响应处理
+          if (data.code !== 200 && data.success !== true) {
+            // 处理业务错误
+            if (config.showError !== false) {
+              this.handleError(data)
+            }
+
+            // 根据状态码处理特定情况
+            if (data.code === 401) {
+              // 处理未授权情况
+              return Promise.reject(new Error('未授权，请重新登录'))
+            }
+
+            return Promise.reject(new Error(data.message || '请求失败'))
+          }
+
+          return data.data
+        }
+
+        // 非标准格式，直接返回
+        return response.data
       },
       (error: AxiosError) => {
         // 处理请求和网络错误
@@ -268,8 +282,12 @@ export default class AxiosClient {
    * @returns Promise<T>
    */
   public async request<T = any>(config: RequestConfig): Promise<T> {
-    const response = await this.instance.request<any, AxiosResponse<HttpResponse<T>>>(config)
-    return response.data.data
+    try {
+      return await this.instance.request<any, T>(config)
+    } catch (error) {
+      console.error('请求失败:', error)
+      throw error
+    }
   }
 
   /**

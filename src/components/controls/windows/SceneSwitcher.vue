@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useAuthStore } from '../../../stores/authStore'
+import { useAuthStore } from '@/stores/authStore'
 
 /**
  * SceneSwitcher.vue - 场景切换组件

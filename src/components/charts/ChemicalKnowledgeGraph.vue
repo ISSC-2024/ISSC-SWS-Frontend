@@ -499,11 +499,11 @@
  */
 import { ref, onMounted, onUnmounted, inject, watch } from 'vue'
 import * as echarts from 'echarts'
-import graphData from '../../mock/monitoringKnowledgeGraph.json'
+import graphData from '@/mock/monitoringKnowledgeGraph.json'
 // 引入Pinia状态管理和类型定义
-import { useGraphStore, type NodeData, type LinkData } from '../../stores/graphStore'
+import { useGraphStore, type NodeData, type LinkData } from '@/stores/graphStore'
 // 引入Unity通信服务
-import unityService from '../../services/UnityService'
+import unityService from '@/services/UnityService'
 
 // 获取图表容器展开状态
 const isChartExpanded = inject('isChartExpanded', ref(false))

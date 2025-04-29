@@ -6,12 +6,14 @@
  * 2. 采用高级暗色科技风格设计
  * 3. 使用Ant Design Vue组件
  */
-import { ref, onMounted, watch, nextTick, computed } from 'vue'
+import { ref, onMounted, watch, nextTick, computed, onBeforeUnmount } from 'vue'
 import { Marked } from 'marked'
 import { markedHighlight } from 'marked-highlight'
 import DOMPurify from 'dompurify'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css'
+// 导入API服务
+import AIInterfaceAPI, { type AIModelType } from '@/apis/AIInterface'
 
 // 定义组件向外发出的事件
 const emit = defineEmits(['close'])
@@ -21,8 +23,13 @@ const emit = defineEmits(['close'])
  * 调用父组件的关闭方法
  */
 const close = () => {
+  // 关闭窗口前取消所有未完成的请求
+  AIInterfaceAPI.cancelAllQueries()
   emit('close')
 }
+
+// 添加模型选择器需要的状态
+const selectedModel = ref<AIModelType>('top-llm')
 
 // 使用markedHighlight配置marked
 const marked = new Marked(
@@ -51,13 +58,14 @@ const renderMarkdown = (content: string): string => {
 // 消息类型定义
 interface Message {
   id?: number
-  conversationId?: number
+  conversationId?: number | null
   role: 'user' | 'assistant'
   content: string
   timestamp?: string
   isThinking?: boolean
   thinking?: string
   isThinkingExpanded?: boolean // 控制思考内容的展开/收起状态
+  model?: AIModelType // 添加模型类型
 }
 
 // 对话类型定义
@@ -68,12 +76,6 @@ interface Conversation {
   updatedAt: string
   active?: boolean // UI状态，不需要存储到数据库
   messages?: Message[] // 关联的消息
-}
-
-// API响应类型定义
-interface APIResponse {
-  thinking: string
-  response: string
 }
 
 // 状态
@@ -114,11 +116,13 @@ const conversations = ref<Conversation[]>([
 ])
 
 // 当前对话ID
-const currentConversationId = ref(1)
+const currentConversationId = ref<number | null>(null)
 
 // 当前对话 - 通过计算属性获取
 const currentConversation = computed(() => {
-  return conversations.value.find((conversation) => conversation.id === currentConversationId.value) || null
+  return currentConversationId.value
+    ? conversations.value.find((conversation) => conversation.id === currentConversationId.value)
+    : null
 })
 
 // 当前对话标题
@@ -236,42 +240,20 @@ const renameCurrentChat = () => {
   }
 }
 
-// 预设的响应映射 - 在实际项目中应该通过API获取
-const presetResponses: Record<string, APIResponse> = {
-  帮我解释React中的虚拟DOM: {
-    thinking:
-      '这个问题是关于React中虚拟DOM的概念。\n我需要解释:\n1. 什么是虚拟DOM\n2. 为什么React使用虚拟DOM\n3. 它如何工作\n4. 它的优势是什么\n5. 可能的缺点',
-    response:
-      '# React中的虚拟DOM\n\n## 什么是虚拟DOM？\n虚拟DOM(Virtual DOM)是React在内存中维护的UI表示，本质上是一个轻量级的JavaScript对象树，是实际DOM的副本。\n\n## 工作原理\n1. **初始渲染**：React创建整个虚拟DOM树\n2. **状态更新**：创建新的虚拟DOM树\n3. **对比(Diffing)**：比较新旧树差异\n4. **批量更新**：只将差异部分应用到实际DOM\n\n## 优势\n- **性能优化**：减少直接操作DOM\n- **跨平台能力**：抽象化DOM便于支持其他平台\n- **声明式编程**：让开发者专注于状态而非DOM操作\n\n```jsx\n// 使用React时我们只需声明UI状态\nfunction Counter() {\n  const [count, setCount] = useState(0);\n  return <div>{count}</div>;\n}\n```',
-  },
-  请展示Markdown表格功能: {
-    thinking:
-      '用户希望测试Markdown表格功能。我将创建一个简单的人员信息表格，包含姓名、年龄和城市三个字段，并添加一些关于Markdown表格的说明。',
-    response:
-      '# Markdown表格渲染测试\n\n下面是一个简单的人员信息表格：\n\n| 姓名   | 年龄 | 城市    |\n|--------|------|--------|\n| 张三   | 25   | 北京    |\n| 李四   | 30   | 上海    |\n| 王五   | 28   | 广州    |\n\n## 表格功能说明\n\n- Markdown表格使用`|`和`-`字符构建\n- 可以通过`:`控制对齐方式\n- 表格支持在各种Markdown环境中使用',
-  },
-}
-
-// 默认回复
-const defaultResponse: APIResponse = {
-  thinking: '我需要考虑如何回应这个问题。\n看起来这个问题不在我的预设回复中。\n我应该提供一个通用但有帮助的回答。',
-  response:
-    '感谢您的提问！这似乎是一个我没有预设回复的问题。在实际应用中，AI会根据您的问题生成相关回复。\n\n您可以尝试以下预设问题以查看完整效果：\n- "今天天气如何?"\n- "如何学习编程?"\n- "帮我解释React中的虚拟DOM"\n- "请展示Markdown表格功能"',
-}
-
-// 模拟 API 响应
-const simulateResponse = async (message: string): Promise<APIResponse> => {
-  // 模拟网络延迟
-  await new Promise((resolve) => setTimeout(resolve, 800))
-
-  // 查找预设回复或使用默认回复
-  return presetResponses[message] || defaultResponse
-}
+// 控制是否应该自动滚动
+const shouldAutoScroll = ref(true)
 
 // 切换思考内容的展开/收起状态
 const toggleThinking = (index: number) => {
   if (messages.value[index]) {
+    // 切换展开状态前暂时禁用自动滚动
+    shouldAutoScroll.value = false
     messages.value[index].isThinkingExpanded = !messages.value[index].isThinkingExpanded
+
+    // 使用setTimeout确保在DOM更新后恢复自动滚动
+    setTimeout(() => {
+      shouldAutoScroll.value = true
+    }, 100)
   }
 }
 
@@ -287,7 +269,10 @@ const scrollToBottom = async () => {
 watch(
   messages,
   () => {
-    scrollToBottom()
+    // 只有当shouldAutoScroll为true时才滚动
+    if (shouldAutoScroll.value) {
+      scrollToBottom()
+    }
   },
   { deep: true },
 )
@@ -334,13 +319,32 @@ const clearInput = () => {
   inputText.value = ''
 }
 
-// 发送消息处理函数
+// 使用API服务的模型选项
+const modelOptions = [
+  { value: 'top-llm', label: '化工产业园区' },
+  { value: 'sub-llm1', label: '原料储存区' },
+  { value: 'sub-llm2', label: '成品储存区' },
+  { value: 'sub-llm3', label: '反应器区' },
+  { value: 'sub-llm4', label: '分离提纯区' },
+  { value: 'sub-llm5', label: '公用工程区' },
+]
+
+// 获取模型友好名称
+const getModelLabel = (modelValue: AIModelType): string => {
+  const model = modelOptions.find((m) => m.value === modelValue)
+  return model ? model.label : modelValue
+}
+
+// 发送消息处理函数 - 修改为使用API
 const sendMessage = async () => {
   const content = inputText.value.trim()
   if (!content || isLoading.value) return
 
-  // 确保有一个有效的对话
-  if (!currentConversation.value) {
+  // 如果currentConversationId为null，说明需要创建新对话
+  if (currentConversationId.value === null) {
+    createNewChat()
+  } else if (!currentConversation.value) {
+    // 如果ID存在但对话不存在，也创建新对话
     createNewChat()
   }
 
@@ -353,6 +357,7 @@ const sendMessage = async () => {
     role: 'user',
     content,
     timestamp,
+    model: selectedModel.value, // 记录使用的模型
   }
 
   messages.value.push(userMessage)
@@ -374,16 +379,17 @@ const sendMessage = async () => {
     role: 'assistant',
     content: '',
     isThinking: true,
-    thinking: '',
+    thinking: `正在使用${getModelLabel(selectedModel.value)}模型思考中...`,
     isThinkingExpanded: true, // 思考过程中默认展开
     timestamp: new Date().toISOString(),
+    model: selectedModel.value, // 记录使用的模型
   }
 
   messages.value.push(assistantMessage)
 
   try {
-    // 模拟获取 AI 回复
-    const { thinking, response } = await simulateResponse(content)
+    // 调用API获取响应
+    const { response, thinking } = await AIInterfaceAPI.queryLLM(selectedModel.value, content)
 
     // 如果对话标题是默认的'新对话 x'，则尝试更新为更有意义的标题
     if (currentConversation.value && currentConversation.value.title.startsWith('新对话 ')) {
@@ -396,18 +402,11 @@ const sendMessage = async () => {
       console.log('自动更新对话标题:', currentConversation.value)
     }
 
-    // 模拟流式输出思考过程
-    let displayedThinking = ''
-    for (const char of thinking) {
-      displayedThinking += char
-      messages.value[thinkingMessageIndex].thinking = displayedThinking
-      await new Promise((resolve) => setTimeout(resolve, 10))
-    }
-
-    // 思考过程展示完毕后，立即收起思考内容
+    // 更新思考过程
+    messages.value[thinkingMessageIndex].thinking = thinking || '已完成思考'
     messages.value[thinkingMessageIndex].isThinkingExpanded = false
 
-    // 展示回复内容
+    // 模拟流式输出响应内容
     let displayedContent = ''
     for (const char of response) {
       displayedContent += char
@@ -426,7 +425,7 @@ const sendMessage = async () => {
     // 保存对话消息
     saveCurrentMessages()
   } catch (error) {
-    console.error('Error getting AI response:', error)
+    console.error(`从${selectedModel.value}获取回复失败:`, error)
     messages.value[thinkingMessageIndex].content = '抱歉，发生了错误，请稍后再试。'
     messages.value[thinkingMessageIndex].isThinking = false
     messages.value[thinkingMessageIndex].isThinkingExpanded = false
@@ -435,14 +434,16 @@ const sendMessage = async () => {
   }
 }
 
+// 在组件卸载前取消所有请求
+onBeforeUnmount(() => {
+  AIInterfaceAPI.cancelAllQueries()
+})
+
 onMounted(() => {
   // 初始化激活状态
   initializeActiveState()
 
-  // 加载当前对话的消息
-  loadConversationMessages(currentConversationId.value)
-
-  // 滚动到底部
+  // 保留滚动到底部
   scrollToBottom()
 })
 </script>
@@ -553,25 +554,14 @@ onMounted(() => {
             </div>
 
             <div class="history-footer">
-              <button class="settings-button">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <circle cx="12" cy="12" r="3"></circle>
-                  <path
-                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
-                  ></path>
-                </svg>
-                设置
-              </button>
+              <!-- 添加模型选择器，取代原来的设置按钮 -->
+              <div class="model-selector">
+                <select v-model="selectedModel" class="model-select">
+                  <option v-for="option in modelOptions" :key="option.value" :value="option.value">
+                    {{ option.label + '模型' }}
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -633,21 +623,21 @@ onMounted(() => {
                   </svg>
                 </div>
                 <div class="empty-text">准备就绪</div>
-                <div class="empty-desc">您的化工AI助手可以回答各种问题</div>
+                <div class="empty-desc">
+                  您的化工AI助手可以回答<span class="model-name-highlight">{{ getModelLabel(selectedModel) }}</span
+                  >的各种问题
+                </div>
                 <div class="empty-suggestions">
                   <p>试试这些问题:</p>
                   <ul>
-                    <li @click="fillQuestion('今天天气如何?')">
-                      <span class="suggestion-tag">问候</span> 今天天气如何?
+                    <li @click="fillQuestion('原料储存区最危险的传感器')">
+                      <span class="suggestion-tag">风险</span> 原料储存区最危险的传感器
                     </li>
-                    <li @click="fillQuestion('如何学习编程?')">
-                      <span class="suggestion-tag">学习</span> 如何学习编程?
+                    <li @click="fillQuestion('原料存储区当前人力配置情况')">
+                      <span class="suggestion-tag">资源</span> 原料存储区当前人力配置情况
                     </li>
-                    <li @click="fillQuestion('帮我解释React中的虚拟DOM')">
-                      <span class="suggestion-tag">技术</span> 帮我解释React中的虚拟DOM
-                    </li>
-                    <li @click="fillQuestion('请展示Markdown表格功能')">
-                      <span class="suggestion-tag">测试</span> 请展示Markdown表格功能
+                    <li @click="fillQuestion('调用决策功能，重新进行检测异常数据')">
+                      <span class="suggestion-tag">操作</span> 调用决策功能，重新进行检测异常数据
                     </li>
                   </ul>
                 </div>
@@ -703,6 +693,10 @@ onMounted(() => {
                     </div>
                     <div class="message-sender">
                       {{ message.role === 'user' ? '您' : 'AI助手' }}
+                      <!-- 显示使用的模型 -->
+                      <span v-if="message.model && message.role === 'assistant'" class="model-badge">
+                        {{ getModelLabel(message.model) }}
+                      </span>
                       <span class="message-time" v-if="message.timestamp">
                         {{ new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
                       </span>
@@ -1254,32 +1248,79 @@ onMounted(() => {
 
 /* 历史面板底部 */
 .history-footer {
-  padding: 12px;
+  padding: 16px;
   border-top: 1px solid rgba(97, 218, 251, 0.1);
+  background-color: rgba(8, 16, 32, 0.5);
 }
 
-.settings-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.history-footer > div > select {
   width: 100%;
-  padding: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  color: var(--ai-text-tertiary);
+  position: relative;
+  text-align: center;
+}
+
+.model-select {
+  width: 100%;
+  padding: 10px 12px;
+  padding-right: 12px !important;
+  background-color: rgba(26, 34, 52, 0.8);
+  border: 1px solid rgba(97, 218, 251, 0.2);
+  border-radius: 8px;
+  color: var(--ai-text-secondary);
   font-size: 0.85rem;
+  outline: none;
+  appearance: none;
   cursor: pointer;
   transition: all 0.2s;
+  padding-right: 30px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-.settings-button svg {
-  margin-right: 8px;
+/* 添加自定义下拉箭头 */
+.model-selector::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid var(--ai-accent);
+  pointer-events: none;
 }
 
-.settings-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--ai-text-secondary);
+.model-select:hover {
+  background-color: rgba(97, 218, 251, 0.12);
+  border-color: rgba(97, 218, 251, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.model-select:focus {
+  border-color: var(--ai-accent);
+  box-shadow:
+    0 0 0 2px rgba(97, 218, 251, 0.15),
+    0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.model-select option {
+  background-color: #081020;
+  color: var(--ai-text-primary);
+  padding: 10px;
+}
+
+.model-badge {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background-color: rgba(97, 218, 251, 0.1);
+  color: var(--ai-accent);
+  border-radius: 4px;
+  margin: 0 8px;
+  border: 1px solid rgba(97, 218, 251, 0.2);
+  box-shadow: 0 0 5px rgba(97, 218, 251, 0.1);
+  text-shadow: 0 0 3px rgba(97, 218, 251, 0.3);
 }
 
 /* 对话区域，让其占据剩余空间 */
@@ -1335,7 +1376,7 @@ onMounted(() => {
   border-color: rgba(97, 218, 251, 0.2);
 }
 
-/* 消息列表 - 改善背景与内容区分 */
+/* 消息列表 */
 .message-list {
   flex: 1;
   overflow-y: auto;
@@ -1386,6 +1427,12 @@ onMounted(() => {
   color: var(--ai-text-tertiary);
   margin-bottom: 30px;
   font-size: 0.95rem;
+}
+
+.model-name-highlight {
+  color: #1890ff;
+  font-weight: 600;
+  margin: 0 2px;
 }
 
 .empty-suggestions {
@@ -1465,7 +1512,7 @@ onMounted(() => {
   border: 1px solid rgba(97, 218, 251, 0.2);
 }
 
-/* 消息样式 - 增强可见性和层次感 */
+/* 消息样式 */
 .message {
   margin-bottom: 28px;
   animation: messageAppear 0.3s ease;
@@ -1642,7 +1689,7 @@ onMounted(() => {
   word-break: break-word;
 }
 
-/* 修改Markdown渲染的代码块样式 */
+/* Markdown渲染的代码块样式 */
 .message-text pre {
   background-color: rgba(0, 0, 0, 0.3) !important;
   border-radius: 8px !important;
@@ -1665,17 +1712,16 @@ onMounted(() => {
   font-weight: 500 !important;
 }
 
-/* 完全重写列表样式，参考DeepSeek组件 - 使用更高优先级 */
 .message-text ul,
 .message-text ol {
-  padding-left: 2.5em !important; /* 增加左内边距使列表更靠右 */
+  padding-left: 2.5em !important;
   margin: 12px 0 !important;
-  /* 增加上下外边距 */
-  list-style-position: outside !important; /* 确保列表标记在内容框外 */
+
+  list-style-position: outside !important;
 }
 
 .message-text li {
-  margin-bottom: 8px !important; /* 增加列表项间距 */
+  margin-bottom: 8px !important;
   line-height: 1.5 !important;
   color: var(--ai-text-secondary) !important;
   position: relative !important;
@@ -1683,12 +1729,12 @@ onMounted(() => {
 
 /* 无序列表样式 */
 .message-text ul {
-  list-style-type: disc !important; /* 确保使用标准圆点 */
+  list-style-type: disc !important;
 }
 
 /* 有序列表样式 */
 .message-text ol {
-  list-style-type: decimal !important; /* 确保使用标准数字 */
+  list-style-type: decimal !important;
 }
 
 /* 列表项中的文本 */
@@ -1700,8 +1746,8 @@ onMounted(() => {
 /* 嵌套列表样式 */
 .message-text li > ul,
 .message-text li > ol {
-  margin: 8px 0 0 0 !important; /* 嵌套列表只需顶部外边距 */
-  padding-left: 2em !important; /* 嵌套列表缩进少一些 */
+  margin: 8px 0 0 0 !important;
+  padding-left: 2em !important;
 }
 
 /* 无序列表的嵌套样式 */
@@ -1721,7 +1767,7 @@ onMounted(() => {
   margin-bottom: 8px !important;
 }
 
-/* 输入区域 - 改善可见性和对比度 */
+/* 输入区域 */
 .input-area {
   padding: 20px;
   background-color: #081020;
@@ -1883,7 +1929,7 @@ onMounted(() => {
 </style>
 
 <style scoped>
-/* 原生文本框样式 - 增强可见性 */
+/* 原生文本框样式  */
 .ai-textarea {
   flex: 1;
   min-height: 42px;

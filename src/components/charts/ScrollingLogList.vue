@@ -83,11 +83,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, inject, onUnmounted, watch } from 'vue'
-import unityService from '../../services/UnityService'
+import unityService from '@/services/UnityService'
 import { message } from 'ant-design-vue'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-import { useMessageStore } from '../../stores/messageStore'
-import { useDataFileStore, DataFileType } from '../../stores/dataFileStore'
+import { useMessageStore } from '@/stores/messageStore'
+import { useDataFileStore, DataFileType } from '@/stores/dataFileStore'
 import { ClockCircleOutlined, EnvironmentOutlined, MessageOutlined } from '@ant-design/icons-vue'
 
 // 定义新的日志数据结构接口
