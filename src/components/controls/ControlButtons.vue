@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import type { AIModelType } from '@/apis/AIInterface'
+
+//! 扩展Window接口，之后需要改为监听事件
+declare global {
+  interface Window {
+    RecvUnityAIReq?: (data: any) => void
+  }
+}
 
 /**
  * ControlButtons.vue - 控制按钮主组件
@@ -18,6 +26,12 @@ const activeWindow = ref<string | null>(null)
 
 // 切换浮窗显示状态
 const toggleWindow = (window: string) => {
+  // 如果是点击按钮打开AI接口，重置modelValue为默认值
+  if (window === 'interface') {
+    // 设置为化工产业园区模型
+    modelValue.value = 'top-llm'
+  }
+
   activeWindow.value = activeWindow.value === window ? null : window
 }
 
@@ -52,6 +66,40 @@ const handleFormSubmit = (data: any) => {
 
   closeWindow()
 }
+
+// 存储当前选中的AI模型
+const modelValue = ref<AIModelType>('top-llm')
+
+// 处理从Unity接收的AI请求
+const handleUnityAIRequest = (data: any) => {
+  // 将收到的区域参数转换为相应的模型类型
+  const areaToModel: Record<string, AIModelType> = {
+    RMS: 'sub-llm1', // 原料存储区
+    PRO: 'sub-llm2', // 成品储存区
+    REA: 'sub-llm3', // 反应器区
+    SEP: 'sub-llm4', // 分离提纯区
+    UTL: 'sub-llm5', // 公用工程区
+  }
+
+  // 设置模型值，如果没有匹配则使用默认的top-llm
+  modelValue.value = areaToModel[data] || 'top-llm'
+
+  // 打开AI接口窗口
+  activeWindow.value = 'interface'
+}
+
+//! 组件挂载时添加Unity事件监听
+onMounted(() => {
+  window.RecvUnityAIReq = handleUnityAIRequest
+})
+
+//! 组件卸载前移除事件监听
+onBeforeUnmount(() => {
+  if (window.RecvUnityAIReq === handleUnityAIRequest) {
+    window.RecvUnityAIReq = undefined
+    console.log('RecvUnityAIReq 已被移除.')
+  }
+})
 </script>
 
 <template>
@@ -127,7 +175,7 @@ const handleFormSubmit = (data: any) => {
     />
 
     <!-- 人机接口浮窗 -->
-    <AIInterface v-if="activeWindow === 'interface'" @close="closeWindow" />
+    <AIInterface v-if="activeWindow === 'interface'" :model="modelValue" @close="closeWindow" />
   </div>
 </template>
 

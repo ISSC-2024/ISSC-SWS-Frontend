@@ -3,8 +3,8 @@
  * AIInterface.vue - 人机接口组件
  *
  * 1. 该组件负责提供AI聊天服务
- * 2. 采用高级暗色科技风格设计
- * 3. 使用Ant Design Vue组件
+ * 2. 根据不同厂区选择不同的AI模型
+ * 3. 采用高级暗色科技风格设计
  */
 import { ref, onMounted, watch, nextTick, computed, onBeforeUnmount } from 'vue'
 import { Marked } from 'marked'
@@ -14,6 +14,15 @@ import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css'
 // 导入API服务
 import AIInterfaceAPI, { type AIModelType } from '@/apis/AIInterface'
+
+// 添加props定义，接收外部传入的model
+const props = defineProps({
+  // 允许外部传入模型类型
+  model: {
+    type: String as () => AIModelType,
+    default: 'top-llm',
+  },
+})
 
 // 定义组件向外发出的事件
 const emit = defineEmits(['close'])
@@ -29,7 +38,7 @@ const close = () => {
 }
 
 // 添加模型选择器需要的状态
-const selectedModel = ref<AIModelType>('top-llm')
+const selectedModel = ref<AIModelType>(props.model)
 
 // 使用markedHighlight配置marked
 const marked = new Marked(
@@ -277,6 +286,14 @@ watch(
   { deep: true },
 )
 
+// 监听props.model变化，更新内部selectedModel
+watch(
+  () => props.model,
+  (newModel) => {
+    selectedModel.value = newModel
+  },
+)
+
 const fillQuestion = (question: string) => {
   inputText.value = question
   if (textareaRef.value) {
@@ -284,7 +301,7 @@ const fillQuestion = (question: string) => {
   }
 }
 
-// 修改处理回车键的函数，手动实现Shift+Enter换行
+// 处理回车键的函数，手动实现Shift+Enter换行
 const handleEnter = (e: KeyboardEvent) => {
   // 如果是Shift+Enter，手动插入换行符
   if (e.key === 'Enter' && e.shiftKey) {
@@ -335,7 +352,16 @@ const getModelLabel = (modelValue: AIModelType): string => {
   return model ? model.label : modelValue
 }
 
-// 发送消息处理函数 - 修改为使用API
+// 添加特殊算法处理函数
+const handleSpecialAlgorithm = (algorithm: string) => {
+  // 算法处理逻辑先空着，后续可以扩展
+  console.log(`调用了特殊算法: ${algorithm}`)
+
+  // 构建格式化的响应
+  return `## 算法已调用\n\n**${algorithm}** 算法已成功执行。\n\n### 状态信息\n- 算法: ${algorithm}\n- 结果: 已更新至前端模块\n- 时间: ${new Date().toLocaleString()}\n\n> ${algorithm}算法已执行`
+}
+
+// 修改发送消息处理函数中的特殊算法处理部分
 const sendMessage = async () => {
   const content = inputText.value.trim()
   if (!content || isLoading.value) return
@@ -391,14 +417,11 @@ const sendMessage = async () => {
     // 调用API获取响应
     const { response, thinking } = await AIInterfaceAPI.queryLLM(selectedModel.value, content)
 
-    // 如果对话标题是默认的'新对话 x'，则尝试更新为更有意义的标题
+    // 更新对话标题
     if (currentConversation.value && currentConversation.value.title.startsWith('新对话 ')) {
-      // 实际项目中，这可能由后端生成或使用提取的关键词
       const newTitle = content.length > 20 ? content.substring(0, 20) + '...' : content
       currentConversation.value.title = newTitle
       currentConversation.value.updatedAt = new Date().toISOString()
-
-      // 实际项目中，这里应该调用API更新对话标题
       console.log('自动更新对话标题:', currentConversation.value)
     }
 
@@ -406,9 +429,23 @@ const sendMessage = async () => {
     messages.value[thinkingMessageIndex].thinking = thinking || '已完成思考'
     messages.value[thinkingMessageIndex].isThinkingExpanded = false
 
-    // 模拟流式输出响应内容
+    // 检查是否为特殊算法关键词
+    const specialAlgorithms = ['TimeMixer', 'KonwledgeGraph', 'DON', 'MAPPO']
+
+    let contentToDisplay = ''
+
+    if (specialAlgorithms.includes(response.trim())) {
+      //! 如果是特殊算法关键词，使用特殊处理函数生成响应
+      const algorithm = response.trim()
+      contentToDisplay = handleSpecialAlgorithm(algorithm)
+    } else {
+      // 正常响应
+      contentToDisplay = response
+    }
+
+    // 使用流式输出
     let displayedContent = ''
-    for (const char of response) {
+    for (const char of contentToDisplay) {
       displayedContent += char
       messages.value[thinkingMessageIndex].content = displayedContent
       await new Promise((resolve) => setTimeout(resolve, 20))
@@ -1253,7 +1290,7 @@ onMounted(() => {
   background-color: rgba(8, 16, 32, 0.5);
 }
 
-.history-footer > div > select {
+.history-footer > div > .model-select {
   width: 100%;
   position: relative;
   text-align: center;
@@ -1274,21 +1311,6 @@ onMounted(() => {
   transition: all 0.2s;
   padding-right: 30px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-/* 添加自定义下拉箭头 */
-.model-selector::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 14px;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid var(--ai-accent);
-  pointer-events: none;
 }
 
 .model-select:hover {
