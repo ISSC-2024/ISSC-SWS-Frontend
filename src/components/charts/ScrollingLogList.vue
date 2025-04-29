@@ -82,12 +82,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, inject, onUnmounted } from 'vue'
-import newPlantLogData from '../../mock/riskRegionSummary.json'
+import { ref, onMounted, computed, inject, onUnmounted, watch } from 'vue'
 import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
 import { useMessageStore } from '../../stores/messageStore'
+import { useDataFileStore, DataFileType } from '../../stores/dataFileStore'
 import { ClockCircleOutlined, EnvironmentOutlined, MessageOutlined } from '@ant-design/icons-vue'
 
 // 定义新的日志数据结构接口
@@ -98,6 +98,9 @@ interface LogEntry {
   message: string
 }
 
+// 使用通用数据文件 store
+const dataFileStore = useDataFileStore()
+
 // 定义有效区域常量
 const VALID_REGIONS = ['RMS', 'REA', 'SEP', 'PRO', 'UTL']
 const VALID_RISK_LEVELS = ['safe', 'warning', 'danger']
@@ -107,8 +110,20 @@ const isExpanded = inject('isChartExpanded', ref(false))
 
 const logs = ref<LogEntry[]>([])
 const startIndex = ref(0)
-const visibleCount = 100 // 一次显示的行数（非展开状态）
+const visibleCount = 100
 let scrollTimer: ReturnType<typeof setInterval> | null = null
+
+// 加载日志数据的函数
+const loadLogData = async () => {
+  try {
+    // 使用 store 提供的导入方法获取数据
+    const logModule = await dataFileStore.importDataFile(DataFileType.LOG)
+    logs.value = logModule.default as LogEntry[]
+  } catch (error) {
+    console.error(`加载日志数据失败:`, error)
+    logs.value = [] // 加载失败时清空日志
+  }
+}
 
 // 跟踪当前选中的日志项
 const selectedLog = ref<LogEntry | null>(null)
@@ -269,12 +284,23 @@ const scrollList = () => {
 }
 
 onMounted(() => {
-  // 直接一次性加载所有数据
-  logs.value = newPlantLogData as unknown as LogEntry[]
+  // 初始加载数据
+  loadLogData()
 
   // 非展开状态下设置滚动定时器
   scrollTimer = setInterval(scrollList, 2000)
 })
+
+// 监听日志文件配置变化，热更新数据
+watch(
+  () => dataFileStore.dataFiles[DataFileType.LOG],
+  () => {
+    loadLogData()
+    // 重置开始索引
+    startIndex.value = 0
+  },
+  { deep: true },
+)
 
 onUnmounted(() => {
   // 清除定时器
