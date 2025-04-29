@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 // 定义节点和连接的类型
 export interface NodeData {
@@ -26,39 +27,44 @@ export interface LinkData {
   }
 }
 
-// 定义存储的状态接口
-interface GraphState {
-  focusedArea: string | null
-  filteredNodes: NodeData[]
-  filteredLinks: LinkData[]
-  showLabels: boolean
-}
+// 创建图谱状态管理
+export const useGraphStore = defineStore('graphState', () => {
+  // 状态定义
+  const focusedArea = ref<string | null>(null)
+  const filteredNodes = ref<NodeData[]>([])
+  const filteredLinks = ref<LinkData[]>([])
+  const showLabels = ref<boolean>(false)
 
-export const useGraphStore = defineStore('graphState', {
-  state: (): GraphState => ({
-    focusedArea: null,
-    filteredNodes: [],
-    filteredLinks: [],
-    showLabels: false,
-  }),
+  // 设置关注区域
+  function setFocusedArea(areaCode: string | null): void {
+    focusedArea.value = areaCode
+  }
 
-  actions: {
-    setFocusedArea(areaCode: string | null): void {
-      this.focusedArea = areaCode
-    },
+  // 设置过滤后的数据
+  function setFilteredData(nodes: NodeData[], links: LinkData[]): void {
+    filteredNodes.value = JSON.parse(JSON.stringify(nodes))
+    filteredLinks.value = JSON.parse(JSON.stringify(links))
+  }
 
-    setFilteredData(nodes: NodeData[], links: LinkData[]): void {
-      this.filteredNodes = JSON.parse(JSON.stringify(nodes))
-      this.filteredLinks = JSON.parse(JSON.stringify(links))
-    },
+  // 清除过滤后的数据
+  function clearFilteredData(): void {
+    filteredNodes.value = []
+    filteredLinks.value = []
+  }
 
-    clearFilteredData(): void {
-      this.filteredNodes = []
-      this.filteredLinks = []
-    },
+  // 切换标签显示状态
+  function toggleLabels(): void {
+    showLabels.value = !showLabels.value
+  }
 
-    toggleLabels(): void {
-      this.showLabels = !this.showLabels
-    },
-  },
+  return {
+    focusedArea,
+    filteredNodes,
+    filteredLinks,
+    showLabels,
+    setFocusedArea,
+    setFilteredData,
+    clearFilteredData,
+    toggleLabels,
+  }
 })

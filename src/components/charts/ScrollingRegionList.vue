@@ -91,7 +91,7 @@ import unityService from '../../services/UnityService'
 import { message } from 'ant-design-vue'
 // 导入文本框组件和消息管理
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-import { useMessageStore } from '../../stores/message'
+import { useMessageStore } from '../../stores/messageStore'
 import {
   ClockCircleOutlined,
   EnvironmentOutlined,
