@@ -14,6 +14,14 @@ import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css'
 // 导入API服务
 import AIInterfaceAPI, { type AIModelType } from '@/apis/AIInterface'
+import ConversationAPI, {
+  type Conversation as ConversationType,
+  type Message as MessageType,
+  type CreateMessageRequest,
+} from '@/apis/Conversation'
+import { useAlgorithmStore, AlgorithmType, ModuleType } from '@/stores/algorithmStore'
+
+const algorithmStore = useAlgorithmStore()
 
 // 添加props定义，接收外部传入的model
 const props = defineProps({
@@ -34,6 +42,9 @@ const emit = defineEmits(['close'])
 const close = () => {
   // 关闭窗口前取消所有未完成的请求
   AIInterfaceAPI.cancelAllQueries()
+  //同时取消对话API的请求
+  ConversationAPI.cancelAllRequests()
+  //
   emit('close')
 }
 
@@ -64,27 +75,16 @@ const renderMarkdown = (content: string): string => {
 
 // 对话数据库模型相关定义 //
 
-// 消息类型定义
-interface Message {
-  id?: number
-  conversationId?: number | null
-  role: 'user' | 'assistant'
-  content: string
-  timestamp?: string
+// Message类型定义
+type Message = MessageType & {
   isThinking?: boolean // 不保存到数据库，只用于UI状态
-  thinking?: string
   isThinkingExpanded?: boolean // 控制思考内容的展开/收起状态
   model?: AIModelType // 添加模型类型
 }
 
 // 对话类型定义
-interface Conversation {
-  id: number
-  title: string
-  createdAt: string
-  updatedAt: string
+type Conversation = ConversationType & {
   active?: boolean // UI状态，不需要存储到数据库
-  messages?: Message[] // 关联的消息
 }
 
 // 状态
@@ -95,34 +95,7 @@ const messagesContainer = ref<HTMLElement | null>(null)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
 // 对话历史数据
-const conversations = ref<Conversation[]>([
-  {
-    id: 1,
-    title: 'React虚拟DOM工作原理',
-    createdAt: '2023-11-23T09:15:00Z',
-    updatedAt: '2023-11-23T09:25:00Z',
-    active: false,
-    messages: [
-      {
-        id: 5,
-        conversationId: 3,
-        role: 'user',
-        content: '帮我解释React中的虚拟DOM',
-        timestamp: '2023-11-23T09:15:00Z',
-      },
-      {
-        id: 6,
-        conversationId: 3,
-        role: 'assistant',
-        content:
-          '# React中的虚拟DOM\n\n## 什么是虚拟DOM？\n虚拟DOM(Virtual DOM)是React在内存中维护的UI表示，本质上是一个轻量级的JavaScript对象树，是实际DOM的副本。\n\n## 工作原理\n1. **初始渲染**：React创建整个虚拟DOM树\n2. **状态更新**：创建新的虚拟DOM树\n3. **对比(Diffing)**：比较新旧树差异\n4. **批量更新**：只将差异部分应用到实际DOM\n\n## 优势\n- **性能优化**：减少直接操作DOM\n- **跨平台能力**：抽象化DOM便于支持其他平台\n- **声明式编程**：让开发者专注于状态而非DOM操作\n\n```jsx\n// 使用React时我们只需声明UI状态\nfunction Counter() {\n  const [count, setCount] = useState(0);\n  return <div>{count}</div>;\n}\n```',
-        thinking:
-          '这个问题是关于React中虚拟DOM的概念。\n我需要解释:\n1. 什么是虚拟DOM\n2. 为什么React使用虚拟DOM\n3. 它如何工作\n4. 它的优势是什么\n5. 可能的缺点',
-        timestamp: '2023-11-23T09:15:12Z',
-      },
-    ],
-  },
-])
+const conversations = ref<Conversation[]>([])
 
 // 当前对话ID
 const currentConversationId = ref<number | null>(null)
@@ -147,9 +120,11 @@ const initializeActiveState = () => {
 }
 
 // 切换对话历史
-const switchChat = (id: number) => {
+const switchChat = async (id: number) => {
   // 保存当前对话的消息
-  saveCurrentMessages()
+  if (currentConversationId.value) {
+    await saveCurrentMessages()
+  }
 
   // 更新当前对话ID
   currentConversationId.value = id
@@ -158,93 +133,136 @@ const switchChat = (id: number) => {
   initializeActiveState()
 
   // 加载对应对话的消息
-  loadConversationMessages(id)
+  await loadConversationMessages(id)
 }
 
-// 保存当前对话的消息
-const saveCurrentMessages = () => {
-  if (!currentConversation.value) return
-
-  // 如果当前有消息，则保存到对应对话
-  if (messages.value.length > 0) {
-    const conversation = conversations.value.find((c) => c.id === currentConversationId.value)
-    if (conversation) {
-      conversation.messages = [...messages.value]
-      conversation.updatedAt = new Date().toISOString()
-
-      // 实际项目中，这里应该调用API保存到数据库
-      console.log('保存对话消息:', conversation)
-    }
-  }
+// 保存当前对话的消息，占位
+const saveCurrentMessages = async () => {
+  // 当前实现只在发送消息时保存单条消息，不再需要批量保存
+  console.log('当前对话消息已通过API保存')
 }
 
 // 加载特定对话的消息
-const loadConversationMessages = (conversationId: number) => {
-  const conversation = conversations.value.find((c) => c.id === conversationId)
+const loadConversationMessages = async (conversationId: number) => {
+  try {
+    // 从API获取消息
+    const conversationMessages = await ConversationAPI.getConversationMessages(conversationId)
 
-  if (conversation && conversation.messages && conversation.messages.length > 0) {
-    messages.value = [...conversation.messages]
-  } else {
-    // 如果没有消息，清空消息列表
+    if (conversationMessages && conversationMessages.length > 0) {
+      // 转换消息格式，确保UI状态属性存在，并处理类型不匹配问题
+      messages.value = conversationMessages.map((msg) => {
+        // 将API返回的model字段转换为AIModelType或undefined
+        let modelValue: AIModelType | undefined = undefined
+        if (msg.model) {
+          // 检查model值是否为有效的AIModelType
+          if (['top-llm', 'sub-llm1', 'sub-llm2', 'sub-llm3', 'sub-llm4', 'sub-llm5'].includes(msg.model)) {
+            modelValue = msg.model as AIModelType
+          }
+        }
+
+        return {
+          ...msg,
+          model: modelValue,
+          isThinkingExpanded: false, // 默认收起思考内容
+        } as Message
+      })
+    } else {
+      // 如果没有消息，清空消息列表
+      messages.value = []
+    }
+
+    console.log(`已加载对话ID: ${conversationId}的消息，共${messages.value.length}条`)
+  } catch (error) {
+    console.error('加载对话消息失败:', error)
     messages.value = []
+  }
+}
 
-    // 实际项目中，这里应该调用API获取消息
-    console.log('从API加载对话消息，对话ID:', conversationId)
+// 加载所有对话
+const loadConversations = async () => {
+  try {
+    const result = await ConversationAPI.getConversations()
+
+    // 转换为组件使用的格式
+    conversations.value = result.map((conversation) => ({
+      ...conversation,
+      active: conversation.id === currentConversationId.value,
+    }))
+
+    console.log(`已加载${conversations.value.length}个对话`)
+
+    // 如果有对话但没有选中对话，默认选中第一个
+    if (conversations.value.length > 0 && currentConversationId.value === null) {
+      await switchChat(conversations.value[0].id)
+    }
+  } catch (error) {
+    console.error('加载对话列表失败:', error)
   }
 }
 
 // 新建对话
-const createNewChat = () => {
-  // 保存当前对话
-  saveCurrentMessages()
+const createNewChat = async () => {
+  try {
+    // 保存当前对话
+    if (currentConversationId.value) {
+      await saveCurrentMessages()
+    }
 
-  // 生成新ID (实际项目中应由后端生成)
-  const newId = Math.max(...conversations.value.map((c) => c.id)) + 1
+    // 创建新对话
+    const title = '新对话'
+    const newChat = await ConversationAPI.createConversation(title)
 
-  // 当前时间
-  const now = new Date().toISOString()
+    // 添加UI状态属性
+    const conversationWithUI = {
+      ...newChat,
+      active: true,
+    }
 
-  // 创建新对话
-  const newChat: Conversation = {
-    id: newId,
-    title: '新对话 ' + newId,
-    createdAt: now,
-    updatedAt: now,
-    active: true,
-    messages: [],
+    // 更新对话列表
+    conversations.value.forEach((chat) => {
+      chat.active = false
+    })
+    conversations.value.unshift(conversationWithUI)
+
+    // 更新当前对话ID
+    currentConversationId.value = newChat.id
+
+    // 清空消息
+    messages.value = []
+
+    console.log('创建新对话成功:', newChat)
+    return newChat.id
+  } catch (error) {
+    console.error('创建新对话失败:', error)
+    return null
   }
-
-  // 更新对话列表
-  conversations.value.forEach((chat) => {
-    chat.active = false
-  })
-  conversations.value.unshift(newChat)
-
-  // 更新当前对话ID
-  currentConversationId.value = newId
-
-  // 清空消息
-  messages.value = []
-
-  // 实际项目中，这里应该调用API创建新对话
-  console.log('创建新对话:', newChat)
 }
 
 // 重命名当前对话
-const renameCurrentChat = () => {
+const renameCurrentChat = async () => {
   if (!currentConversation.value) return
 
   // 在实际项目中，这里应该弹出对话框让用户输入新名称
   const newTitle = prompt('请输入新的对话标题:', currentConversation.value.title)
 
   if (newTitle && newTitle.trim() !== '') {
-    const conversation = conversations.value.find((c) => c.id === currentConversationId.value)
-    if (conversation) {
-      conversation.title = newTitle.trim()
-      conversation.updatedAt = new Date().toISOString()
+    try {
+      // 调用API更新对话标题
+      const updatedConversation = await ConversationAPI.renameConversation(
+        currentConversationId.value as number,
+        newTitle.trim(),
+      )
 
-      // 实际项目中，这里应该调用API更新对话标题
-      console.log('更新对话标题:', conversation)
+      // 更新本地状态
+      const conversation = conversations.value.find((c) => c.id === currentConversationId.value)
+      if (conversation) {
+        conversation.title = updatedConversation.title
+        conversation.updatedAt = updatedConversation.updatedAt
+      }
+
+      console.log('更新对话标题成功:', updatedConversation)
+    } catch (error) {
+      console.error('更新对话标题失败:', error)
     }
   }
 }
@@ -352,41 +370,257 @@ const getModelLabel = (modelValue: AIModelType): string => {
   return model ? model.label : modelValue
 }
 
-// 添加特殊算法处理函数
-const handleSpecialAlgorithm = (algorithm: string) => {
-  // 算法处理逻辑先空着，后续可以扩展
+// 添加特殊算法处理函数// 修改特殊算法处理函数
+const handleSpecialAlgorithm = async (algorithm: string) => {
   console.log(`调用了特殊算法: ${algorithm}`)
 
-  // 构建格式化的响应
-  return `## 算法已调用\n\n**${algorithm}** 算法已成功执行。\n\n### 状态信息\n- 算法: ${algorithm}\n- 结果: 已更新至前端模块\n- 时间: ${new Date().toLocaleString()}\n\n> ${algorithm}算法已执行`
+  // 算法类型映射
+  const algorithmTypeMap: Record<string, { type: AlgorithmType; module: ModuleType }> = {
+    TimeMixer: { type: AlgorithmType.TimeMixer, module: ModuleType.Module1 },
+    TimesNet: { type: AlgorithmType.TimesNet, module: ModuleType.Module1 },
+    KnowledgeGraph: { type: AlgorithmType.KnowledgeGraph, module: ModuleType.Module2 },
+    xgboost: { type: AlgorithmType.xgboost, module: ModuleType.Module3 },
+    lightGBM: { type: AlgorithmType.lightGBM, module: ModuleType.Module3 },
+    TabNet: { type: AlgorithmType.TabNet, module: ModuleType.Module3 },
+    IQL: { type: AlgorithmType.IQL, module: ModuleType.Module4 },
+    DQN: { type: AlgorithmType.DQN, module: ModuleType.Module4 },
+    MADDPG: { type: AlgorithmType.MADDPG, module: ModuleType.Module4 },
+    MAPPO: { type: AlgorithmType.MAPPO, module: ModuleType.Module4 },
+  }
+
+  // 检查算法是否在映射中
+  if (algorithm in algorithmTypeMap) {
+    const { type, module } = algorithmTypeMap[algorithm]
+    try {
+      // 获取算法当前参数
+      const currentParams = JSON.parse(JSON.stringify(algorithmStore.getAlgorithmParams(type)))
+
+      // 获取当前文件路径
+      const currentFilePath = algorithmStore.getAlgorithmFilePath(type)
+      console.log(`当前算法参数文件: ${currentFilePath}`)
+
+      // 根据不同算法设置新参数
+      let newParams: Record<string, number | string> = {}
+
+      switch (algorithm) {
+        case 'KnowledgeGraph': {
+          // KnowledgeGraph参数: max_depth, sensitivity, tree_count
+
+          // 按照max_depth, sensitivity, tree_count参数轮换
+          if (currentParams.max_depth === 4 && currentParams.sensitivity === 0.8 && currentParams.tree_count === 100) {
+            newParams = { max_depth: 6, sensitivity: 1.0, tree_count: 150 }
+          } else if (
+            currentParams.max_depth === 6 &&
+            currentParams.sensitivity === 1.0 &&
+            currentParams.tree_count === 150
+          ) {
+            newParams = { max_depth: 8, sensitivity: 1.2, tree_count: 200 }
+          } else {
+            newParams = { max_depth: 4, sensitivity: 0.8, tree_count: 100 }
+          }
+          break
+        }
+
+        case 'DQN': {
+          // DQN参数: convergence_threshold, max_epochs
+
+          // 轮换convergence_threshold
+          if (currentParams.convergence_threshold === 0.001) {
+            newParams = { convergence_threshold: 0.005, max_epochs: 1000 }
+          } else {
+            newParams = { convergence_threshold: 0.001, max_epochs: 1000 }
+          }
+          break
+        }
+
+        case 'MAPPO': {
+          // MAPPO参数: convergence_threshold, max_epochs
+
+          // 与DQN相同的逻辑轮换convergence_threshold
+          if (currentParams.convergence_threshold === 0.001) {
+            newParams = { convergence_threshold: 0.005, max_epochs: 1000 }
+          } else {
+            newParams = { convergence_threshold: 0.001, max_epochs: 1000 }
+          }
+          break
+        }
+
+        default: {
+          // 其他算法使用默认参数调整逻辑
+          if (type === AlgorithmType.TimeMixer || type === AlgorithmType.TimesNet) {
+            // 对于模型1的时间序列算法，轮换传感器ID
+            const sensorIds = ['RMS001', 'RMS002', 'RMS003']
+            const currentIndex = sensorIds.indexOf(currentParams.model_id as string)
+            const nextIndex = (currentIndex + 1) % sensorIds.length
+            newParams = {
+              ...currentParams,
+              model_id: sensorIds[nextIndex],
+              task_name: 'short_term_forecast',
+            }
+          } else if (type === AlgorithmType.xgboost || type === AlgorithmType.lightGBM) {
+            // 调整学习率和最大深度
+            if (type === AlgorithmType.xgboost) {
+              if (currentParams.max_depth === 6) {
+                newParams = { learning_rate: 0.1, max_depth: 8 }
+              } else {
+                newParams = { learning_rate: 0.1, max_depth: 6 }
+              }
+            } else {
+              // lightGBM
+              if (currentParams.max_depth === 4) {
+                newParams = { learning_rate: 0.1, max_depth: 6 }
+              } else {
+                newParams = { learning_rate: 0.1, max_depth: 4 }
+              }
+            }
+          } else if (type === AlgorithmType.TabNet) {
+            // 轮换学习率和最大轮次
+            if (currentParams.learning_rate === 0.01) {
+              newParams = { learning_rate: 0.02, max_epochs: 50 }
+            } else {
+              newParams = { learning_rate: 0.01, max_epochs: 100 }
+            }
+          } else if (type === AlgorithmType.IQL || type === AlgorithmType.MADDPG) {
+            // 调整收敛阈值
+            if (currentParams.convergence_threshold === 0.001) {
+              newParams = { convergence_threshold: 0.005, max_epochs: 1000 }
+            } else {
+              newParams = { convergence_threshold: 0.001, max_epochs: 1000 }
+            }
+          }
+          break
+        }
+      }
+
+      // 应用新参数
+      algorithmStore.updateAlgorithmParams(type, newParams)
+
+      // 设置为当前选中的算法
+      algorithmStore.setModuleSelectedAlgorithm(module, type)
+
+      // 获取更新后的新文件路径
+      const newFilePath = algorithmStore.getAlgorithmFilePath(type)
+      console.log(`更新后的算法参数文件: ${newFilePath}`)
+
+      // 构建响应消息
+      const oldParamsString = Object.entries(currentParams)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ')
+
+      const newParamsString = Object.entries(newParams)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ')
+
+      return `## 算法参数已更新
+
+**${algorithm}** 算法参数已成功更新。
+
+### 更新详情
+- **算法**: ${algorithm}
+- **模块**: ${module}
+- **原参数**: \`${oldParamsString}\`
+- **新参数**: \`${newParamsString}\`
+- **对应文件**: ${newFilePath.split('/').pop()}
+- **时间**: ${new Date().toLocaleString()}
+
+> 算法参数已更新，关联的数据视图将在下一次刷新时应用新参数。`
+    } catch (error) {
+      console.error(`修改算法参数出错:`, error)
+      return `## 算法参数更新失败
+
+尝试更新 **${algorithm}** 算法参数时发生错误。
+
+### 错误详情
+- **算法**: ${algorithm}
+- **错误**: ${error}
+- **时间**: ${new Date().toLocaleString()}
+
+> 请稍后再试，或联系系统管理员。`
+    }
+  } else {
+    return `## 未知算法
+
+**${algorithm}** 不是系统中已知的算法。
+
+### 状态信息
+- **请求算法**: ${algorithm}
+- **可用算法**: TimeMixer, TimesNet, KnowledgeGraph, xgboost, lightGBM, TabNet, IQL, DQN, MADDPG, MAPPO
+- **时间**: ${new Date().toLocaleString()}
+
+> 请检查算法名称是否正确，并重新尝试。`
+  }
 }
 
-// 修改发送消息处理函数中的特殊算法处理部分
+const renameConversationWithoutPrompt = async (conversationId: number, title: string) => {
+  try {
+    const updatedConversation = await ConversationAPI.renameConversation(conversationId, title)
+
+    // 更新本地状态
+    const conversation = conversations.value.find((c) => c.id === conversationId)
+    if (conversation) {
+      conversation.title = updatedConversation.title
+      conversation.updatedAt = updatedConversation.updatedAt
+    }
+
+    console.log('自动更新对话标题成功:', title)
+  } catch (error) {
+    console.error('自动更新对话标题失败:', error)
+  }
+}
+
+// 发送消息处理函数
 const sendMessage = async () => {
   const content = inputText.value.trim()
   if (!content || isLoading.value) return
 
   // 如果currentConversationId为null，说明需要创建新对话
   if (currentConversationId.value === null) {
-    createNewChat()
-  } else if (!currentConversation.value) {
-    // 如果ID存在但对话不存在，也创建新对话
-    createNewChat()
+    const newId = await createNewChat()
+    if (!newId) {
+      console.error('无法创建新对话')
+      return
+    }
   }
-
-  // 为消息生成时间戳
-  const timestamp = new Date().toISOString()
 
   // 添加用户消息
-  const userMessage: Message = {
-    conversationId: currentConversationId.value,
+  const userMessageRequest: CreateMessageRequest = {
     role: 'user',
     content,
-    timestamp,
-    model: selectedModel.value, // 记录使用的模型
+    model: selectedModel.value,
   }
 
-  messages.value.push(userMessage)
+  // 立即添加到UI
+  const tempUserMessage: Message = {
+    id: -1, // 临时ID
+    conversation_id: currentConversationId.value as number,
+    role: 'user',
+    content,
+    timestamp: new Date().toISOString(),
+    model: selectedModel.value,
+  }
+
+  messages.value.push(tempUserMessage)
+
+  try {
+    // 保存用户消息到服务器
+    const savedUserMessage = await ConversationAPI.createMessage(
+      currentConversationId.value as number,
+      userMessageRequest,
+    )
+
+    // 更新临时消息的ID
+    const userMessageIndex = messages.value.findIndex((m) => m.content === content && m.role === 'user' && m.id === -1)
+    if (userMessageIndex !== -1) {
+      messages.value[userMessageIndex] = {
+        ...messages.value[userMessageIndex],
+        id: savedUserMessage.id,
+        timestamp: savedUserMessage.timestamp,
+      }
+    }
+  } catch (error) {
+    console.error('保存用户消息失败:', error)
+    // 继续执行，即使保存失败
+  }
 
   // 清空输入框
   clearInput()
@@ -400,29 +634,28 @@ const sendMessage = async () => {
 
   // 添加思考中的助手消息
   const thinkingMessageIndex = messages.value.length
-  const assistantMessage: Message = {
-    conversationId: currentConversationId.value,
+  const assistantTempMessage: Message = {
+    id: -2, // 临时ID给思考中的消息
+    conversation_id: currentConversationId.value as number,
     role: 'assistant',
     content: '',
     isThinking: true,
     thinking: `正在使用${getModelLabel(selectedModel.value)}模型思考中...`,
     isThinkingExpanded: true, // 思考过程中默认展开
     timestamp: new Date().toISOString(),
-    model: selectedModel.value, // 记录使用的模型
+    model: selectedModel.value,
   }
 
-  messages.value.push(assistantMessage)
+  messages.value.push(assistantTempMessage)
 
   try {
     // 调用API获取响应
     const { response, thinking } = await AIInterfaceAPI.queryLLM(selectedModel.value, content)
 
-    // 更新对话标题
-    if (currentConversation.value && currentConversation.value.title.startsWith('新对话 ')) {
+    // 更新对话标题 - 如果是新对话
+    if (currentConversation.value && currentConversation.value.title === '新对话') {
       const newTitle = content.length > 20 ? content.substring(0, 20) + '...' : content
-      currentConversation.value.title = newTitle
-      currentConversation.value.updatedAt = new Date().toISOString()
-      console.log('自动更新对话标题:', currentConversation.value)
+      await renameConversationWithoutPrompt(currentConversationId.value as number, newTitle)
     }
 
     // 更新思考过程
@@ -430,14 +663,14 @@ const sendMessage = async () => {
     messages.value[thinkingMessageIndex].isThinkingExpanded = false
 
     // 检查是否为特殊算法关键词
-    const specialAlgorithms = ['TimeMixer', 'KonwledgeGraph', 'DON', 'MAPPO']
+    const specialAlgorithms = ['TimeMixer', 'KonwledgeGraph', 'DQN', 'MAPPO']
 
     let contentToDisplay = ''
 
     if (specialAlgorithms.includes(response.trim())) {
       //! 如果是特殊算法关键词，使用特殊处理函数生成响应
       const algorithm = response.trim()
-      contentToDisplay = handleSpecialAlgorithm(algorithm)
+      contentToDisplay = await handleSpecialAlgorithm(algorithm)
     } else {
       // 正常响应
       contentToDisplay = response
@@ -454,35 +687,68 @@ const sendMessage = async () => {
     // 完成后保留思考内容，但保持收起状态
     messages.value[thinkingMessageIndex].isThinking = false
 
-    // 更新对话的最后更新时间
-    if (currentConversation.value) {
-      currentConversation.value.updatedAt = new Date().toISOString()
+    // 保存助手消息到服务器
+    const assistantMessageRequest: CreateMessageRequest = {
+      role: 'assistant',
+      content: contentToDisplay,
+      thinking: thinking || undefined,
+      model: selectedModel.value,
     }
 
-    // 保存对话消息
-    saveCurrentMessages()
+    try {
+      const savedAssistantMessage = await ConversationAPI.createMessage(
+        currentConversationId.value as number,
+        assistantMessageRequest,
+      )
+
+      // 更新临时消息的ID
+      messages.value[thinkingMessageIndex].id = savedAssistantMessage.id
+      messages.value[thinkingMessageIndex].timestamp = savedAssistantMessage.timestamp
+    } catch (error) {
+      console.error('保存助手消息失败:', error)
+    }
   } catch (error) {
     console.error(`从${selectedModel.value}获取回复失败:`, error)
     messages.value[thinkingMessageIndex].content = '抱歉，发生了错误，请稍后再试。'
     messages.value[thinkingMessageIndex].isThinking = false
     messages.value[thinkingMessageIndex].isThinkingExpanded = false
+
+    // 即使失败也保存错误消息
+    try {
+      const errorMessage: CreateMessageRequest = {
+        role: 'assistant',
+        content: '抱歉，发生了错误，请稍后再试。',
+        thinking: `发生错误: ${error}`,
+        model: selectedModel.value,
+      }
+
+      const savedErrorMessage = await ConversationAPI.createMessage(currentConversationId.value as number, errorMessage)
+
+      messages.value[thinkingMessageIndex].id = savedErrorMessage.id
+    } catch (saveError) {
+      console.error('保存错误消息失败:', saveError)
+    }
   } finally {
     isLoading.value = false
   }
 }
 
-// 在组件卸载前取消所有请求
 onBeforeUnmount(() => {
   AIInterfaceAPI.cancelAllQueries()
+  ConversationAPI.cancelAllRequests()
 })
 
-onMounted(() => {
+onMounted(async () => {
+  // 加载对话列表
+  await loadConversations()
+
   // 初始化激活状态
   initializeActiveState()
 
   // 保留滚动到底部
   scrollToBottom()
 })
+// 修改结束
 </script>
 
 <template>
