@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMessageStore } from '../../../stores/message' // 根据实际路径调整
+import { useMessageStore } from '@/stores/messageStore' // 根据实际路径调整
 
 // type StatusType = 'normal' | 'warning' | 'danger'
 // 在这里直接读取消息管理中的信息进行显示

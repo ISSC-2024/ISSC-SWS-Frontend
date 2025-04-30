@@ -82,21 +82,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, inject, onUnmounted } from 'vue'
-import newPlantLogData from '../../mock/riskRegionSummary.json'
-import unityService from '../../services/UnityService'
+import { ref, onMounted, computed, inject, onUnmounted, watch } from 'vue'
+import unityService from '@/services/UnityService'
 import { message } from 'ant-design-vue'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-import { useMessageStore } from '../../stores/message'
+import { useMessageStore } from '@/stores/messageStore'
+import { useAlgorithmStore, ModuleType } from '@/stores/algorithmStore'
 import { ClockCircleOutlined, EnvironmentOutlined, MessageOutlined } from '@ant-design/icons-vue'
 
-// 定义新的日志数据结构接口
+// 日志数据结构接口
 interface LogEntry {
   timestamp: string
   region: string
   risk_level: 'safe' | 'warning' | 'danger'
   message: string
 }
+
+// 使用算法数据 store
+const algorithmStore = useAlgorithmStore()
 
 // 定义有效区域常量
 const VALID_REGIONS = ['RMS', 'REA', 'SEP', 'PRO', 'UTL']
@@ -107,8 +110,26 @@ const isExpanded = inject('isChartExpanded', ref(false))
 
 const logs = ref<LogEntry[]>([])
 const startIndex = ref(0)
-const visibleCount = 100 // 一次显示的行数（非展开状态）
+const visibleCount = 100
 let scrollTimer: ReturnType<typeof setInterval> | null = null
+
+// 加载日志数据
+const loadLogData = async () => {
+  try {
+    // 使用getModuleDataFile方法获取模块3的数据
+    const logModule = await algorithmStore.getModuleDataFile(ModuleType.Module3)
+
+    if (logModule && logModule.default) {
+      logs.value = logModule.default as LogEntry[]
+    } else {
+      console.warn('模块3日志数据为空')
+      logs.value = [] // 数据为空时清空日志
+    }
+  } catch (error) {
+    console.error(`加载模块3日志数据失败:`, error)
+    logs.value = [] // 加载失败时清空日志
+  }
+}
 
 // 跟踪当前选中的日志项
 const selectedLog = ref<LogEntry | null>(null)
@@ -268,13 +289,28 @@ const scrollList = () => {
   }
 }
 
-onMounted(() => {
-  // 直接一次性加载所有数据
-  logs.value = newPlantLogData as unknown as LogEntry[]
+onMounted(async () => {
+  // 初始加载数据
+  await loadLogData()
 
   // 非展开状态下设置滚动定时器
   scrollTimer = setInterval(scrollList, 2000)
 })
+
+// 监听模块3的任何变化（包括算法选择和参数）
+watch(
+  () => [
+    algorithmStore.selectedAlgorithms[ModuleType.Module3],
+    algorithmStore.algorithms[algorithmStore.selectedAlgorithms[ModuleType.Module3]]?.params,
+  ],
+  async () => {
+    console.log('模块3配置已更新，重新加载数据')
+    await loadLogData()
+    // 重置开始索引
+    startIndex.value = 0
+  },
+  { deep: true },
+)
 
 onUnmounted(() => {
   // 清除定时器

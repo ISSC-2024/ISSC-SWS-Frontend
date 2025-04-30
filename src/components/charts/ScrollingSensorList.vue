@@ -270,9 +270,9 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, inject, watch, onUnmounted } from 'vue'
 import sensorData from '@/mock/predictions_arima_auto.json'
-import UnityService from '../../services/UnityService'
+import UnityService from '@/services/UnityService'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-import { useMessageStore } from '../../stores/message'
+import { useMessageStore } from '@/stores/messageStore'
 
 // 1. 定义明确的元组类型和接口
 type RangeTuple = [number, number]

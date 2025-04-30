@@ -1,0 +1,6618 @@
+{
+    "nodes": [
+        {
+            "id": "PRO",
+            "name": "成品储存区",
+            "symbolSize": 80,
+            "category": 0,
+            "itemStyle": {
+                "color": "#5470c6"
+            }
+        },
+        {
+            "id": "REA",
+            "name": "反应器区",
+            "symbolSize": 80,
+            "category": 0,
+            "itemStyle": {
+                "color": "#5470c6"
+            }
+        },
+        {
+            "id": "RMS",
+            "name": "原料储存区",
+            "symbolSize": 80,
+            "category": 0,
+            "itemStyle": {
+                "color": "#5470c6"
+            }
+        },
+        {
+            "id": "SEP",
+            "name": "分离提纯区",
+            "symbolSize": 80,
+            "category": 0,
+            "itemStyle": {
+                "color": "#5470c6"
+            }
+        },
+        {
+            "id": "UTL",
+            "name": "公用工程区",
+            "symbolSize": 80,
+            "category": 0,
+            "itemStyle": {
+                "color": "#5470c6"
+            }
+        },
+        {
+            "id": "PRO_PRO001",
+            "name": "PRO001",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3450480215979092,
+            "area_code": "PRO",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO002",
+            "name": "PRO002",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.24589588027928086,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO003",
+            "name": "PRO003",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.19036366033781837,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO004",
+            "name": "PRO004",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.30163167152898773,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO005",
+            "name": "PRO005",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.23074448893211905,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO006",
+            "name": "PRO006",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.19283205730402958,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO007",
+            "name": "PRO007",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.17999969858716638,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO008",
+            "name": "PRO008",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.32141979268077525,
+            "area_code": "PRO",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO009",
+            "name": "PRO009",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.9271869315394017,
+            "area_code": "PRO",
+            "pred_risk": "danger",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO010",
+            "name": "PRO010",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.27867742263444906,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO011",
+            "name": "PRO011",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.1816667348637101,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO012",
+            "name": "PRO012",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.1953016693406822,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO013",
+            "name": "PRO013",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.1385095980436188,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO014",
+            "name": "PRO014",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.39005073618181213,
+            "area_code": "PRO",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO015",
+            "name": "PRO015",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.14710941975191846,
+            "area_code": "PRO",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA001",
+            "name": "REA001",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.25688662436045634,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA002",
+            "name": "REA002",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.26669874640114516,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA003",
+            "name": "REA003",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.4347278462125711,
+            "area_code": "REA",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA004",
+            "name": "REA004",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.30262280520319623,
+            "area_code": "REA",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA005",
+            "name": "REA005",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.23883645464604744,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA006",
+            "name": "REA006",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3059176608061931,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA007",
+            "name": "REA007",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.4168144545536428,
+            "area_code": "REA",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA008",
+            "name": "REA008",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.11844861376576625,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA009",
+            "name": "REA009",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.23223548319698287,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA010",
+            "name": "REA010",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.24997347635809108,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA011",
+            "name": "REA011",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.1882758482546339,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA012",
+            "name": "REA012",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.31702132601617816,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA013",
+            "name": "REA013",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.23719555746445778,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA014",
+            "name": "REA014",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.27846114504050296,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA015",
+            "name": "REA015",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.34490902301106097,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA016",
+            "name": "REA016",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3374079257434043,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA017",
+            "name": "REA017",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3321743768697252,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA018",
+            "name": "REA018",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.20911724207461987,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA019",
+            "name": "REA019",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.2026640039679068,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA020",
+            "name": "REA020",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.25953735614717655,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA021",
+            "name": "REA021",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.1533206222726466,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA022",
+            "name": "REA022",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.25854647997483204,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA023",
+            "name": "REA023",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.283844025292514,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA024",
+            "name": "REA024",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.7830596069412037,
+            "area_code": "REA",
+            "pred_risk": "danger",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "REA_REA025",
+            "name": "REA025",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3273183237023989,
+            "area_code": "REA",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS001",
+            "name": "RMS001",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.9736812085968636,
+            "area_code": "RMS",
+            "pred_risk": "danger",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS002",
+            "name": "RMS002",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.2739124845241915,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS003",
+            "name": "RMS003",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3460093614965809,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS004",
+            "name": "RMS004",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.10232936842995558,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS005",
+            "name": "RMS005",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.2689528607122754,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS006",
+            "name": "RMS006",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3644707395071487,
+            "area_code": "RMS",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS007",
+            "name": "RMS007",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.2626198229388404,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS008",
+            "name": "RMS008",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.36494044063677233,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS009",
+            "name": "RMS009",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.17698743522749394,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS010",
+            "name": "RMS010",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.27412612534933933,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS011",
+            "name": "RMS011",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.363438196830564,
+            "area_code": "RMS",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS012",
+            "name": "RMS012",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.9205243571042525,
+            "area_code": "RMS",
+            "pred_risk": "danger",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS013",
+            "name": "RMS013",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3186289027884891,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS014",
+            "name": "RMS014",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.2602413109114676,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS015",
+            "name": "RMS015",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.241649486003422,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS016",
+            "name": "RMS016",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.15519975902022937,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS017",
+            "name": "RMS017",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.1274065009186662,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS018",
+            "name": "RMS018",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3500106429962938,
+            "area_code": "RMS",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS019",
+            "name": "RMS019",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.9736328198457151,
+            "area_code": "RMS",
+            "pred_risk": "danger",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "RMS_RMS020",
+            "name": "RMS020",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.16062890598771257,
+            "area_code": "RMS",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP001",
+            "name": "SEP001",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.23846232119578475,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP002",
+            "name": "SEP002",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.14803351365529802,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP003",
+            "name": "SEP003",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.18609997341523224,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP004",
+            "name": "SEP004",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.1308630002336948,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP005",
+            "name": "SEP005",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.19632147562365967,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP006",
+            "name": "SEP006",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3164093533495709,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP007",
+            "name": "SEP007",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.25584937151163706,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP008",
+            "name": "SEP008",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.09268892314823812,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP009",
+            "name": "SEP009",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.29560054293095295,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP010",
+            "name": "SEP010",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.22159426421096662,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP011",
+            "name": "SEP011",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.22703061802699542,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP012",
+            "name": "SEP012",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.181110478862484,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP013",
+            "name": "SEP013",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.29573585012579917,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP014",
+            "name": "SEP014",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.13726613196096177,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP015",
+            "name": "SEP015",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.13478154943760798,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP016",
+            "name": "SEP016",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.16903468950741954,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP017",
+            "name": "SEP017",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.29643448470556233,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP018",
+            "name": "SEP018",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.15215613437088088,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP019",
+            "name": "SEP019",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.2925166084353661,
+            "area_code": "SEP",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "SEP_SEP020",
+            "name": "SEP020",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.1369312160846152,
+            "area_code": "SEP",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL001",
+            "name": "UTL001",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.24983156808198623,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL002",
+            "name": "UTL002",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.15305849164914784,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL003",
+            "name": "UTL003",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.38063970407132325,
+            "area_code": "UTL",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL004",
+            "name": "UTL004",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3255005609276896,
+            "area_code": "UTL",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL005",
+            "name": "UTL005",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.35197089092510025,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL006",
+            "name": "UTL006",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3125907223896195,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL007",
+            "name": "UTL007",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3011452609312627,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL008",
+            "name": "UTL008",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.37159010715500895,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL009",
+            "name": "UTL009",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.30375426756415214,
+            "area_code": "UTL",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL010",
+            "name": "UTL010",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3608382325346537,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL011",
+            "name": "UTL011",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3393563777462504,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL012",
+            "name": "UTL012",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3101327498579804,
+            "area_code": "UTL",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL013",
+            "name": "UTL013",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.27479843741047116,
+            "area_code": "UTL",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL014",
+            "name": "UTL014",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.34173111097756237,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL015",
+            "name": "UTL015",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.2931602584283657,
+            "area_code": "UTL",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL016",
+            "name": "UTL016",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.3588072431505363,
+            "area_code": "UTL",
+            "pred_risk": "warning",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL017",
+            "name": "UTL017",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.23982614327651114,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL018",
+            "name": "UTL018",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.319369222897133,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL019",
+            "name": "UTL019",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.18235188971453134,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "UTL_UTL020",
+            "name": "UTL020",
+            "symbolSize": 40,
+            "category": 1,
+            "weight": 0.26497861955487967,
+            "area_code": "UTL",
+            "pred_risk": "safe",
+            "itemStyle": {
+                "color": "#91cc75"
+            }
+        },
+        {
+            "id": "PRO_PRO001_safe",
+            "name": "安全",
+            "symbolSize": 37,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO001",
+            "weight": 0.3450480215979092
+        },
+        {
+            "id": "PRO_PRO001_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO001",
+            "weight": 0.3450480215979092
+        },
+        {
+            "id": "PRO_PRO001_danger",
+            "name": "危险",
+            "symbolSize": 27,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO001",
+            "weight": 0.3450480215979092
+        },
+        {
+            "id": "PRO_PRO002_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO002",
+            "weight": 0.24589588027928086
+        },
+        {
+            "id": "PRO_PRO002_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO002",
+            "weight": 0.24589588027928086
+        },
+        {
+            "id": "PRO_PRO002_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO002",
+            "weight": 0.24589588027928086
+        },
+        {
+            "id": "PRO_PRO003_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO003",
+            "weight": 0.19036366033781837
+        },
+        {
+            "id": "PRO_PRO003_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO003",
+            "weight": 0.19036366033781837
+        },
+        {
+            "id": "PRO_PRO003_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO003",
+            "weight": 0.19036366033781837
+        },
+        {
+            "id": "PRO_PRO004_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO004",
+            "weight": 0.30163167152898773
+        },
+        {
+            "id": "PRO_PRO004_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO004",
+            "weight": 0.30163167152898773
+        },
+        {
+            "id": "PRO_PRO004_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO004",
+            "weight": 0.30163167152898773
+        },
+        {
+            "id": "PRO_PRO005_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO005",
+            "weight": 0.23074448893211905
+        },
+        {
+            "id": "PRO_PRO005_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO005",
+            "weight": 0.23074448893211905
+        },
+        {
+            "id": "PRO_PRO005_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO005",
+            "weight": 0.23074448893211905
+        },
+        {
+            "id": "PRO_PRO006_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO006",
+            "weight": 0.19283205730402958
+        },
+        {
+            "id": "PRO_PRO006_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO006",
+            "weight": 0.19283205730402958
+        },
+        {
+            "id": "PRO_PRO006_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO006",
+            "weight": 0.19283205730402958
+        },
+        {
+            "id": "PRO_PRO007_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO007",
+            "weight": 0.17999969858716638
+        },
+        {
+            "id": "PRO_PRO007_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO007",
+            "weight": 0.17999969858716638
+        },
+        {
+            "id": "PRO_PRO007_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO007",
+            "weight": 0.17999969858716638
+        },
+        {
+            "id": "PRO_PRO008_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO008",
+            "weight": 0.32141979268077525
+        },
+        {
+            "id": "PRO_PRO008_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO008",
+            "weight": 0.32141979268077525
+        },
+        {
+            "id": "PRO_PRO008_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO008",
+            "weight": 0.32141979268077525
+        },
+        {
+            "id": "PRO_PRO009_safe",
+            "name": "安全",
+            "symbolSize": 17,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO009",
+            "weight": 0.9271869315394017
+        },
+        {
+            "id": "PRO_PRO009_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO009",
+            "weight": 0.9271869315394017
+        },
+        {
+            "id": "PRO_PRO009_danger",
+            "name": "危险",
+            "symbolSize": 47,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO009",
+            "weight": 0.9271869315394017
+        },
+        {
+            "id": "PRO_PRO010_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO010",
+            "weight": 0.27867742263444906
+        },
+        {
+            "id": "PRO_PRO010_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO010",
+            "weight": 0.27867742263444906
+        },
+        {
+            "id": "PRO_PRO010_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO010",
+            "weight": 0.27867742263444906
+        },
+        {
+            "id": "PRO_PRO011_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO011",
+            "weight": 0.1816667348637101
+        },
+        {
+            "id": "PRO_PRO011_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO011",
+            "weight": 0.1816667348637101
+        },
+        {
+            "id": "PRO_PRO011_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO011",
+            "weight": 0.1816667348637101
+        },
+        {
+            "id": "PRO_PRO012_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO012",
+            "weight": 0.1953016693406822
+        },
+        {
+            "id": "PRO_PRO012_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO012",
+            "weight": 0.1953016693406822
+        },
+        {
+            "id": "PRO_PRO012_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO012",
+            "weight": 0.1953016693406822
+        },
+        {
+            "id": "PRO_PRO013_safe",
+            "name": "安全",
+            "symbolSize": 45,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO013",
+            "weight": 0.1385095980436188
+        },
+        {
+            "id": "PRO_PRO013_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO013",
+            "weight": 0.1385095980436188
+        },
+        {
+            "id": "PRO_PRO013_danger",
+            "name": "危险",
+            "symbolSize": 19,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO013",
+            "weight": 0.1385095980436188
+        },
+        {
+            "id": "PRO_PRO014_safe",
+            "name": "安全",
+            "symbolSize": 36,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO014",
+            "weight": 0.39005073618181213
+        },
+        {
+            "id": "PRO_PRO014_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO014",
+            "weight": 0.39005073618181213
+        },
+        {
+            "id": "PRO_PRO014_danger",
+            "name": "危险",
+            "symbolSize": 28,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO014",
+            "weight": 0.39005073618181213
+        },
+        {
+            "id": "PRO_PRO015_safe",
+            "name": "安全",
+            "symbolSize": 44,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "PRO015",
+            "weight": 0.14710941975191846
+        },
+        {
+            "id": "PRO_PRO015_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "PRO015",
+            "weight": 0.14710941975191846
+        },
+        {
+            "id": "PRO_PRO015_danger",
+            "name": "危险",
+            "symbolSize": 20,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "PRO015",
+            "weight": 0.14710941975191846
+        },
+        {
+            "id": "REA_REA001_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA001",
+            "weight": 0.25688662436045634
+        },
+        {
+            "id": "REA_REA001_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA001",
+            "weight": 0.25688662436045634
+        },
+        {
+            "id": "REA_REA001_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA001",
+            "weight": 0.25688662436045634
+        },
+        {
+            "id": "REA_REA002_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA002",
+            "weight": 0.26669874640114516
+        },
+        {
+            "id": "REA_REA002_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA002",
+            "weight": 0.26669874640114516
+        },
+        {
+            "id": "REA_REA002_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA002",
+            "weight": 0.26669874640114516
+        },
+        {
+            "id": "REA_REA003_safe",
+            "name": "安全",
+            "symbolSize": 34,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA003",
+            "weight": 0.4347278462125711
+        },
+        {
+            "id": "REA_REA003_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA003",
+            "weight": 0.4347278462125711
+        },
+        {
+            "id": "REA_REA003_danger",
+            "name": "危险",
+            "symbolSize": 30,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA003",
+            "weight": 0.4347278462125711
+        },
+        {
+            "id": "REA_REA004_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA004",
+            "weight": 0.30262280520319623
+        },
+        {
+            "id": "REA_REA004_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA004",
+            "weight": 0.30262280520319623
+        },
+        {
+            "id": "REA_REA004_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA004",
+            "weight": 0.30262280520319623
+        },
+        {
+            "id": "REA_REA005_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA005",
+            "weight": 0.23883645464604744
+        },
+        {
+            "id": "REA_REA005_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA005",
+            "weight": 0.23883645464604744
+        },
+        {
+            "id": "REA_REA005_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA005",
+            "weight": 0.23883645464604744
+        },
+        {
+            "id": "REA_REA006_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA006",
+            "weight": 0.3059176608061931
+        },
+        {
+            "id": "REA_REA006_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA006",
+            "weight": 0.3059176608061931
+        },
+        {
+            "id": "REA_REA006_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA006",
+            "weight": 0.3059176608061931
+        },
+        {
+            "id": "REA_REA007_safe",
+            "name": "安全",
+            "symbolSize": 35,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA007",
+            "weight": 0.4168144545536428
+        },
+        {
+            "id": "REA_REA007_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA007",
+            "weight": 0.4168144545536428
+        },
+        {
+            "id": "REA_REA007_danger",
+            "name": "危险",
+            "symbolSize": 29,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA007",
+            "weight": 0.4168144545536428
+        },
+        {
+            "id": "REA_REA008_safe",
+            "name": "安全",
+            "symbolSize": 45,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA008",
+            "weight": 0.11844861376576625
+        },
+        {
+            "id": "REA_REA008_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA008",
+            "weight": 0.11844861376576625
+        },
+        {
+            "id": "REA_REA008_danger",
+            "name": "危险",
+            "symbolSize": 19,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA008",
+            "weight": 0.11844861376576625
+        },
+        {
+            "id": "REA_REA009_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA009",
+            "weight": 0.23223548319698287
+        },
+        {
+            "id": "REA_REA009_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA009",
+            "weight": 0.23223548319698287
+        },
+        {
+            "id": "REA_REA009_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA009",
+            "weight": 0.23223548319698287
+        },
+        {
+            "id": "REA_REA010_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA010",
+            "weight": 0.24997347635809108
+        },
+        {
+            "id": "REA_REA010_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA010",
+            "weight": 0.24997347635809108
+        },
+        {
+            "id": "REA_REA010_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA010",
+            "weight": 0.24997347635809108
+        },
+        {
+            "id": "REA_REA011_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA011",
+            "weight": 0.1882758482546339
+        },
+        {
+            "id": "REA_REA011_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA011",
+            "weight": 0.1882758482546339
+        },
+        {
+            "id": "REA_REA011_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA011",
+            "weight": 0.1882758482546339
+        },
+        {
+            "id": "REA_REA012_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA012",
+            "weight": 0.31702132601617816
+        },
+        {
+            "id": "REA_REA012_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA012",
+            "weight": 0.31702132601617816
+        },
+        {
+            "id": "REA_REA012_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA012",
+            "weight": 0.31702132601617816
+        },
+        {
+            "id": "REA_REA013_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA013",
+            "weight": 0.23719555746445778
+        },
+        {
+            "id": "REA_REA013_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA013",
+            "weight": 0.23719555746445778
+        },
+        {
+            "id": "REA_REA013_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA013",
+            "weight": 0.23719555746445778
+        },
+        {
+            "id": "REA_REA014_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA014",
+            "weight": 0.27846114504050296
+        },
+        {
+            "id": "REA_REA014_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA014",
+            "weight": 0.27846114504050296
+        },
+        {
+            "id": "REA_REA014_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA014",
+            "weight": 0.27846114504050296
+        },
+        {
+            "id": "REA_REA015_safe",
+            "name": "安全",
+            "symbolSize": 37,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA015",
+            "weight": 0.34490902301106097
+        },
+        {
+            "id": "REA_REA015_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA015",
+            "weight": 0.34490902301106097
+        },
+        {
+            "id": "REA_REA015_danger",
+            "name": "危险",
+            "symbolSize": 27,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA015",
+            "weight": 0.34490902301106097
+        },
+        {
+            "id": "REA_REA016_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA016",
+            "weight": 0.3374079257434043
+        },
+        {
+            "id": "REA_REA016_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA016",
+            "weight": 0.3374079257434043
+        },
+        {
+            "id": "REA_REA016_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA016",
+            "weight": 0.3374079257434043
+        },
+        {
+            "id": "REA_REA017_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA017",
+            "weight": 0.3321743768697252
+        },
+        {
+            "id": "REA_REA017_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA017",
+            "weight": 0.3321743768697252
+        },
+        {
+            "id": "REA_REA017_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA017",
+            "weight": 0.3321743768697252
+        },
+        {
+            "id": "REA_REA018_safe",
+            "name": "安全",
+            "symbolSize": 42,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA018",
+            "weight": 0.20911724207461987
+        },
+        {
+            "id": "REA_REA018_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA018",
+            "weight": 0.20911724207461987
+        },
+        {
+            "id": "REA_REA018_danger",
+            "name": "危险",
+            "symbolSize": 22,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA018",
+            "weight": 0.20911724207461987
+        },
+        {
+            "id": "REA_REA019_safe",
+            "name": "安全",
+            "symbolSize": 42,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA019",
+            "weight": 0.2026640039679068
+        },
+        {
+            "id": "REA_REA019_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA019",
+            "weight": 0.2026640039679068
+        },
+        {
+            "id": "REA_REA019_danger",
+            "name": "危险",
+            "symbolSize": 22,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA019",
+            "weight": 0.2026640039679068
+        },
+        {
+            "id": "REA_REA020_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA020",
+            "weight": 0.25953735614717655
+        },
+        {
+            "id": "REA_REA020_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA020",
+            "weight": 0.25953735614717655
+        },
+        {
+            "id": "REA_REA020_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA020",
+            "weight": 0.25953735614717655
+        },
+        {
+            "id": "REA_REA021_safe",
+            "name": "安全",
+            "symbolSize": 44,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA021",
+            "weight": 0.1533206222726466
+        },
+        {
+            "id": "REA_REA021_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA021",
+            "weight": 0.1533206222726466
+        },
+        {
+            "id": "REA_REA021_danger",
+            "name": "危险",
+            "symbolSize": 20,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA021",
+            "weight": 0.1533206222726466
+        },
+        {
+            "id": "REA_REA022_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA022",
+            "weight": 0.25854647997483204
+        },
+        {
+            "id": "REA_REA022_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA022",
+            "weight": 0.25854647997483204
+        },
+        {
+            "id": "REA_REA022_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA022",
+            "weight": 0.25854647997483204
+        },
+        {
+            "id": "REA_REA023_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA023",
+            "weight": 0.283844025292514
+        },
+        {
+            "id": "REA_REA023_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA023",
+            "weight": 0.283844025292514
+        },
+        {
+            "id": "REA_REA023_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA023",
+            "weight": 0.283844025292514
+        },
+        {
+            "id": "REA_REA024_safe",
+            "name": "安全",
+            "symbolSize": 22,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA024",
+            "weight": 0.7830596069412037
+        },
+        {
+            "id": "REA_REA024_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA024",
+            "weight": 0.7830596069412037
+        },
+        {
+            "id": "REA_REA024_danger",
+            "name": "危险",
+            "symbolSize": 42,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA024",
+            "weight": 0.7830596069412037
+        },
+        {
+            "id": "REA_REA025_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "REA025",
+            "weight": 0.3273183237023989
+        },
+        {
+            "id": "REA_REA025_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "REA025",
+            "weight": 0.3273183237023989
+        },
+        {
+            "id": "REA_REA025_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "REA025",
+            "weight": 0.3273183237023989
+        },
+        {
+            "id": "RMS_RMS001_safe",
+            "name": "安全",
+            "symbolSize": 15,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS001",
+            "weight": 0.9736812085968636
+        },
+        {
+            "id": "RMS_RMS001_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS001",
+            "weight": 0.9736812085968636
+        },
+        {
+            "id": "RMS_RMS001_danger",
+            "name": "危险",
+            "symbolSize": 49,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS001",
+            "weight": 0.9736812085968636
+        },
+        {
+            "id": "RMS_RMS002_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS002",
+            "weight": 0.2739124845241915
+        },
+        {
+            "id": "RMS_RMS002_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS002",
+            "weight": 0.2739124845241915
+        },
+        {
+            "id": "RMS_RMS002_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS002",
+            "weight": 0.2739124845241915
+        },
+        {
+            "id": "RMS_RMS003_safe",
+            "name": "安全",
+            "symbolSize": 37,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS003",
+            "weight": 0.3460093614965809
+        },
+        {
+            "id": "RMS_RMS003_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS003",
+            "weight": 0.3460093614965809
+        },
+        {
+            "id": "RMS_RMS003_danger",
+            "name": "危险",
+            "symbolSize": 27,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS003",
+            "weight": 0.3460093614965809
+        },
+        {
+            "id": "RMS_RMS004_safe",
+            "name": "安全",
+            "symbolSize": 46,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS004",
+            "weight": 0.10232936842995558
+        },
+        {
+            "id": "RMS_RMS004_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS004",
+            "weight": 0.10232936842995558
+        },
+        {
+            "id": "RMS_RMS004_danger",
+            "name": "危险",
+            "symbolSize": 18,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS004",
+            "weight": 0.10232936842995558
+        },
+        {
+            "id": "RMS_RMS005_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS005",
+            "weight": 0.2689528607122754
+        },
+        {
+            "id": "RMS_RMS005_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS005",
+            "weight": 0.2689528607122754
+        },
+        {
+            "id": "RMS_RMS005_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS005",
+            "weight": 0.2689528607122754
+        },
+        {
+            "id": "RMS_RMS006_safe",
+            "name": "安全",
+            "symbolSize": 37,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS006",
+            "weight": 0.3644707395071487
+        },
+        {
+            "id": "RMS_RMS006_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS006",
+            "weight": 0.3644707395071487
+        },
+        {
+            "id": "RMS_RMS006_danger",
+            "name": "危险",
+            "symbolSize": 27,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS006",
+            "weight": 0.3644707395071487
+        },
+        {
+            "id": "RMS_RMS007_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS007",
+            "weight": 0.2626198229388404
+        },
+        {
+            "id": "RMS_RMS007_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS007",
+            "weight": 0.2626198229388404
+        },
+        {
+            "id": "RMS_RMS007_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS007",
+            "weight": 0.2626198229388404
+        },
+        {
+            "id": "RMS_RMS008_safe",
+            "name": "安全",
+            "symbolSize": 37,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS008",
+            "weight": 0.36494044063677233
+        },
+        {
+            "id": "RMS_RMS008_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS008",
+            "weight": 0.36494044063677233
+        },
+        {
+            "id": "RMS_RMS008_danger",
+            "name": "危险",
+            "symbolSize": 27,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS008",
+            "weight": 0.36494044063677233
+        },
+        {
+            "id": "RMS_RMS009_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS009",
+            "weight": 0.17698743522749394
+        },
+        {
+            "id": "RMS_RMS009_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS009",
+            "weight": 0.17698743522749394
+        },
+        {
+            "id": "RMS_RMS009_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS009",
+            "weight": 0.17698743522749394
+        },
+        {
+            "id": "RMS_RMS010_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS010",
+            "weight": 0.27412612534933933
+        },
+        {
+            "id": "RMS_RMS010_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS010",
+            "weight": 0.27412612534933933
+        },
+        {
+            "id": "RMS_RMS010_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS010",
+            "weight": 0.27412612534933933
+        },
+        {
+            "id": "RMS_RMS011_safe",
+            "name": "安全",
+            "symbolSize": 37,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS011",
+            "weight": 0.363438196830564
+        },
+        {
+            "id": "RMS_RMS011_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS011",
+            "weight": 0.363438196830564
+        },
+        {
+            "id": "RMS_RMS011_danger",
+            "name": "危险",
+            "symbolSize": 27,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS011",
+            "weight": 0.363438196830564
+        },
+        {
+            "id": "RMS_RMS012_safe",
+            "name": "安全",
+            "symbolSize": 17,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS012",
+            "weight": 0.9205243571042525
+        },
+        {
+            "id": "RMS_RMS012_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS012",
+            "weight": 0.9205243571042525
+        },
+        {
+            "id": "RMS_RMS012_danger",
+            "name": "危险",
+            "symbolSize": 47,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS012",
+            "weight": 0.9205243571042525
+        },
+        {
+            "id": "RMS_RMS013_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS013",
+            "weight": 0.3186289027884891
+        },
+        {
+            "id": "RMS_RMS013_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS013",
+            "weight": 0.3186289027884891
+        },
+        {
+            "id": "RMS_RMS013_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS013",
+            "weight": 0.3186289027884891
+        },
+        {
+            "id": "RMS_RMS014_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS014",
+            "weight": 0.2602413109114676
+        },
+        {
+            "id": "RMS_RMS014_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS014",
+            "weight": 0.2602413109114676
+        },
+        {
+            "id": "RMS_RMS014_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS014",
+            "weight": 0.2602413109114676
+        },
+        {
+            "id": "RMS_RMS015_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS015",
+            "weight": 0.241649486003422
+        },
+        {
+            "id": "RMS_RMS015_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS015",
+            "weight": 0.241649486003422
+        },
+        {
+            "id": "RMS_RMS015_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS015",
+            "weight": 0.241649486003422
+        },
+        {
+            "id": "RMS_RMS016_safe",
+            "name": "安全",
+            "symbolSize": 44,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS016",
+            "weight": 0.15519975902022937
+        },
+        {
+            "id": "RMS_RMS016_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS016",
+            "weight": 0.15519975902022937
+        },
+        {
+            "id": "RMS_RMS016_danger",
+            "name": "危险",
+            "symbolSize": 20,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS016",
+            "weight": 0.15519975902022937
+        },
+        {
+            "id": "RMS_RMS017_safe",
+            "name": "安全",
+            "symbolSize": 45,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS017",
+            "weight": 0.1274065009186662
+        },
+        {
+            "id": "RMS_RMS017_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS017",
+            "weight": 0.1274065009186662
+        },
+        {
+            "id": "RMS_RMS017_danger",
+            "name": "危险",
+            "symbolSize": 19,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS017",
+            "weight": 0.1274065009186662
+        },
+        {
+            "id": "RMS_RMS018_safe",
+            "name": "安全",
+            "symbolSize": 37,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS018",
+            "weight": 0.3500106429962938
+        },
+        {
+            "id": "RMS_RMS018_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS018",
+            "weight": 0.3500106429962938
+        },
+        {
+            "id": "RMS_RMS018_danger",
+            "name": "危险",
+            "symbolSize": 27,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS018",
+            "weight": 0.3500106429962938
+        },
+        {
+            "id": "RMS_RMS019_safe",
+            "name": "安全",
+            "symbolSize": 15,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS019",
+            "weight": 0.9736328198457151
+        },
+        {
+            "id": "RMS_RMS019_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS019",
+            "weight": 0.9736328198457151
+        },
+        {
+            "id": "RMS_RMS019_danger",
+            "name": "危险",
+            "symbolSize": 49,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS019",
+            "weight": 0.9736328198457151
+        },
+        {
+            "id": "RMS_RMS020_safe",
+            "name": "安全",
+            "symbolSize": 44,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "RMS020",
+            "weight": 0.16062890598771257
+        },
+        {
+            "id": "RMS_RMS020_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "RMS020",
+            "weight": 0.16062890598771257
+        },
+        {
+            "id": "RMS_RMS020_danger",
+            "name": "危险",
+            "symbolSize": 20,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "RMS020",
+            "weight": 0.16062890598771257
+        },
+        {
+            "id": "SEP_SEP001_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP001",
+            "weight": 0.23846232119578475
+        },
+        {
+            "id": "SEP_SEP001_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP001",
+            "weight": 0.23846232119578475
+        },
+        {
+            "id": "SEP_SEP001_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP001",
+            "weight": 0.23846232119578475
+        },
+        {
+            "id": "SEP_SEP002_safe",
+            "name": "安全",
+            "symbolSize": 44,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP002",
+            "weight": 0.14803351365529802
+        },
+        {
+            "id": "SEP_SEP002_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP002",
+            "weight": 0.14803351365529802
+        },
+        {
+            "id": "SEP_SEP002_danger",
+            "name": "危险",
+            "symbolSize": 20,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP002",
+            "weight": 0.14803351365529802
+        },
+        {
+            "id": "SEP_SEP003_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP003",
+            "weight": 0.18609997341523224
+        },
+        {
+            "id": "SEP_SEP003_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP003",
+            "weight": 0.18609997341523224
+        },
+        {
+            "id": "SEP_SEP003_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP003",
+            "weight": 0.18609997341523224
+        },
+        {
+            "id": "SEP_SEP004_safe",
+            "name": "安全",
+            "symbolSize": 45,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP004",
+            "weight": 0.1308630002336948
+        },
+        {
+            "id": "SEP_SEP004_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP004",
+            "weight": 0.1308630002336948
+        },
+        {
+            "id": "SEP_SEP004_danger",
+            "name": "危险",
+            "symbolSize": 19,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP004",
+            "weight": 0.1308630002336948
+        },
+        {
+            "id": "SEP_SEP005_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP005",
+            "weight": 0.19632147562365967
+        },
+        {
+            "id": "SEP_SEP005_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP005",
+            "weight": 0.19632147562365967
+        },
+        {
+            "id": "SEP_SEP005_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP005",
+            "weight": 0.19632147562365967
+        },
+        {
+            "id": "SEP_SEP006_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP006",
+            "weight": 0.3164093533495709
+        },
+        {
+            "id": "SEP_SEP006_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP006",
+            "weight": 0.3164093533495709
+        },
+        {
+            "id": "SEP_SEP006_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP006",
+            "weight": 0.3164093533495709
+        },
+        {
+            "id": "SEP_SEP007_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP007",
+            "weight": 0.25584937151163706
+        },
+        {
+            "id": "SEP_SEP007_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP007",
+            "weight": 0.25584937151163706
+        },
+        {
+            "id": "SEP_SEP007_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP007",
+            "weight": 0.25584937151163706
+        },
+        {
+            "id": "SEP_SEP008_safe",
+            "name": "安全",
+            "symbolSize": 46,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP008",
+            "weight": 0.09268892314823812
+        },
+        {
+            "id": "SEP_SEP008_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP008",
+            "weight": 0.09268892314823812
+        },
+        {
+            "id": "SEP_SEP008_danger",
+            "name": "危险",
+            "symbolSize": 18,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP008",
+            "weight": 0.09268892314823812
+        },
+        {
+            "id": "SEP_SEP009_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP009",
+            "weight": 0.29560054293095295
+        },
+        {
+            "id": "SEP_SEP009_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP009",
+            "weight": 0.29560054293095295
+        },
+        {
+            "id": "SEP_SEP009_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP009",
+            "weight": 0.29560054293095295
+        },
+        {
+            "id": "SEP_SEP010_safe",
+            "name": "安全",
+            "symbolSize": 42,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP010",
+            "weight": 0.22159426421096662
+        },
+        {
+            "id": "SEP_SEP010_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP010",
+            "weight": 0.22159426421096662
+        },
+        {
+            "id": "SEP_SEP010_danger",
+            "name": "危险",
+            "symbolSize": 22,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP010",
+            "weight": 0.22159426421096662
+        },
+        {
+            "id": "SEP_SEP011_safe",
+            "name": "安全",
+            "symbolSize": 42,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP011",
+            "weight": 0.22703061802699542
+        },
+        {
+            "id": "SEP_SEP011_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP011",
+            "weight": 0.22703061802699542
+        },
+        {
+            "id": "SEP_SEP011_danger",
+            "name": "危险",
+            "symbolSize": 22,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP011",
+            "weight": 0.22703061802699542
+        },
+        {
+            "id": "SEP_SEP012_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP012",
+            "weight": 0.181110478862484
+        },
+        {
+            "id": "SEP_SEP012_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP012",
+            "weight": 0.181110478862484
+        },
+        {
+            "id": "SEP_SEP012_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP012",
+            "weight": 0.181110478862484
+        },
+        {
+            "id": "SEP_SEP013_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP013",
+            "weight": 0.29573585012579917
+        },
+        {
+            "id": "SEP_SEP013_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP013",
+            "weight": 0.29573585012579917
+        },
+        {
+            "id": "SEP_SEP013_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP013",
+            "weight": 0.29573585012579917
+        },
+        {
+            "id": "SEP_SEP014_safe",
+            "name": "安全",
+            "symbolSize": 45,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP014",
+            "weight": 0.13726613196096177
+        },
+        {
+            "id": "SEP_SEP014_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP014",
+            "weight": 0.13726613196096177
+        },
+        {
+            "id": "SEP_SEP014_danger",
+            "name": "危险",
+            "symbolSize": 19,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP014",
+            "weight": 0.13726613196096177
+        },
+        {
+            "id": "SEP_SEP015_safe",
+            "name": "安全",
+            "symbolSize": 45,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP015",
+            "weight": 0.13478154943760798
+        },
+        {
+            "id": "SEP_SEP015_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP015",
+            "weight": 0.13478154943760798
+        },
+        {
+            "id": "SEP_SEP015_danger",
+            "name": "危险",
+            "symbolSize": 19,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP015",
+            "weight": 0.13478154943760798
+        },
+        {
+            "id": "SEP_SEP016_safe",
+            "name": "安全",
+            "symbolSize": 44,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP016",
+            "weight": 0.16903468950741954
+        },
+        {
+            "id": "SEP_SEP016_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP016",
+            "weight": 0.16903468950741954
+        },
+        {
+            "id": "SEP_SEP016_danger",
+            "name": "危险",
+            "symbolSize": 20,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP016",
+            "weight": 0.16903468950741954
+        },
+        {
+            "id": "SEP_SEP017_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP017",
+            "weight": 0.29643448470556233
+        },
+        {
+            "id": "SEP_SEP017_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP017",
+            "weight": 0.29643448470556233
+        },
+        {
+            "id": "SEP_SEP017_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP017",
+            "weight": 0.29643448470556233
+        },
+        {
+            "id": "SEP_SEP018_safe",
+            "name": "安全",
+            "symbolSize": 44,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP018",
+            "weight": 0.15215613437088088
+        },
+        {
+            "id": "SEP_SEP018_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP018",
+            "weight": 0.15215613437088088
+        },
+        {
+            "id": "SEP_SEP018_danger",
+            "name": "危险",
+            "symbolSize": 20,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP018",
+            "weight": 0.15215613437088088
+        },
+        {
+            "id": "SEP_SEP019_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP019",
+            "weight": 0.2925166084353661
+        },
+        {
+            "id": "SEP_SEP019_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP019",
+            "weight": 0.2925166084353661
+        },
+        {
+            "id": "SEP_SEP019_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP019",
+            "weight": 0.2925166084353661
+        },
+        {
+            "id": "SEP_SEP020_safe",
+            "name": "安全",
+            "symbolSize": 45,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "SEP020",
+            "weight": 0.1369312160846152
+        },
+        {
+            "id": "SEP_SEP020_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "SEP020",
+            "weight": 0.1369312160846152
+        },
+        {
+            "id": "SEP_SEP020_danger",
+            "name": "危险",
+            "symbolSize": 19,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "SEP020",
+            "weight": 0.1369312160846152
+        },
+        {
+            "id": "UTL_UTL001_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL001",
+            "weight": 0.24983156808198623
+        },
+        {
+            "id": "UTL_UTL001_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL001",
+            "weight": 0.24983156808198623
+        },
+        {
+            "id": "UTL_UTL001_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL001",
+            "weight": 0.24983156808198623
+        },
+        {
+            "id": "UTL_UTL002_safe",
+            "name": "安全",
+            "symbolSize": 44,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL002",
+            "weight": 0.15305849164914784
+        },
+        {
+            "id": "UTL_UTL002_warning",
+            "name": "警告",
+            "symbolSize": 15,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL002",
+            "weight": 0.15305849164914784
+        },
+        {
+            "id": "UTL_UTL002_danger",
+            "name": "危险",
+            "symbolSize": 20,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL002",
+            "weight": 0.15305849164914784
+        },
+        {
+            "id": "UTL_UTL003_safe",
+            "name": "安全",
+            "symbolSize": 36,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL003",
+            "weight": 0.38063970407132325
+        },
+        {
+            "id": "UTL_UTL003_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL003",
+            "weight": 0.38063970407132325
+        },
+        {
+            "id": "UTL_UTL003_danger",
+            "name": "危险",
+            "symbolSize": 28,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL003",
+            "weight": 0.38063970407132325
+        },
+        {
+            "id": "UTL_UTL004_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL004",
+            "weight": 0.3255005609276896
+        },
+        {
+            "id": "UTL_UTL004_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL004",
+            "weight": 0.3255005609276896
+        },
+        {
+            "id": "UTL_UTL004_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL004",
+            "weight": 0.3255005609276896
+        },
+        {
+            "id": "UTL_UTL005_safe",
+            "name": "安全",
+            "symbolSize": 37,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL005",
+            "weight": 0.35197089092510025
+        },
+        {
+            "id": "UTL_UTL005_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL005",
+            "weight": 0.35197089092510025
+        },
+        {
+            "id": "UTL_UTL005_danger",
+            "name": "危险",
+            "symbolSize": 27,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL005",
+            "weight": 0.35197089092510025
+        },
+        {
+            "id": "UTL_UTL006_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL006",
+            "weight": 0.3125907223896195
+        },
+        {
+            "id": "UTL_UTL006_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL006",
+            "weight": 0.3125907223896195
+        },
+        {
+            "id": "UTL_UTL006_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL006",
+            "weight": 0.3125907223896195
+        },
+        {
+            "id": "UTL_UTL007_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL007",
+            "weight": 0.3011452609312627
+        },
+        {
+            "id": "UTL_UTL007_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL007",
+            "weight": 0.3011452609312627
+        },
+        {
+            "id": "UTL_UTL007_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL007",
+            "weight": 0.3011452609312627
+        },
+        {
+            "id": "UTL_UTL008_safe",
+            "name": "安全",
+            "symbolSize": 36,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL008",
+            "weight": 0.37159010715500895
+        },
+        {
+            "id": "UTL_UTL008_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL008",
+            "weight": 0.37159010715500895
+        },
+        {
+            "id": "UTL_UTL008_danger",
+            "name": "危险",
+            "symbolSize": 28,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL008",
+            "weight": 0.37159010715500895
+        },
+        {
+            "id": "UTL_UTL009_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL009",
+            "weight": 0.30375426756415214
+        },
+        {
+            "id": "UTL_UTL009_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL009",
+            "weight": 0.30375426756415214
+        },
+        {
+            "id": "UTL_UTL009_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL009",
+            "weight": 0.30375426756415214
+        },
+        {
+            "id": "UTL_UTL010_safe",
+            "name": "安全",
+            "symbolSize": 37,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL010",
+            "weight": 0.3608382325346537
+        },
+        {
+            "id": "UTL_UTL010_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL010",
+            "weight": 0.3608382325346537
+        },
+        {
+            "id": "UTL_UTL010_danger",
+            "name": "危险",
+            "symbolSize": 27,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL010",
+            "weight": 0.3608382325346537
+        },
+        {
+            "id": "UTL_UTL011_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL011",
+            "weight": 0.3393563777462504
+        },
+        {
+            "id": "UTL_UTL011_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL011",
+            "weight": 0.3393563777462504
+        },
+        {
+            "id": "UTL_UTL011_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL011",
+            "weight": 0.3393563777462504
+        },
+        {
+            "id": "UTL_UTL012_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL012",
+            "weight": 0.3101327498579804
+        },
+        {
+            "id": "UTL_UTL012_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL012",
+            "weight": 0.3101327498579804
+        },
+        {
+            "id": "UTL_UTL012_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL012",
+            "weight": 0.3101327498579804
+        },
+        {
+            "id": "UTL_UTL013_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL013",
+            "weight": 0.27479843741047116
+        },
+        {
+            "id": "UTL_UTL013_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL013",
+            "weight": 0.27479843741047116
+        },
+        {
+            "id": "UTL_UTL013_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL013",
+            "weight": 0.27479843741047116
+        },
+        {
+            "id": "UTL_UTL014_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL014",
+            "weight": 0.34173111097756237
+        },
+        {
+            "id": "UTL_UTL014_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL014",
+            "weight": 0.34173111097756237
+        },
+        {
+            "id": "UTL_UTL014_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL014",
+            "weight": 0.34173111097756237
+        },
+        {
+            "id": "UTL_UTL015_safe",
+            "name": "安全",
+            "symbolSize": 39,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL015",
+            "weight": 0.2931602584283657
+        },
+        {
+            "id": "UTL_UTL015_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL015",
+            "weight": 0.2931602584283657
+        },
+        {
+            "id": "UTL_UTL015_danger",
+            "name": "危险",
+            "symbolSize": 25,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL015",
+            "weight": 0.2931602584283657
+        },
+        {
+            "id": "UTL_UTL016_safe",
+            "name": "安全",
+            "symbolSize": 37,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL016",
+            "weight": 0.3588072431505363
+        },
+        {
+            "id": "UTL_UTL016_warning",
+            "name": "警告",
+            "symbolSize": 17,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL016",
+            "weight": 0.3588072431505363
+        },
+        {
+            "id": "UTL_UTL016_danger",
+            "name": "危险",
+            "symbolSize": 27,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL016",
+            "weight": 0.3588072431505363
+        },
+        {
+            "id": "UTL_UTL017_safe",
+            "name": "安全",
+            "symbolSize": 41,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL017",
+            "weight": 0.23982614327651114
+        },
+        {
+            "id": "UTL_UTL017_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL017",
+            "weight": 0.23982614327651114
+        },
+        {
+            "id": "UTL_UTL017_danger",
+            "name": "危险",
+            "symbolSize": 23,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL017",
+            "weight": 0.23982614327651114
+        },
+        {
+            "id": "UTL_UTL018_safe",
+            "name": "安全",
+            "symbolSize": 38,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL018",
+            "weight": 0.319369222897133
+        },
+        {
+            "id": "UTL_UTL018_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL018",
+            "weight": 0.319369222897133
+        },
+        {
+            "id": "UTL_UTL018_danger",
+            "name": "危险",
+            "symbolSize": 26,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL018",
+            "weight": 0.319369222897133
+        },
+        {
+            "id": "UTL_UTL019_safe",
+            "name": "安全",
+            "symbolSize": 43,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL019",
+            "weight": 0.18235188971453134
+        },
+        {
+            "id": "UTL_UTL019_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL019",
+            "weight": 0.18235188971453134
+        },
+        {
+            "id": "UTL_UTL019_danger",
+            "name": "危险",
+            "symbolSize": 21,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL019",
+            "weight": 0.18235188971453134
+        },
+        {
+            "id": "UTL_UTL020_safe",
+            "name": "安全",
+            "symbolSize": 40,
+            "category": 2,
+            "itemStyle": {
+                "color": "#67C23A"
+            },
+            "sensor_id": "UTL020",
+            "weight": 0.26497861955487967
+        },
+        {
+            "id": "UTL_UTL020_warning",
+            "name": "警告",
+            "symbolSize": 16,
+            "category": 3,
+            "itemStyle": {
+                "color": "#E6A23C"
+            },
+            "sensor_id": "UTL020",
+            "weight": 0.26497861955487967
+        },
+        {
+            "id": "UTL_UTL020_danger",
+            "name": "危险",
+            "symbolSize": 24,
+            "category": 4,
+            "itemStyle": {
+                "color": "#F56C6C"
+            },
+            "sensor_id": "UTL020",
+            "weight": 0.26497861955487967
+        }
+    ],
+    "links": [
+        {
+            "source": "PRO",
+            "target": "REA",
+            "value": 2
+        },
+        {
+            "source": "PRO",
+            "target": "RMS",
+            "value": 2
+        },
+        {
+            "source": "PRO",
+            "target": "SEP",
+            "value": 2
+        },
+        {
+            "source": "PRO",
+            "target": "UTL",
+            "value": 2
+        },
+        {
+            "source": "REA",
+            "target": "RMS",
+            "value": 2
+        },
+        {
+            "source": "REA",
+            "target": "SEP",
+            "value": 2
+        },
+        {
+            "source": "REA",
+            "target": "UTL",
+            "value": 2
+        },
+        {
+            "source": "RMS",
+            "target": "SEP",
+            "value": 2
+        },
+        {
+            "source": "RMS",
+            "target": "UTL",
+            "value": 2
+        },
+        {
+            "source": "SEP",
+            "target": "UTL",
+            "value": 2
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO001",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO002",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO003",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO004",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO005",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO006",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO007",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO008",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO009",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO010",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO011",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO012",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO013",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO014",
+            "value": 3
+        },
+        {
+            "source": "PRO",
+            "target": "PRO_PRO015",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA001",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA002",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA003",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA004",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA005",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA006",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA007",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA008",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA009",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA010",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA011",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA012",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA013",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA014",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA015",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA016",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA017",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA018",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA019",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA020",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA021",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA022",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA023",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA024",
+            "value": 3
+        },
+        {
+            "source": "REA",
+            "target": "REA_REA025",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS001",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS002",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS003",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS004",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS005",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS006",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS007",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS008",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS009",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS010",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS011",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS012",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS013",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS014",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS015",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS016",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS017",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS018",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS019",
+            "value": 3
+        },
+        {
+            "source": "RMS",
+            "target": "RMS_RMS020",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP001",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP002",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP003",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP004",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP005",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP006",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP007",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP008",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP009",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP010",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP011",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP012",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP013",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP014",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP015",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP016",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP017",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP018",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP019",
+            "value": 3
+        },
+        {
+            "source": "SEP",
+            "target": "SEP_SEP020",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL001",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL002",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL003",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL004",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL005",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL006",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL007",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL008",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL009",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL010",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL011",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL012",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL013",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL014",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL015",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL016",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL017",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL018",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL019",
+            "value": 3
+        },
+        {
+            "source": "UTL",
+            "target": "UTL_UTL020",
+            "value": 3
+        },
+        {
+            "source": "PRO_PRO001",
+            "target": "PRO_PRO001_safe",
+            "value": 5
+        },
+        {
+            "source": "PRO_PRO001",
+            "target": "PRO_PRO001_warning",
+            "value": 2
+        },
+        {
+            "source": "PRO_PRO001",
+            "target": "PRO_PRO001_danger",
+            "value": 2
+        },
+        {
+            "source": "PRO_PRO002",
+            "target": "PRO_PRO002_safe",
+            "value": 6
+        },
+        {
+            "source": "PRO_PRO002",
+            "target": "PRO_PRO002_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO002",
+            "target": "PRO_PRO002_danger",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO003",
+            "target": "PRO_PRO003_safe",
+            "value": 6
+        },
+        {
+            "source": "PRO_PRO003",
+            "target": "PRO_PRO003_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO003",
+            "target": "PRO_PRO003_danger",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO004",
+            "target": "PRO_PRO004_safe",
+            "value": 5
+        },
+        {
+            "source": "PRO_PRO004",
+            "target": "PRO_PRO004_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO004",
+            "target": "PRO_PRO004_danger",
+            "value": 2
+        },
+        {
+            "source": "PRO_PRO005",
+            "target": "PRO_PRO005_safe",
+            "value": 6
+        },
+        {
+            "source": "PRO_PRO005",
+            "target": "PRO_PRO005_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO005",
+            "target": "PRO_PRO005_danger",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO006",
+            "target": "PRO_PRO006_safe",
+            "value": 6
+        },
+        {
+            "source": "PRO_PRO006",
+            "target": "PRO_PRO006_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO006",
+            "target": "PRO_PRO006_danger",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO007",
+            "target": "PRO_PRO007_safe",
+            "value": 6
+        },
+        {
+            "source": "PRO_PRO007",
+            "target": "PRO_PRO007_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO007",
+            "target": "PRO_PRO007_danger",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO008",
+            "target": "PRO_PRO008_safe",
+            "value": 5
+        },
+        {
+            "source": "PRO_PRO008",
+            "target": "PRO_PRO008_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO008",
+            "target": "PRO_PRO008_danger",
+            "value": 2
+        },
+        {
+            "source": "PRO_PRO009",
+            "target": "PRO_PRO009_safe",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO009",
+            "target": "PRO_PRO009_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO009",
+            "target": "PRO_PRO009_danger",
+            "value": 7
+        },
+        {
+            "source": "PRO_PRO010",
+            "target": "PRO_PRO010_safe",
+            "value": 5
+        },
+        {
+            "source": "PRO_PRO010",
+            "target": "PRO_PRO010_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO010",
+            "target": "PRO_PRO010_danger",
+            "value": 2
+        },
+        {
+            "source": "PRO_PRO011",
+            "target": "PRO_PRO011_safe",
+            "value": 6
+        },
+        {
+            "source": "PRO_PRO011",
+            "target": "PRO_PRO011_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO011",
+            "target": "PRO_PRO011_danger",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO012",
+            "target": "PRO_PRO012_safe",
+            "value": 6
+        },
+        {
+            "source": "PRO_PRO012",
+            "target": "PRO_PRO012_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO012",
+            "target": "PRO_PRO012_danger",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO013",
+            "target": "PRO_PRO013_safe",
+            "value": 6
+        },
+        {
+            "source": "PRO_PRO013",
+            "target": "PRO_PRO013_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO013",
+            "target": "PRO_PRO013_danger",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO014",
+            "target": "PRO_PRO014_safe",
+            "value": 4
+        },
+        {
+            "source": "PRO_PRO014",
+            "target": "PRO_PRO014_warning",
+            "value": 2
+        },
+        {
+            "source": "PRO_PRO014",
+            "target": "PRO_PRO014_danger",
+            "value": 3
+        },
+        {
+            "source": "PRO_PRO015",
+            "target": "PRO_PRO015_safe",
+            "value": 6
+        },
+        {
+            "source": "PRO_PRO015",
+            "target": "PRO_PRO015_warning",
+            "value": 1
+        },
+        {
+            "source": "PRO_PRO015",
+            "target": "PRO_PRO015_danger",
+            "value": 1
+        },
+        {
+            "source": "REA_REA001",
+            "target": "REA_REA001_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA001",
+            "target": "REA_REA001_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA001",
+            "target": "REA_REA001_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA002",
+            "target": "REA_REA002_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA002",
+            "target": "REA_REA002_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA002",
+            "target": "REA_REA002_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA003",
+            "target": "REA_REA003_safe",
+            "value": 4
+        },
+        {
+            "source": "REA_REA003",
+            "target": "REA_REA003_warning",
+            "value": 2
+        },
+        {
+            "source": "REA_REA003",
+            "target": "REA_REA003_danger",
+            "value": 3
+        },
+        {
+            "source": "REA_REA004",
+            "target": "REA_REA004_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA004",
+            "target": "REA_REA004_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA004",
+            "target": "REA_REA004_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA005",
+            "target": "REA_REA005_safe",
+            "value": 6
+        },
+        {
+            "source": "REA_REA005",
+            "target": "REA_REA005_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA005",
+            "target": "REA_REA005_danger",
+            "value": 1
+        },
+        {
+            "source": "REA_REA006",
+            "target": "REA_REA006_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA006",
+            "target": "REA_REA006_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA006",
+            "target": "REA_REA006_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA007",
+            "target": "REA_REA007_safe",
+            "value": 4
+        },
+        {
+            "source": "REA_REA007",
+            "target": "REA_REA007_warning",
+            "value": 2
+        },
+        {
+            "source": "REA_REA007",
+            "target": "REA_REA007_danger",
+            "value": 3
+        },
+        {
+            "source": "REA_REA008",
+            "target": "REA_REA008_safe",
+            "value": 7
+        },
+        {
+            "source": "REA_REA008",
+            "target": "REA_REA008_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA008",
+            "target": "REA_REA008_danger",
+            "value": 1
+        },
+        {
+            "source": "REA_REA009",
+            "target": "REA_REA009_safe",
+            "value": 6
+        },
+        {
+            "source": "REA_REA009",
+            "target": "REA_REA009_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA009",
+            "target": "REA_REA009_danger",
+            "value": 1
+        },
+        {
+            "source": "REA_REA010",
+            "target": "REA_REA010_safe",
+            "value": 6
+        },
+        {
+            "source": "REA_REA010",
+            "target": "REA_REA010_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA010",
+            "target": "REA_REA010_danger",
+            "value": 1
+        },
+        {
+            "source": "REA_REA011",
+            "target": "REA_REA011_safe",
+            "value": 6
+        },
+        {
+            "source": "REA_REA011",
+            "target": "REA_REA011_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA011",
+            "target": "REA_REA011_danger",
+            "value": 1
+        },
+        {
+            "source": "REA_REA012",
+            "target": "REA_REA012_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA012",
+            "target": "REA_REA012_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA012",
+            "target": "REA_REA012_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA013",
+            "target": "REA_REA013_safe",
+            "value": 6
+        },
+        {
+            "source": "REA_REA013",
+            "target": "REA_REA013_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA013",
+            "target": "REA_REA013_danger",
+            "value": 1
+        },
+        {
+            "source": "REA_REA014",
+            "target": "REA_REA014_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA014",
+            "target": "REA_REA014_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA014",
+            "target": "REA_REA014_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA015",
+            "target": "REA_REA015_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA015",
+            "target": "REA_REA015_warning",
+            "value": 2
+        },
+        {
+            "source": "REA_REA015",
+            "target": "REA_REA015_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA016",
+            "target": "REA_REA016_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA016",
+            "target": "REA_REA016_warning",
+            "value": 2
+        },
+        {
+            "source": "REA_REA016",
+            "target": "REA_REA016_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA017",
+            "target": "REA_REA017_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA017",
+            "target": "REA_REA017_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA017",
+            "target": "REA_REA017_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA018",
+            "target": "REA_REA018_safe",
+            "value": 6
+        },
+        {
+            "source": "REA_REA018",
+            "target": "REA_REA018_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA018",
+            "target": "REA_REA018_danger",
+            "value": 1
+        },
+        {
+            "source": "REA_REA019",
+            "target": "REA_REA019_safe",
+            "value": 6
+        },
+        {
+            "source": "REA_REA019",
+            "target": "REA_REA019_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA019",
+            "target": "REA_REA019_danger",
+            "value": 1
+        },
+        {
+            "source": "REA_REA020",
+            "target": "REA_REA020_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA020",
+            "target": "REA_REA020_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA020",
+            "target": "REA_REA020_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA021",
+            "target": "REA_REA021_safe",
+            "value": 6
+        },
+        {
+            "source": "REA_REA021",
+            "target": "REA_REA021_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA021",
+            "target": "REA_REA021_danger",
+            "value": 1
+        },
+        {
+            "source": "REA_REA022",
+            "target": "REA_REA022_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA022",
+            "target": "REA_REA022_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA022",
+            "target": "REA_REA022_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA023",
+            "target": "REA_REA023_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA023",
+            "target": "REA_REA023_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA023",
+            "target": "REA_REA023_danger",
+            "value": 2
+        },
+        {
+            "source": "REA_REA024",
+            "target": "REA_REA024_safe",
+            "value": 1
+        },
+        {
+            "source": "REA_REA024",
+            "target": "REA_REA024_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA024",
+            "target": "REA_REA024_danger",
+            "value": 6
+        },
+        {
+            "source": "REA_REA025",
+            "target": "REA_REA025_safe",
+            "value": 5
+        },
+        {
+            "source": "REA_REA025",
+            "target": "REA_REA025_warning",
+            "value": 1
+        },
+        {
+            "source": "REA_REA025",
+            "target": "REA_REA025_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS001",
+            "target": "RMS_RMS001_safe",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS001",
+            "target": "RMS_RMS001_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS001",
+            "target": "RMS_RMS001_danger",
+            "value": 7
+        },
+        {
+            "source": "RMS_RMS002",
+            "target": "RMS_RMS002_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS002",
+            "target": "RMS_RMS002_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS002",
+            "target": "RMS_RMS002_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS003",
+            "target": "RMS_RMS003_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS003",
+            "target": "RMS_RMS003_warning",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS003",
+            "target": "RMS_RMS003_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS004",
+            "target": "RMS_RMS004_safe",
+            "value": 7
+        },
+        {
+            "source": "RMS_RMS004",
+            "target": "RMS_RMS004_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS004",
+            "target": "RMS_RMS004_danger",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS005",
+            "target": "RMS_RMS005_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS005",
+            "target": "RMS_RMS005_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS005",
+            "target": "RMS_RMS005_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS006",
+            "target": "RMS_RMS006_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS006",
+            "target": "RMS_RMS006_warning",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS006",
+            "target": "RMS_RMS006_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS007",
+            "target": "RMS_RMS007_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS007",
+            "target": "RMS_RMS007_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS007",
+            "target": "RMS_RMS007_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS008",
+            "target": "RMS_RMS008_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS008",
+            "target": "RMS_RMS008_warning",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS008",
+            "target": "RMS_RMS008_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS009",
+            "target": "RMS_RMS009_safe",
+            "value": 6
+        },
+        {
+            "source": "RMS_RMS009",
+            "target": "RMS_RMS009_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS009",
+            "target": "RMS_RMS009_danger",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS010",
+            "target": "RMS_RMS010_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS010",
+            "target": "RMS_RMS010_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS010",
+            "target": "RMS_RMS010_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS011",
+            "target": "RMS_RMS011_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS011",
+            "target": "RMS_RMS011_warning",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS011",
+            "target": "RMS_RMS011_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS012",
+            "target": "RMS_RMS012_safe",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS012",
+            "target": "RMS_RMS012_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS012",
+            "target": "RMS_RMS012_danger",
+            "value": 7
+        },
+        {
+            "source": "RMS_RMS013",
+            "target": "RMS_RMS013_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS013",
+            "target": "RMS_RMS013_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS013",
+            "target": "RMS_RMS013_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS014",
+            "target": "RMS_RMS014_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS014",
+            "target": "RMS_RMS014_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS014",
+            "target": "RMS_RMS014_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS015",
+            "target": "RMS_RMS015_safe",
+            "value": 6
+        },
+        {
+            "source": "RMS_RMS015",
+            "target": "RMS_RMS015_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS015",
+            "target": "RMS_RMS015_danger",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS016",
+            "target": "RMS_RMS016_safe",
+            "value": 6
+        },
+        {
+            "source": "RMS_RMS016",
+            "target": "RMS_RMS016_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS016",
+            "target": "RMS_RMS016_danger",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS017",
+            "target": "RMS_RMS017_safe",
+            "value": 6
+        },
+        {
+            "source": "RMS_RMS017",
+            "target": "RMS_RMS017_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS017",
+            "target": "RMS_RMS017_danger",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS018",
+            "target": "RMS_RMS018_safe",
+            "value": 5
+        },
+        {
+            "source": "RMS_RMS018",
+            "target": "RMS_RMS018_warning",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS018",
+            "target": "RMS_RMS018_danger",
+            "value": 2
+        },
+        {
+            "source": "RMS_RMS019",
+            "target": "RMS_RMS019_safe",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS019",
+            "target": "RMS_RMS019_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS019",
+            "target": "RMS_RMS019_danger",
+            "value": 7
+        },
+        {
+            "source": "RMS_RMS020",
+            "target": "RMS_RMS020_safe",
+            "value": 6
+        },
+        {
+            "source": "RMS_RMS020",
+            "target": "RMS_RMS020_warning",
+            "value": 1
+        },
+        {
+            "source": "RMS_RMS020",
+            "target": "RMS_RMS020_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP001",
+            "target": "SEP_SEP001_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP001",
+            "target": "SEP_SEP001_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP001",
+            "target": "SEP_SEP001_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP002",
+            "target": "SEP_SEP002_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP002",
+            "target": "SEP_SEP002_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP002",
+            "target": "SEP_SEP002_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP003",
+            "target": "SEP_SEP003_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP003",
+            "target": "SEP_SEP003_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP003",
+            "target": "SEP_SEP003_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP004",
+            "target": "SEP_SEP004_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP004",
+            "target": "SEP_SEP004_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP004",
+            "target": "SEP_SEP004_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP005",
+            "target": "SEP_SEP005_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP005",
+            "target": "SEP_SEP005_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP005",
+            "target": "SEP_SEP005_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP006",
+            "target": "SEP_SEP006_safe",
+            "value": 5
+        },
+        {
+            "source": "SEP_SEP006",
+            "target": "SEP_SEP006_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP006",
+            "target": "SEP_SEP006_danger",
+            "value": 2
+        },
+        {
+            "source": "SEP_SEP007",
+            "target": "SEP_SEP007_safe",
+            "value": 5
+        },
+        {
+            "source": "SEP_SEP007",
+            "target": "SEP_SEP007_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP007",
+            "target": "SEP_SEP007_danger",
+            "value": 2
+        },
+        {
+            "source": "SEP_SEP008",
+            "target": "SEP_SEP008_safe",
+            "value": 7
+        },
+        {
+            "source": "SEP_SEP008",
+            "target": "SEP_SEP008_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP008",
+            "target": "SEP_SEP008_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP009",
+            "target": "SEP_SEP009_safe",
+            "value": 5
+        },
+        {
+            "source": "SEP_SEP009",
+            "target": "SEP_SEP009_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP009",
+            "target": "SEP_SEP009_danger",
+            "value": 2
+        },
+        {
+            "source": "SEP_SEP010",
+            "target": "SEP_SEP010_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP010",
+            "target": "SEP_SEP010_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP010",
+            "target": "SEP_SEP010_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP011",
+            "target": "SEP_SEP011_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP011",
+            "target": "SEP_SEP011_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP011",
+            "target": "SEP_SEP011_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP012",
+            "target": "SEP_SEP012_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP012",
+            "target": "SEP_SEP012_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP012",
+            "target": "SEP_SEP012_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP013",
+            "target": "SEP_SEP013_safe",
+            "value": 5
+        },
+        {
+            "source": "SEP_SEP013",
+            "target": "SEP_SEP013_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP013",
+            "target": "SEP_SEP013_danger",
+            "value": 2
+        },
+        {
+            "source": "SEP_SEP014",
+            "target": "SEP_SEP014_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP014",
+            "target": "SEP_SEP014_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP014",
+            "target": "SEP_SEP014_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP015",
+            "target": "SEP_SEP015_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP015",
+            "target": "SEP_SEP015_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP015",
+            "target": "SEP_SEP015_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP016",
+            "target": "SEP_SEP016_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP016",
+            "target": "SEP_SEP016_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP016",
+            "target": "SEP_SEP016_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP017",
+            "target": "SEP_SEP017_safe",
+            "value": 5
+        },
+        {
+            "source": "SEP_SEP017",
+            "target": "SEP_SEP017_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP017",
+            "target": "SEP_SEP017_danger",
+            "value": 2
+        },
+        {
+            "source": "SEP_SEP018",
+            "target": "SEP_SEP018_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP018",
+            "target": "SEP_SEP018_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP018",
+            "target": "SEP_SEP018_danger",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP019",
+            "target": "SEP_SEP019_safe",
+            "value": 5
+        },
+        {
+            "source": "SEP_SEP019",
+            "target": "SEP_SEP019_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP019",
+            "target": "SEP_SEP019_danger",
+            "value": 2
+        },
+        {
+            "source": "SEP_SEP020",
+            "target": "SEP_SEP020_safe",
+            "value": 6
+        },
+        {
+            "source": "SEP_SEP020",
+            "target": "SEP_SEP020_warning",
+            "value": 1
+        },
+        {
+            "source": "SEP_SEP020",
+            "target": "SEP_SEP020_danger",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL001",
+            "target": "UTL_UTL001_safe",
+            "value": 6
+        },
+        {
+            "source": "UTL_UTL001",
+            "target": "UTL_UTL001_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL001",
+            "target": "UTL_UTL001_danger",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL002",
+            "target": "UTL_UTL002_safe",
+            "value": 6
+        },
+        {
+            "source": "UTL_UTL002",
+            "target": "UTL_UTL002_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL002",
+            "target": "UTL_UTL002_danger",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL003",
+            "target": "UTL_UTL003_safe",
+            "value": 4
+        },
+        {
+            "source": "UTL_UTL003",
+            "target": "UTL_UTL003_warning",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL003",
+            "target": "UTL_UTL003_danger",
+            "value": 3
+        },
+        {
+            "source": "UTL_UTL004",
+            "target": "UTL_UTL004_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL004",
+            "target": "UTL_UTL004_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL004",
+            "target": "UTL_UTL004_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL005",
+            "target": "UTL_UTL005_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL005",
+            "target": "UTL_UTL005_warning",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL005",
+            "target": "UTL_UTL005_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL006",
+            "target": "UTL_UTL006_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL006",
+            "target": "UTL_UTL006_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL006",
+            "target": "UTL_UTL006_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL007",
+            "target": "UTL_UTL007_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL007",
+            "target": "UTL_UTL007_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL007",
+            "target": "UTL_UTL007_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL008",
+            "target": "UTL_UTL008_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL008",
+            "target": "UTL_UTL008_warning",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL008",
+            "target": "UTL_UTL008_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL009",
+            "target": "UTL_UTL009_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL009",
+            "target": "UTL_UTL009_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL009",
+            "target": "UTL_UTL009_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL010",
+            "target": "UTL_UTL010_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL010",
+            "target": "UTL_UTL010_warning",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL010",
+            "target": "UTL_UTL010_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL011",
+            "target": "UTL_UTL011_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL011",
+            "target": "UTL_UTL011_warning",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL011",
+            "target": "UTL_UTL011_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL012",
+            "target": "UTL_UTL012_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL012",
+            "target": "UTL_UTL012_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL012",
+            "target": "UTL_UTL012_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL013",
+            "target": "UTL_UTL013_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL013",
+            "target": "UTL_UTL013_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL013",
+            "target": "UTL_UTL013_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL014",
+            "target": "UTL_UTL014_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL014",
+            "target": "UTL_UTL014_warning",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL014",
+            "target": "UTL_UTL014_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL015",
+            "target": "UTL_UTL015_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL015",
+            "target": "UTL_UTL015_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL015",
+            "target": "UTL_UTL015_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL016",
+            "target": "UTL_UTL016_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL016",
+            "target": "UTL_UTL016_warning",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL016",
+            "target": "UTL_UTL016_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL017",
+            "target": "UTL_UTL017_safe",
+            "value": 6
+        },
+        {
+            "source": "UTL_UTL017",
+            "target": "UTL_UTL017_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL017",
+            "target": "UTL_UTL017_danger",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL018",
+            "target": "UTL_UTL018_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL018",
+            "target": "UTL_UTL018_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL018",
+            "target": "UTL_UTL018_danger",
+            "value": 2
+        },
+        {
+            "source": "UTL_UTL019",
+            "target": "UTL_UTL019_safe",
+            "value": 6
+        },
+        {
+            "source": "UTL_UTL019",
+            "target": "UTL_UTL019_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL019",
+            "target": "UTL_UTL019_danger",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL020",
+            "target": "UTL_UTL020_safe",
+            "value": 5
+        },
+        {
+            "source": "UTL_UTL020",
+            "target": "UTL_UTL020_warning",
+            "value": 1
+        },
+        {
+            "source": "UTL_UTL020",
+            "target": "UTL_UTL020_danger",
+            "value": 2
+        }
+    ],
+    "categories": [
+        {
+            "name": "区域"
+        },
+        {
+            "name": "传感器"
+        },
+        {
+            "name": "安全"
+        },
+        {
+            "name": "警告"
+        },
+        {
+            "name": "危险"
+        }
+    ]
+}

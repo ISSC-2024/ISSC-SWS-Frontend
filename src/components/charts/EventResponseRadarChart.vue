@@ -18,14 +18,14 @@ import type { Ref } from 'vue'
 import * as echarts from 'echarts'
 
 // 导入所有算法结果文件
-import mappo005 from '../../mock/MAPPO__0.005_allocate_result.json'
-import mappo001 from '../../mock/MAPPO__0.001_allocate_result.json'
-import maddpg005 from '../../mock/MADDPG__0.005_allocate_result.json'
-import maddpg001 from '../../mock/MADDPG__0.001_allocate_result.json'
-import iqlearning005 from '../../mock/Independent Q-Learning__0.005_allocate_result.json'
-import iqlearning001 from '../../mock/Independent Q-Learning__0.001_allocate_result.json'
-import dqn005 from '../../mock/DQN__0.005_allocate_result.json'
-import dqn001 from '../../mock/DQN__0.001_allocate_result.json'
+import mappo005 from '@/mock/MAPPO__0.005_allocate_result.json'
+import mappo001 from '@/mock/MAPPO__0.001_allocate_result.json'
+import maddpg005 from '@/mock/MADDPG__0.005_allocate_result.json'
+import maddpg001 from '@/mock/MADDPG__0.001_allocate_result.json'
+import iqlearning005 from '@/mock/Independent Q-Learning__0.005_allocate_result.json'
+import iqlearning001 from '@/mock/Independent Q-Learning__0.001_allocate_result.json'
+import dqn005 from '@/mock/DQN__0.005_allocate_result.json'
+import dqn001 from '@/mock/DQN__0.001_allocate_result.json'
 
 // 为每个算法分配不同颜色
 const algorithmColors = {

@@ -18,44 +18,40 @@
 import { ref, onMounted, inject, computed, watch, onBeforeUnmount } from 'vue'
 import type { Ref } from 'vue'
 import * as echarts from 'echarts'
-import { useAlgorithmStore } from '../../stores/algorithmStore'
-import unityService from '../../services/UnityService'
-import { useMessageStore } from '../../stores/message'
+import { useAlgorithmStore, ModuleType } from '@/stores/algorithmStore'
+import unityService from '@/services/UnityService'
+import { useMessageStore } from '@/stores/messageStore'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-
-// 默认数据
-import defaultReport from '../../mock/report.json'
 
 // 获取算法状态管理
 const algorithmStore = useAlgorithmStore()
 
 // 当前使用的报告数据
-const reportData = ref(defaultReport)
+const reportData = ref({} as any)
 
 // 获取消息store
 const messageStore = useMessageStore()
 
-// 动态加载报告数据
+// 动态加载报告数据 - 修改为使用algorithmStore
 const loadReportData = async () => {
-  if (algorithmStore.isDataLoaded) {
-    try {
-      const fileName = algorithmStore.getDataFileName()
-      console.log('加载数据文件:', fileName)
-      // 动态导入JSON文件
-      const module = await import(`../../mock/${fileName}`)
-      reportData.value = module.default
-      console.log('成功加载算法数据')
-      // 更新图表数据
-      updateChartData()
-      // 重新渲染图表
-      updateChart()
-    } catch (error) {
-      console.error('加载数据文件失败:', error)
-      reportData.value = defaultReport
+  try {
+    // 使用algorithmStore获取模块4的数据
+    const reportModule = await algorithmStore.getModuleDataFile(ModuleType.Module4)
+
+    if (reportModule && reportModule.default) {
+      reportData.value = reportModule.default
+      const currentAlgorithm = algorithmStore.getModuleSelectedAlgorithm(ModuleType.Module4)
+      console.log(`成功加载模块4(${currentAlgorithm})资源分布数据`)
+    } else {
+      console.warn('模块4资源分布数据为空')
     }
-  } else {
-    reportData.value = defaultReport
+  } catch (error) {
+    console.error('加载模块4资源分布数据失败:', error)
   }
+  // 更新图表数据
+  updateChartData()
+  // 重新渲染图表
+  updateChart()
 }
 
 // 更新图表数据
@@ -142,39 +138,39 @@ const updateChartData = () => {
 const staffData = {
   staff: {
     原料储存区: {
-      技术人员: defaultReport.resources.personnel.subtypes.technician.data[0].value,
-      管理人员: defaultReport.resources.personnel.subtypes.manager.data[0].value,
-      维修人员: defaultReport.resources.personnel.subtypes.maintenance.data[0].value,
-      安全人员: defaultReport.resources.personnel.subtypes.safety.data[0].value,
-      操作人员: defaultReport.resources.personnel.subtypes.operator.data[0].value,
+      技术人员: 0,
+      管理人员: 0,
+      维修人员: 0,
+      安全人员: 0,
+      操作人员: 0,
     },
     反应器区: {
-      技术人员: defaultReport.resources.personnel.subtypes.technician.data[1].value,
-      管理人员: defaultReport.resources.personnel.subtypes.manager.data[1].value,
-      维修人员: defaultReport.resources.personnel.subtypes.maintenance.data[1].value,
-      安全人员: defaultReport.resources.personnel.subtypes.safety.data[1].value,
-      操作人员: defaultReport.resources.personnel.subtypes.operator.data[1].value,
+      技术人员: 0,
+      管理人员: 0,
+      维修人员: 0,
+      安全人员: 0,
+      操作人员: 0,
     },
     分离提纯区: {
-      技术人员: defaultReport.resources.personnel.subtypes.technician.data[2].value,
-      管理人员: defaultReport.resources.personnel.subtypes.manager.data[2].value,
-      维修人员: defaultReport.resources.personnel.subtypes.maintenance.data[2].value,
-      安全人员: defaultReport.resources.personnel.subtypes.safety.data[2].value,
-      操作人员: defaultReport.resources.personnel.subtypes.operator.data[2].value,
+      技术人员: 0,
+      管理人员: 0,
+      维修人员: 0,
+      安全人员: 0,
+      操作人员: 0,
     },
     成品储存区: {
-      技术人员: defaultReport.resources.personnel.subtypes.technician.data[3].value,
-      管理人员: defaultReport.resources.personnel.subtypes.manager.data[3].value,
-      维修人员: defaultReport.resources.personnel.subtypes.maintenance.data[3].value,
-      安全人员: defaultReport.resources.personnel.subtypes.safety.data[3].value,
-      操作人员: defaultReport.resources.personnel.subtypes.operator.data[3].value,
+      技术人员: 0,
+      管理人员: 0,
+      维修人员: 0,
+      安全人员: 0,
+      操作人员: 0,
     },
     公用工程区: {
-      技术人员: defaultReport.resources.personnel.subtypes.technician.data[4].value,
-      管理人员: defaultReport.resources.personnel.subtypes.manager.data[4].value,
-      维修人员: defaultReport.resources.personnel.subtypes.maintenance.data[4].value,
-      安全人员: defaultReport.resources.personnel.subtypes.safety.data[4].value,
-      操作人员: defaultReport.resources.personnel.subtypes.operator.data[4].value,
+      技术人员: 0,
+      管理人员: 0,
+      维修人员: 0,
+      安全人员: 0,
+      操作人员: 0,
     },
   },
   colors: {
@@ -252,29 +248,29 @@ interface ElectricityData {
 const materialsData = {
   materials: {
     原料储存区: {
-      原料: defaultReport.resources.materials.subtypes.raw_material.data[0].value,
-      催化剂: defaultReport.resources.materials.subtypes.catalyst.data[0].value,
-      存储容量: defaultReport.resources.materials.subtypes.storage.data[0].value,
+      原料: 0,
+      催化剂: 0,
+      存储容量: 0,
     },
     反应器区: {
-      原料: defaultReport.resources.materials.subtypes.raw_material.data[1].value,
-      催化剂: defaultReport.resources.materials.subtypes.catalyst.data[1].value,
-      存储容量: defaultReport.resources.materials.subtypes.storage.data[1].value,
+      原料: 0,
+      催化剂: 0,
+      存储容量: 0,
     },
     分离提纯区: {
-      原料: defaultReport.resources.materials.subtypes.raw_material.data[2].value,
-      催化剂: defaultReport.resources.materials.subtypes.catalyst.data[2].value,
-      存储容量: defaultReport.resources.materials.subtypes.storage.data[2].value,
+      原料: 0,
+      催化剂: 0,
+      存储容量: 0,
     },
     成品储存区: {
-      原料: defaultReport.resources.materials.subtypes.raw_material.data[3].value,
-      催化剂: defaultReport.resources.materials.subtypes.catalyst.data[3].value,
-      存储容量: defaultReport.resources.materials.subtypes.storage.data[3].value,
+      原料: 0,
+      催化剂: 0,
+      存储容量: 0,
     },
     公用工程区: {
-      原料: defaultReport.resources.materials.subtypes.raw_material.data[4].value,
-      催化剂: defaultReport.resources.materials.subtypes.catalyst.data[4].value,
-      存储容量: defaultReport.resources.materials.subtypes.storage.data[4].value,
+      原料: 0,
+      催化剂: 0,
+      存储容量: 0,
     },
   },
   colors: {
@@ -287,11 +283,11 @@ const materialsData = {
 // 准备电力资源分配数据
 const electricityData = {
   electricity: {
-    原料储存区: defaultReport.resources.electricity.data[0].value,
-    反应器区: defaultReport.resources.electricity.data[1].value,
-    分离提纯区: defaultReport.resources.electricity.data[2].value,
-    成品储存区: defaultReport.resources.electricity.data[3].value,
-    公用工程区: defaultReport.resources.electricity.data[4].value,
+    原料储存区: 0,
+    反应器区: 0,
+    分离提纯区: 0,
+    成品储存区: 0,
+    公用工程区: 0,
   },
   colors: {
     电力: '#9C27B0',
@@ -708,13 +704,13 @@ watch(isExpanded, () => {
   }
 })
 
-// 组件挂载时初始化图表
-onMounted(() => {
+// 组件挂载时初始化图表 - 修改监听algorithmStore
+onMounted(async () => {
   // 文本框
   chartRef.value?.addEventListener('mouseleave', hidePipeFlow)
 
   // 加载报告数据
-  loadReportData()
+  await loadReportData()
 
   // 初始化图表
   initChart()
@@ -726,15 +722,17 @@ onMounted(() => {
     }
   })
 
-  // 监听算法选择变化
+  // 监听模块4的算法和参数变化
   watch(
-    // 同时监听算法名称和阈值参数的变化
-    () => [algorithmStore.selectedAlgorithm, algorithmStore.convergenceThreshold],
-    () => {
-      if (algorithmStore.isDataLoaded) {
-        loadReportData()
-      }
+    () => [
+      algorithmStore.selectedAlgorithms[ModuleType.Module4],
+      algorithmStore.algorithms[algorithmStore.selectedAlgorithms[ModuleType.Module4]]?.params,
+    ],
+    async () => {
+      console.log('模块4配置已更新，重新加载数据')
+      await loadReportData()
     },
+    { deep: true },
   )
 })
 
