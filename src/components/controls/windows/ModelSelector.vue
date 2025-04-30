@@ -1,13 +1,6 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useAlgorithmStore } from '@/stores/algorithmStore'
-
-/**
- * ModelSelector.vue - 模型选择组件
- *
- * 该组件负责模型选择和参数配置功能
- * 从主控制组件中拆分出来，使代码结构更加清晰
- */
+import { ref } from 'vue'
+import { useAlgorithmStore, ModuleType, AlgorithmType } from '@/stores/algorithmStore'
 
 // 定义组件向外发出的事件
 const emit = defineEmits(['close', 'show-tip', 'submit'])
@@ -17,11 +10,15 @@ const algorithmStore = useAlgorithmStore()
 
 // 模型选择相关数据
 const selectedModel = ref('')
-const modelParams = ref<Record<string, string>>({
-  param1: '',
-  param2: '',
-  param3: '',
-})
+const modelParams = ref<Record<string, any>>({})
+
+// 模块映射
+const modelToModule: Record<string, ModuleType> = {
+  model1: ModuleType.Module1,
+  model2: ModuleType.Module2,
+  model3: ModuleType.Module3,
+  model4: ModuleType.Module4,
+}
 
 // 模型列表
 const models = [
@@ -31,30 +28,42 @@ const models = [
   { id: 'model4', name: '模型4' },
 ]
 
-// 模型参数配置
 const modelParamsConfig = {
   model1: [
-    { id: 'param1', name: '算法', options: ['TimesNet', 'TimeMixer'] },
-    { id: 'param2', name: '任务', options: ['short_term_forecast', 'anomaly_detection'] },
-    { id: 'param4', name: '传感器编号', options: ['RMS001', 'RMS002', 'RMS003'] },
+    {
+      id: 'algorithm',
+      name: '算法',
+      options: [AlgorithmType.TimesNet, AlgorithmType.TimeMixer],
+    },
+    { id: 'task_name', name: '任务', options: ['short_term_forecast'] },
+    { id: 'model_id', name: '传感器编号', options: ['RMS001', 'RMS002', 'RMS003'] },
   ],
   model2: [
-    { id: 'param1', name: '决策树数量', options: ['100', '150', '200'] },
-    { id: 'param2', name: '树最大深度', options: ['4', '6', '8'] },
-    { id: 'param3', name: '偏离敏感度', options: ['0.8', '1.0', '1.2'] },
+    { id: 'tree_count', name: '决策树数量', options: ['100', '150', '200'] },
+    { id: 'max_depth', name: '树最大深度', options: ['4', '6', '8'] },
+    { id: 'sensitivity', name: '偏离敏感度', options: ['0.8', '1.0', '1.2'] },
   ],
   // 模型三动态根据选择的算法配置对应的参数
-  model3: [{ id: 'param1', name: '算法', options: ['xgboost', 'lightGBM', 'TabNet'] }],
+  model3: [
+    {
+      id: 'algorithm',
+      name: '算法',
+      options: [AlgorithmType.xgboost, AlgorithmType.lightGBM, AlgorithmType.TabNet],
+    },
+  ],
   model4: [
-    { id: 'param1', name: '算法', options: ['Independent Q-Learning', 'DQN', 'MADDPG', 'MAPPO'] },
-    { id: 'param2', name: '收敛阈值', options: ['0.001', '0.005'] },
-    { id: 'param3', name: '最大迭代次数', options: ['1000'] },
+    {
+      id: 'algorithm',
+      name: '算法',
+      options: [AlgorithmType.IQL, AlgorithmType.DQN, AlgorithmType.MADDPG, AlgorithmType.MAPPO],
+    },
+    { id: 'convergence_threshold', name: '收敛阈值', options: ['0.001', '0.005'] },
+    { id: 'max_epochs', name: '最大迭代次数', options: ['1000'] },
   ],
 }
 
 /**
  * 获取当前模型的参数配置
- * 根据选择的模型，返回对应的参数配置
  */
 const getCurrentModelParams = () => {
   if (!selectedModel.value) return []
@@ -63,61 +72,42 @@ const getCurrentModelParams = () => {
 
   // 对模型三的参数选择根据对应的算法进行显示
   if (selectedModel.value === 'model3') {
-    const algorithm = modelParams.value.param1
-    if (algorithm === 'xgboost') {
+    const algorithm = modelParams.value.algorithm
+    if (algorithm === AlgorithmType.xgboost) {
       params = [
         ...params,
-        { id: 'param2', name: '学习率', options: ['0.1'] },
-        { id: 'param3', name: '最大深度', options: ['6', '8'] },
+        { id: 'learning_rate', name: '学习率', options: ['0.1'] },
+        { id: 'max_depth', name: '最大深度', options: ['6', '8'] },
       ]
-    } else if (algorithm === 'lightGBM') {
+    } else if (algorithm === AlgorithmType.lightGBM) {
       params = [
         ...params,
-        { id: 'param2', name: '学习率', options: ['0.1'] },
-        { id: 'param3', name: '最大深度', options: ['4', '6'] },
+        { id: 'learning_rate', name: '学习率', options: ['0.1'] },
+        { id: 'max_depth', name: '最大深度', options: ['4', '6'] },
       ]
-    } else if (algorithm === 'TabNet') {
-      const lr = modelParams.value.param2
+    } else if (algorithm === AlgorithmType.TabNet) {
+      const lr = modelParams.value.learning_rate
       params = [
         ...params,
         {
-          id: 'param2',
+          id: 'learning_rate',
           name: '学习率',
           options: ['0.01', '0.02'],
         },
-        {
-          id: 'param3',
+      ]
+
+      // 如果已经选择了学习率，添加最大轮次参数
+      if (lr) {
+        params.push({
+          id: 'max_epochs',
           name: '最大轮次',
           options: lr === '0.01' ? ['100'] : lr === '0.02' ? ['50'] : [],
-        },
-      ]
+        })
+      }
     }
   }
   return params
 }
-
-// 监听 param1 的变化
-// 当 modelParams.value.param1 的值发生变化时，
-// 检查当前选择的模型是否是 model3。如果是，并且新值与旧值不同，则清空 param2 和 param3 的值
-watch(
-  () => modelParams.value.param1,
-  (newVal, oldVal) => {
-    if (selectedModel.value === 'model3' && newVal !== oldVal) {
-      modelParams.value.param2 = ''
-      modelParams.value.param3 = ''
-    }
-  },
-)
-
-// 监听 param2 的变化
-watch(
-  () => modelParams.value.param2,
-  (newVal, oldVal) => {
-    if (selectedModel.value === 'model3' && modelParams.value.param1 === 'TabNet' && newVal !== oldVal) {
-      modelParams.value.param3 = ''
-    }
-  },
-)
 
 /**
  * 选择模型
@@ -132,13 +122,39 @@ const selectModel = (modelId: string) => {
 
 /**
  * 重置模型参数
- * 清空当前模型的所有参数选择
+ * 清空当前模型的所有参数选择并加载当前值
  */
 const resetModelParams = () => {
-  const currentParams = getCurrentModelParams()
-  currentParams.forEach((param) => {
-    modelParams.value[param.id] = ''
-  })
+  // 清空当前参数
+  modelParams.value = {}
+
+  // 如果选择了模型，并且模型有对应的模块
+  if (selectedModel.value) {
+    const moduleType = modelToModule[selectedModel.value]
+    if (moduleType) {
+      // 获取模块当前算法
+      const currentAlgorithm = algorithmStore.getModuleSelectedAlgorithm(moduleType)
+
+      // 设置当前算法
+      modelParams.value.algorithm = currentAlgorithm
+
+      // 获取算法的当前参数并设置到表单
+      const currentParams = algorithmStore.getAlgorithmParams(currentAlgorithm)
+
+      // 将算法参数设置到表单（转为字符串以匹配下拉选项）
+      Object.entries(currentParams).forEach(([key, value]) => {
+        if (key !== 'algorithm') {
+          // 避免重复设置算法
+          modelParams.value[key] = String(value)
+        }
+        if (key === 'sensitivity' && selectedModel.value === 'model2') {
+          // 处理敏感偏离度，确保为一位小数
+          const numValue = typeof value === 'number' ? value : Number(value)
+          modelParams.value[key] = String(numValue).includes('.') ? String(numValue) : numValue.toFixed(1)
+        }
+      })
+    }
+  }
 }
 
 /**
@@ -161,14 +177,48 @@ const submitModelSelection = () => {
     参数: { ...modelParams.value },
   }
 
-  // 如果是model4（算法选择），则保存到算法状态管理中
-  if (selectedModel.value === 'model4') {
-    const algorithm = modelParams.value.param1 // 算法名称
-    const threshold = modelParams.value.param2 // 收敛阈值
+  // 获取对应的模块
+  const moduleType = modelToModule[selectedModel.value]
+  if (moduleType) {
+    // 如果有算法字段，处理算法选择
+    if (modelParams.value.algorithm) {
+      const algorithmType = modelParams.value.algorithm as AlgorithmType
 
-    // 保存到状态管理中
-    algorithmStore.setAlgorithmSelection(algorithm, threshold)
-    emit('show-tip', `已选择算法: ${algorithm}, 阈值: ${threshold}`)
+      // 设置模块的当前选中算法
+      algorithmStore.setModuleSelectedAlgorithm(moduleType, algorithmType)
+
+      // 准备更新的参数
+      const paramsToUpdate: Record<string, any> = {}
+
+      // 收集除algorithm之外的所有参数
+      Object.entries(modelParams.value).forEach(([key, value]) => {
+        if (key !== 'algorithm') {
+          // 尝试将字符串转换为数字
+          const numValue = Number(value)
+          paramsToUpdate[key] = isNaN(numValue) ? value : numValue
+        }
+      })
+
+      // 更新算法参数
+      algorithmStore.updateAlgorithmParams(algorithmType, paramsToUpdate)
+      emit('show-tip', `已更新${algorithmType}算法参数`)
+    } else if (selectedModel.value === 'model2') {
+      // 模型2只有一个算法：KnowledgeGraph
+      const algorithmType = AlgorithmType.KnowledgeGraph
+
+      // 准备更新的参数
+      const paramsToUpdate: Record<string, any> = {}
+
+      // 收集所有参数并转换为数字
+      Object.entries(modelParams.value).forEach(([key, value]) => {
+        const numValue = Number(value)
+        paramsToUpdate[key] = isNaN(numValue) ? value : numValue
+      })
+
+      // 更新算法参数
+      algorithmStore.updateAlgorithmParams(algorithmType, paramsToUpdate)
+      emit('show-tip', `已更新${algorithmType}算法参数`)
+    }
   }
 
   // 向父组件发送提交事件和数据
@@ -177,7 +227,6 @@ const submitModelSelection = () => {
 
 /**
  * 关闭窗口
- * 调用父组件的关闭方法
  */
 const close = () => {
   emit('close')

@@ -71,7 +71,7 @@ interface Message {
   role: 'user' | 'assistant'
   content: string
   timestamp?: string
-  isThinking?: boolean
+  isThinking?: boolean // 不保存到数据库，只用于UI状态
   thinking?: string
   isThinkingExpanded?: boolean // 控制思考内容的展开/收起状态
   model?: AIModelType // 添加模型类型

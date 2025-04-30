@@ -87,10 +87,10 @@ import unityService from '@/services/UnityService'
 import { message } from 'ant-design-vue'
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
 import { useMessageStore } from '@/stores/messageStore'
-import { useDataFileStore, DataFileType } from '@/stores/dataFileStore'
+import { useAlgorithmStore, ModuleType } from '@/stores/algorithmStore'
 import { ClockCircleOutlined, EnvironmentOutlined, MessageOutlined } from '@ant-design/icons-vue'
 
-// 定义新的日志数据结构接口
+// 日志数据结构接口
 interface LogEntry {
   timestamp: string
   region: string
@@ -98,8 +98,8 @@ interface LogEntry {
   message: string
 }
 
-// 使用通用数据文件 store
-const dataFileStore = useDataFileStore()
+// 使用算法数据 store
+const algorithmStore = useAlgorithmStore()
 
 // 定义有效区域常量
 const VALID_REGIONS = ['RMS', 'REA', 'SEP', 'PRO', 'UTL']
@@ -113,14 +113,20 @@ const startIndex = ref(0)
 const visibleCount = 100
 let scrollTimer: ReturnType<typeof setInterval> | null = null
 
-// 加载日志数据的函数
+// 加载日志数据
 const loadLogData = async () => {
   try {
-    // 使用 store 提供的导入方法获取数据
-    const logModule = await dataFileStore.importDataFile(DataFileType.LOG)
-    logs.value = logModule.default as LogEntry[]
+    // 使用getModuleDataFile方法获取模块3的数据
+    const logModule = await algorithmStore.getModuleDataFile(ModuleType.Module3)
+
+    if (logModule && logModule.default) {
+      logs.value = logModule.default as LogEntry[]
+    } else {
+      console.warn('模块3日志数据为空')
+      logs.value = [] // 数据为空时清空日志
+    }
   } catch (error) {
-    console.error(`加载日志数据失败:`, error)
+    console.error(`加载模块3日志数据失败:`, error)
     logs.value = [] // 加载失败时清空日志
   }
 }
@@ -283,19 +289,23 @@ const scrollList = () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   // 初始加载数据
-  loadLogData()
+  await loadLogData()
 
   // 非展开状态下设置滚动定时器
   scrollTimer = setInterval(scrollList, 2000)
 })
 
-// 监听日志文件配置变化，热更新数据
+// 监听模块3的任何变化（包括算法选择和参数）
 watch(
-  () => dataFileStore.dataFiles[DataFileType.LOG],
-  () => {
-    loadLogData()
+  () => [
+    algorithmStore.selectedAlgorithms[ModuleType.Module3],
+    algorithmStore.algorithms[algorithmStore.selectedAlgorithms[ModuleType.Module3]]?.params,
+  ],
+  async () => {
+    console.log('模块3配置已更新，重新加载数据')
+    await loadLogData()
     // 重置开始索引
     startIndex.value = 0
   },

@@ -85,8 +85,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, inject, onUnmounted } from 'vue'
-import sensorData from '@/mock/riskRegionSummary.json'
+import { ref, onMounted, computed, inject, onUnmounted, watch } from 'vue'
+import { useAlgorithmStore, ModuleType } from '@/stores/algorithmStore'
 import unityService from '@/services/UnityService'
 import { message } from 'ant-design-vue'
 // 导入文本框组件和消息管理
@@ -100,6 +100,9 @@ import {
   WarningOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons-vue'
+
+// 使用算法数据 store
+const algorithmStore = useAlgorithmStore()
 
 interface Region {
   timestamp: string
@@ -266,13 +269,48 @@ const scrollList = () => {
   }
 }
 
-onMounted(() => {
-  // 加载模拟数据
-  regions.value = sensorData as Region[]
+// 使用algorithmStore加载函数
+const loadRegionData = async () => {
+  try {
+    // 获取模块3的数据
+    const regionModule = await algorithmStore.getModuleDataFile(ModuleType.Module3)
+
+    if (regionModule && regionModule.default) {
+      regions.value = regionModule.default as Region[]
+    } else {
+      console.warn('模块3区域数据为空')
+      regions.value = [] // 数据为空时清空区域列表
+    }
+  } catch (error) {
+    console.error(`加载模块3区域数据失败:`, error)
+    regions.value = [] // 加载失败时清空区域列表
+  }
+}
+
+onMounted(async () => {
+  // 加载区域数据
+  await loadRegionData()
 
   // 设置定时器，每2秒滚动一次
   scrollTimer = setInterval(scrollList, 2000) as unknown as number
 })
+
+// 监听算法变化
+watch(
+  () => [
+    algorithmStore.selectedAlgorithms[ModuleType.Module3],
+    algorithmStore.algorithms[algorithmStore.selectedAlgorithms[ModuleType.Module3]]?.params,
+  ],
+  async (newAlgorithm) => {
+    console.log(`模块3选中的算法变更为: ${newAlgorithm}，重新加载数据`)
+    await loadRegionData()
+    // 重置开始索引
+    startIndex.value = 0
+    // 清除选中状态
+    selectedRegion.value = null
+  },
+  { deep: true },
+)
 
 onUnmounted(() => {
   // 清除定时器
