@@ -6,6 +6,7 @@ import { http } from './AxiosClient'
 export interface Conversation {
   id: number
   title: string
+  model: string
   createdAt: string
   updatedAt: string
   messageCount: number
@@ -30,6 +31,7 @@ export interface Message {
  */
 export interface CreateConversationRequest {
   title: string
+  model: string
 }
 
 /**
@@ -60,9 +62,9 @@ export default class ConversationAPI {
    * @param title 对话标题
    * @returns 创建的对话信息
    */
-  static async createConversation(title: string): Promise<Conversation> {
+  static async createConversation(title: string, model: string): Promise<Conversation> {
     try {
-      const data: CreateConversationRequest = { title }
+      const data: CreateConversationRequest = { title, model }
       return await http.post<Conversation>(this.BASE_PATH, data, {
         requestId: `create-conversation-${Date.now()}`,
       })

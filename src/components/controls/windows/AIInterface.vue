@@ -21,9 +21,18 @@ import ConversationAPI, {
 } from '@/apis/Conversation'
 import { useAlgorithmStore, AlgorithmType, ModuleType } from '@/stores/algorithmStore'
 
+import {
+  GlobalOutlined,
+  InboxOutlined,
+  BoxPlotOutlined,
+  ExperimentOutlined,
+  FilterOutlined,
+  SettingOutlined,
+} from '@ant-design/icons-vue'
+
 const algorithmStore = useAlgorithmStore()
 
-// 添加props定义，接收外部传入的model
+// props接收外部传入的model
 const props = defineProps({
   // 允许外部传入模型类型
   model: {
@@ -48,7 +57,7 @@ const close = () => {
   emit('close')
 }
 
-// 添加模型选择器需要的状态
+// 模型选择器需要的状态
 const selectedModel = ref<AIModelType>(props.model)
 
 // 使用markedHighlight配置marked
@@ -186,15 +195,10 @@ const loadConversations = async () => {
     // 转换为组件使用的格式
     conversations.value = result.map((conversation) => ({
       ...conversation,
-      active: conversation.id === currentConversationId.value,
+      active: false, // 所有对话初始状态都是非激活的
     }))
 
     console.log(`已加载${conversations.value.length}个对话`)
-
-    // 如果有对话但没有选中对话，默认选中第一个
-    if (conversations.value.length > 0 && currentConversationId.value === null) {
-      await switchChat(conversations.value[0].id)
-    }
   } catch (error) {
     console.error('加载对话列表失败:', error)
   }
@@ -210,7 +214,7 @@ const createNewChat = async () => {
 
     // 创建新对话
     const title = '新对话'
-    const newChat = await ConversationAPI.createConversation(title)
+    const newChat = await ConversationAPI.createConversation(title, selectedModel.value)
 
     // 添加UI状态属性
     const conversationWithUI = {
@@ -242,7 +246,6 @@ const createNewChat = async () => {
 const renameCurrentChat = async () => {
   if (!currentConversation.value) return
 
-  // 在实际项目中，这里应该弹出对话框让用户输入新名称
   const newTitle = prompt('请输入新的对话标题:', currentConversation.value.title)
 
   if (newTitle && newTitle.trim() !== '') {
@@ -580,6 +583,8 @@ const sendMessage = async () => {
       console.error('无法创建新对话')
       return
     }
+
+    // 新对话创建后，不需要展示"准备就绪"页面，将立即添加新消息
   }
 
   // 添加用户消息
@@ -652,7 +657,7 @@ const sendMessage = async () => {
     // 调用API获取响应
     const { response, thinking } = await AIInterfaceAPI.queryLLM(selectedModel.value, content)
 
-    // 更新对话标题 - 如果是新对话
+    // 更新对话标题 - 如果是新对话（截取部分前缀）
     if (currentConversation.value && currentConversation.value.title === '新对话') {
       const newTitle = content.length > 20 ? content.substring(0, 20) + '...' : content
       await renameConversationWithoutPrompt(currentConversationId.value as number, newTitle)
@@ -681,7 +686,7 @@ const sendMessage = async () => {
     for (const char of contentToDisplay) {
       displayedContent += char
       messages.value[thinkingMessageIndex].content = displayedContent
-      await new Promise((resolve) => setTimeout(resolve, 20))
+      await new Promise((resolve) => setTimeout(resolve, 10))
     }
 
     // 完成后保留思考内容，但保持收起状态
@@ -733,6 +738,50 @@ const sendMessage = async () => {
   }
 }
 
+// 根据模型类型获取对应的图标组件
+const getModelIcon = (modelType: string | undefined) => {
+  if (!modelType) return GlobalOutlined
+
+  switch (modelType) {
+    case 'top-llm':
+      return GlobalOutlined
+    case 'sub-llm1':
+      return InboxOutlined
+    case 'sub-llm2':
+      return BoxPlotOutlined
+    case 'sub-llm3':
+      return ExperimentOutlined
+    case 'sub-llm4':
+      return FilterOutlined
+    case 'sub-llm5':
+      return SettingOutlined
+    default:
+      return GlobalOutlined
+  }
+}
+
+// 获取模型对应的主色调
+const getModelColor = (modelType: string | undefined) => {
+  if (!modelType) return '#1890ff'
+
+  switch (modelType) {
+    case 'top-llm':
+      return '#1890ff'
+    case 'sub-llm1':
+      return '#52c41a'
+    case 'sub-llm2':
+      return '#faad14'
+    case 'sub-llm3':
+      return '#f5222d'
+    case 'sub-llm4':
+      return '#722ed1'
+    case 'sub-llm5':
+      return '#13c2c2'
+    default:
+      return '#1890ff'
+  }
+}
+
 onBeforeUnmount(() => {
   AIInterfaceAPI.cancelAllQueries()
   ConversationAPI.cancelAllRequests()
@@ -742,8 +791,16 @@ onMounted(async () => {
   // 加载对话列表
   await loadConversations()
 
-  // 初始化激活状态
-  initializeActiveState()
+  // 初始化激活状态，但不自动选择第一个对话
+  conversations.value.forEach((conversation) => {
+    conversation.active = false
+  })
+
+  // 清空消息列表，确保显示"准备就绪"页面
+  messages.value = []
+
+  // 设置当前对话ID为null，表示没有选择任何对话
+  currentConversationId.value = null
 
   // 保留滚动到底部
   scrollToBottom()
@@ -834,36 +891,30 @@ onMounted(async () => {
                 :class="{ active: chat.active }"
                 @click="switchChat(chat.id)"
               >
-                <div class="history-item-icon">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                  </svg>
+                <div class="history-item-icon" :style="{ color: getModelColor(chat.model) }">
+                  <component :is="getModelIcon(chat.model)" />
                 </div>
                 <div class="history-item-content">
                   <div class="history-item-title">{{ chat.title }}</div>
-                  <div class="history-item-date">{{ new Date(chat.updatedAt).toLocaleDateString() }}</div>
+                  <div class="history-item-date">{{ new Date(chat.updatedAt).toLocaleString() }}</div>
                 </div>
               </div>
             </div>
 
             <div class="history-footer">
-              <!-- 添加模型选择器，取代原来的设置按钮 -->
+              <!-- 模型选择器 -->
               <div class="model-selector">
-                <select v-model="selectedModel" class="model-select">
-                  <option v-for="option in modelOptions" :key="option.value" :value="option.value">
-                    {{ option.label + '模型' }}
-                  </option>
-                </select>
+                <div class="select-wrapper">
+                  <select v-model="selectedModel" class="model-select">
+                    <option v-for="option in modelOptions" :key="option.value" :value="option.value">
+                      {{ option.label + '模型' }}
+                    </option>
+                  </select>
+                  <!-- 添加选中模型的图标 -->
+                  <div class="select-icon" :style="{ color: getModelColor(selectedModel) }">
+                    <component :is="getModelIcon(selectedModel)" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -927,7 +978,11 @@ onMounted(async () => {
                 </div>
                 <div class="empty-text">准备就绪</div>
                 <div class="empty-desc">
-                  您的化工AI助手可以回答<span class="model-name-highlight">{{ getModelLabel(selectedModel) }}</span
+                  您的化工AI助手可以回答<span
+                    class="model-name-highlight"
+                    :style="{ color: getModelColor(selectedModel) }"
+                  >
+                    {{ getModelLabel(selectedModel) }} </span
                   >的各种问题
                 </div>
                 <div class="empty-suggestions">
@@ -1120,7 +1175,7 @@ onMounted(async () => {
   padding: 0;
 }
 
-/* 全局覆盖Ant Design样式，确保与自定义主题一致 */
+/* 全局覆盖Ant Design样式 */
 .ai-window .ant-btn-primary {
   background-color: #61dafb !important;
   border-color: #61dafb !important;
@@ -1148,7 +1203,7 @@ onMounted(async () => {
   background: rgba(255, 255, 255, 0.2) !important;
 }
 
-/* 强制应用于markdown元素的全局样式 - 这些将覆盖任何默认或scoped样式 */
+/* 强制应用于markdown元素的全局样式 */
 .ai-window .message-text ul,
 .ai-window .message-text ol {
   padding-left: 2em !important;
@@ -1174,7 +1229,7 @@ onMounted(async () => {
   margin: 0 !important;
 }
 
-/* 增强代码块的样式 */
+/* 代码块的样式 */
 .ai-window .message-text pre {
   background-color: rgba(0, 0, 0, 0.3) !important;
   border-radius: 8px !important;
@@ -1214,7 +1269,7 @@ onMounted(async () => {
   margin: 0 !important;
 }
 
-/* 增强标题样式 */
+/* 标题样式 */
 .ai-window .message-text h1,
 .ai-window .message-text h2,
 .ai-window .message-text h3 {
@@ -1333,7 +1388,7 @@ onMounted(async () => {
   flex-direction: column;
   overflow: hidden;
   border: 1px solid rgba(97, 218, 251, 0.3);
-  /* 改进的背景纹理 */
+  /* 背景纹理 */
   background-image:
     linear-gradient(to bottom, rgba(18, 24, 38, 0.95), rgba(11, 16, 27, 0.98)),
     repeating-linear-gradient(
@@ -1364,7 +1419,7 @@ onMounted(async () => {
   opacity: 0.3;
 }
 
-/* 头部样式 - 增强对比度和层次感 */
+/* 头部样式 */
 .ai-header {
   display: flex;
   justify-content: space-between;
@@ -1409,7 +1464,7 @@ onMounted(async () => {
   text-shadow: 0 0 10px rgba(97, 218, 251, 0.3);
 }
 
-/* 关闭按钮样式修复 */
+/* 关闭按钮样式 */
 .close-button {
   width: 36px;
   height: 36px;
@@ -1517,12 +1572,23 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background-color: rgba(97, 218, 251, 0.08);
-  margin-right: 10px;
-  color: var(--ai-accent);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+  margin-right: 12px;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.history-item:hover .history-item-icon {
+  transform: scale(1.1);
+}
+
+.history-item.active .history-item-icon {
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 8px 0 currentColor;
+  transform: scale(1.1);
 }
 
 .history-item-content {
@@ -1562,10 +1628,14 @@ onMounted(async () => {
   text-align: center;
 }
 
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+/* select元素样式 */
 .model-select {
   width: 100%;
-  padding: 10px 12px;
-  padding-right: 12px !important;
+  height: 38px;
   background-color: rgba(26, 34, 52, 0.8);
   border: 1px solid rgba(97, 218, 251, 0.2);
   border-radius: 8px;
@@ -1575,15 +1645,26 @@ onMounted(async () => {
   appearance: none;
   cursor: pointer;
   transition: all 0.2s;
-  padding-right: 30px;
+
+  text-align: center;
+  text-align-last: center;
+  -moz-text-align-last: center;
+
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.select-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  pointer-events: none;
 }
 
 .model-select:hover {
   background-color: rgba(97, 218, 251, 0.12);
   border-color: rgba(97, 218, 251, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
 .model-select:focus {
@@ -1718,9 +1799,8 @@ onMounted(async () => {
 }
 
 .model-name-highlight {
-  color: #1890ff;
   font-weight: 600;
-  margin: 0 2px;
+  transition: color 0.3s;
 }
 
 .empty-suggestions {
@@ -1761,7 +1841,7 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-/* 添加点击波纹效果 */
+/* 点击波纹效果 */
 .empty-suggestions li:active::after {
   content: '';
   position: absolute;
