@@ -4,6 +4,42 @@ import { ref, provide } from 'vue'
 import UnityContainer from '../components/display/UnityContainer.vue'
 import IndustryRelationshipGraph from '../components/charts/IndustryRelationshipGraph.vue'
 
+// 定义类型接口
+interface Industry {
+  id: string
+  name: string
+  description: string
+  dataPoints: string
+  runningDevices: string
+  monthlyDevices: string
+  position: string
+  color: string
+  x: number
+  y: number
+}
+
+interface Plant {
+  id: string
+  name: string
+  description: string
+}
+
+interface LinkType {
+  id: string
+  name: string
+  color: string
+  description: string
+}
+
+interface Link {
+  industry?: string
+  source: string
+  target: string
+  type?: string
+  linkType?: string
+  description: string
+}
+
 // 为所有子组件提供展开状态
 const isChartExpanded = ref(false)
 provide('isChartExpanded', isChartExpanded)
@@ -15,7 +51,7 @@ const selectedIndustry = ref('')
 const selectedPlant = ref('')
 
 // 行业数据
-const industries = [
+const industries: Industry[] = [
   {
     id: 'chemical',
     name: '化工',
@@ -67,7 +103,7 @@ const industries = [
 ]
 
 // 厂区数据
-const industryPlants = {
+const industryPlants: Record<string, Plant[]> = {
   chemical: [
     { id: 'material-storage', name: '原料储存区', description: '化工原料存储区域' },
     { id: 'reactor', name: '反应器区', description: '化学反应进行的主要区域' },
@@ -97,14 +133,14 @@ const industryPlants = {
 }
 
 // 链接类型
-const linkTypes = [
+const linkTypes: LinkType[] = [
   { id: 'value', name: '价值链', color: '#F56C6C', description: '展示价值如何在各厂区传递' },
   { id: 'logistics', name: '物流链', color: '#409EFF', description: '展示物料在厂区间的运输路径' },
   { id: 'business', name: '业务链', color: '#67C23A', description: '展示各厂区间的业务协作关系' },
 ]
 
 // 链接数据 - 定义行业内部厂区间的链接
-const intraIndustryLinks = {
+const intraIndustryLinks: Record<string, Link[]> = {
   chemical: [
     { source: 'material-storage', target: 'reactor', type: 'value', description: '原料价值转化为反应物价值' },
     {
@@ -147,7 +183,7 @@ const intraIndustryLinks = {
 }
 
 // 行业间链接 - 定义不同行业间的链接关系
-const interIndustryLinks = [
+const interIndustryLinks: Link[] = [
   {
     source: 'chemical',
     target: 'steel',
@@ -186,7 +222,7 @@ const chatHistory = ref([{ role: 'assistant', content: '欢迎使用工业智能
 const userInput = ref('')
 
 // 选择行业并跳转
-const selectIndustry = (industryId) => {
+const selectIndustry = (industryId: string): void => {
   selectedIndustry.value = industryId
   // 将所选行业保存到会话存储中，以便在仪表板中使用
   sessionStorage.setItem('selectedIndustry', industryId)
@@ -195,7 +231,7 @@ const selectIndustry = (industryId) => {
 }
 
 // 选择厂区并在Unity WebGL中显示相应视图
-const selectPlant = (industryId, plantId) => {
+const selectPlant = (industryId: string, plantId: string): void => {
   selectedIndustry.value = industryId
   selectedPlant.value = plantId
   // 将所选厂区保存到会话存储中
@@ -214,18 +250,18 @@ const selectPlant = (industryId, plantId) => {
 }
 
 // 处理链接的点击事件
-const handleLinkClick = (link, isInterIndustry = false) => {
+const handleLinkClick = (link: Link, isInterIndustry = false): void => {
   let message = ''
 
   if (isInterIndustry) {
     const sourceIndustry = getIndustryName(link.source)
     const targetIndustry = getIndustryName(link.target)
-    message = `【${getLinkTypeName(link.linkType)}】${sourceIndustry} → ${targetIndustry}：${link.description}`
+    message = `【${getLinkTypeName(link.type || '')}】${sourceIndustry} → ${targetIndustry}：${link.description}`
   } else {
-    const industryId = link.industry
+    const industryId = link.industry || ''
     const sourcePlant = getPlantName(industryId, link.source.replace(`${industryId}_`, ''))
     const targetPlant = getPlantName(industryId, link.target.replace(`${industryId}_`, ''))
-    message = `【${getLinkTypeName(link.linkType)}】${sourcePlant} → ${targetPlant}：${link.description}`
+    message = `【${getLinkTypeName(link.linkType || '')}】${sourcePlant} → ${targetPlant}：${link.description}`
   }
 
   // 添加链接信息到聊天历史
@@ -233,26 +269,26 @@ const handleLinkClick = (link, isInterIndustry = false) => {
 }
 
 // 辅助函数 - 获取行业名称
-const getIndustryName = (industryId) => {
+const getIndustryName = (industryId: string): string => {
   const industry = industries.find((ind) => ind.id === industryId)
   return industry ? industry.name : industryId
 }
 
 // 辅助函数 - 获取厂区名称
-const getPlantName = (industryId, plantId) => {
-  const plants = industryPlants[industryId] || []
+const getPlantName = (industryId: string, plantId: string): string => {
+  const plants = industryPlants[industryId as keyof typeof industryPlants] || []
   const plant = plants.find((p) => p.id === plantId)
   return plant ? plant.name : plantId
 }
 
 // 辅助函数 - 获取链接类型名称
-const getLinkTypeName = (typeId) => {
+const getLinkTypeName = (typeId: string): string => {
   const linkType = linkTypes.find((lt) => lt.id === typeId)
   return linkType ? linkType.name : typeId
 }
 
 // 发送消息
-const sendMessage = () => {
+const sendMessage = (): void => {
   const trimmedInput = userInput.value.trim()
   if (trimmedInput) {
     chatHistory.value.push({ role: 'user', content: trimmedInput })
