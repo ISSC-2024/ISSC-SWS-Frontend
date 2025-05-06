@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import IndustrySelectionView from '../views/IndustrySelectionView.vue'
 import AuthService from '../services/AuthService'
 
 const routes = [
@@ -12,6 +13,12 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: LoginView,
+  },
+  {
+    path: '/industry-selection',
+    name: 'IndustrySelection',
+    component: IndustrySelectionView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/dashboard',
@@ -34,8 +41,8 @@ router.beforeEach((to, _from, next) => {
   if (to.meta.requiresAuth && !isLoggedIn) {
     next('/login')
   } else if (to.path === '/login' && isLoggedIn) {
-    // 如果用户已登录且尝试访问登录页面，重定向到仪表盘
-    next('/dashboard')
+    // 如果用户已登录且尝试访问登录页面，重定向到行业选择页面
+    next('/industry-selection')
   } else {
     next()
   }
