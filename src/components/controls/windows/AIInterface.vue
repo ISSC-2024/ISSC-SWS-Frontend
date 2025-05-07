@@ -88,7 +88,7 @@ const renderMarkdown = (content: string): string => {
 type Message = MessageType & {
   isThinking?: boolean // 不保存到数据库，只用于UI状态
   isThinkingExpanded?: boolean // 控制思考内容的展开/收起状态
-  model?: AIModelType // 添加模型类型
+  model?: AIModelType // 模型类型
 }
 
 // 对话类型定义
@@ -216,7 +216,7 @@ const createNewChat = async () => {
     const title = '新对话'
     const newChat = await ConversationAPI.createConversation(title, selectedModel.value)
 
-    // 添加UI状态属性
+    // UI状态属性
     const conversationWithUI = {
       ...newChat,
       active: true,
@@ -267,6 +267,26 @@ const renameCurrentChat = async () => {
     } catch (error) {
       console.error('更新对话标题失败:', error)
     }
+  }
+}
+
+const deleteChat = async (id: number) => {
+  try {
+    // 调用API删除对话
+    await ConversationAPI.deleteConversation(id)
+
+    // 从列表中移除该对话
+    conversations.value = conversations.value.filter((chat) => chat.id !== id)
+
+    // 如果删除的是当前选中的对话，则清空消息并设置当前对话ID为null
+    if (currentConversationId.value === id) {
+      messages.value = []
+      currentConversationId.value = null
+    }
+
+    console.log('删除对话成功:', id)
+  } catch (error) {
+    console.error('删除对话失败:', error)
   }
 }
 
@@ -897,6 +917,22 @@ onMounted(async () => {
                 <div class="history-item-content">
                   <div class="history-item-title">{{ chat.title }}</div>
                   <div class="history-item-date">{{ new Date(chat.updatedAt).toLocaleString() }}</div>
+                </div>
+                <div class="delete-icon" @click.stop="deleteChat(chat.id)">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
                 </div>
               </div>
             </div>
@@ -1615,6 +1651,31 @@ onMounted(async () => {
   color: var(--ai-text-dim);
 }
 
+.delete-icon {
+  display: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+.delete-icon:hover {
+  background-color: rgba(255, 59, 48, 0.2);
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.history-item:hover .delete-icon {
+  display: flex;
+}
+
 /* 历史面板底部 */
 .history-footer {
   padding: 16px;
@@ -2326,7 +2387,7 @@ onMounted(async () => {
   padding-left: 1em;
 }
 
-/* 添加自定义滚动条 */
+/* 自定义滚动条 */
 .ai-textarea::-webkit-scrollbar {
   width: 4px;
 }
