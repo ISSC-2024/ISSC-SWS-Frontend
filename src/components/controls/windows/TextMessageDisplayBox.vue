@@ -204,8 +204,8 @@ const handleClose = () => {
 <style scoped>
 .text-message-display-box {
   position: absolute;
-  bottom: 330px;
-  left: 400px;
+  bottom: 1000px;
+  left: 1000px;
   z-index: 1000;
   pointer-events: none;
 }

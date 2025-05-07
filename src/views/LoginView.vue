@@ -51,9 +51,9 @@ const handleLogin = async () => {
       // 显示成功消息
       message.success(authResult.message)
 
-      // 跳转到仪表盘页面
+      // 跳转到行业选择页面
       setTimeout(() => {
-        router.push('/dashboard')
+        router.push('/industry-selection')
         loading.value = false
       }, 1000)
     } else {
