@@ -4,8 +4,6 @@
  */
 import { ref, onMounted, onUnmounted, inject, watch } from 'vue'
 import * as echarts from 'echarts'
-// 删除直接导入 JSON 文件
-// import graphData from '@/mock/monitoringKnowledgeGraph.json'
 // 引入 algorithmStore
 import { useAlgorithmStore, ModuleType } from '@/stores/algorithmStore'
 // 引入Pinia状态管理和类型定义
@@ -76,8 +74,6 @@ const sendHighlightToUnity = (areaCode: string | null, highlight: boolean): void
     area: areaCode || '',
     nodes: {},
   }
-
-  // 添加传感器数据
 
   // 查找该区域下的所有传感器
   const areaSensors = originalNodes.value.filter((node: NodeData) => node.category === 1 && node.area_code === areaCode)
@@ -420,7 +416,7 @@ const initChart = () => {
   focusedArea.value = graphStore.focusedArea
   showAllLabels.value = graphStore.showLabels
 
-  // 添加双击事件 - 实现区域节点聚焦功能
+  // 双击事件 - 区域节点聚焦
   chart.on('dblclick', (params: any) => {
     if (params.dataType === 'node') {
       const nodeData = params.data
