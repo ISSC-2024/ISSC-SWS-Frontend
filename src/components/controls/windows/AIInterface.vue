@@ -102,6 +102,9 @@ const isLoading = ref(false)
 const inputText = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
+//标题编辑状态
+const isEditingTitle = ref(false)
+const editingTitle = ref('')
 
 // 对话历史数据
 const conversations = ref<Conversation[]>([])
@@ -244,30 +247,77 @@ const createNewChat = async () => {
 
 // 重命名当前对话
 const renameCurrentChat = async () => {
+  startEditingTitle()
+}
+
+// 开始编辑标题
+const startEditingTitle = () => {
   if (!currentConversation.value) return
 
-  const newTitle = prompt('请输入新的对话标题:', currentConversation.value.title)
+  editingTitle.value = currentConversation.value.title
+  isEditingTitle.value = true
 
-  if (newTitle && newTitle.trim() !== '') {
-    try {
-      // 调用API更新对话标题
-      const updatedConversation = await ConversationAPI.renameConversation(
-        currentConversationId.value as number,
-        newTitle.trim(),
-      )
-
-      // 更新本地状态
-      const conversation = conversations.value.find((c) => c.id === currentConversationId.value)
-      if (conversation) {
-        conversation.title = updatedConversation.title
-        conversation.updatedAt = updatedConversation.updatedAt
-      }
-
-      console.log('更新对话标题成功:', updatedConversation)
-    } catch (error) {
-      console.error('更新对话标题失败:', error)
+  // 等待DOM更新后聚焦输入框
+  nextTick(() => {
+    const titleInput = document.getElementById('title-input') as HTMLInputElement
+    if (titleInput) {
+      titleInput.focus()
+      titleInput.select()
     }
+  })
+}
+
+// 保存编辑后的标题
+const saveEditedTitle = async () => {
+  if (!currentConversation.value || !editingTitle.value.trim()) {
+    isEditingTitle.value = false
+    return
   }
+
+  const newTitle = editingTitle.value.trim()
+
+  try {
+    // 调用API更新对话标题
+    const updatedConversation = await ConversationAPI.renameConversation(
+      currentConversationId.value as number,
+      newTitle,
+    )
+
+    // 更新本地状态
+    const conversation = conversations.value.find((c) => c.id === currentConversationId.value)
+    if (conversation) {
+      conversation.title = updatedConversation.title
+      conversation.updatedAt = updatedConversation.updatedAt
+    }
+
+    console.log('更新对话标题成功:', updatedConversation)
+  } catch (error) {
+    console.error('更新对话标题失败:', error)
+  } finally {
+    isEditingTitle.value = false
+  }
+}
+
+// 处理标题输入框的按键事件
+const handleTitleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Enter') {
+    saveEditedTitle()
+    // ESC取消编辑
+  } else if (e.key === 'Escape') {
+    cancelTitleEditing()
+  }
+}
+
+// 取消编辑标题
+const cancelTitleEditing = () => {
+  isEditingTitle.value = false
+  // 不保存更改，直接恢复为原标题
+  editingTitle.value = currentConversation.value?.title || ''
+}
+
+// 失焦时保存标题
+const onTitleInputBlur = () => {
+  saveEditedTitle()
 }
 
 const deleteChat = async (id: number) => {
@@ -958,9 +1008,20 @@ onMounted(async () => {
           <div class="ai-content">
             <!-- 当前对话标题 -->
             <div class="chat-title">
-              <h3>{{ currentChatTitle }}</h3>
+              <div v-if="isEditingTitle" class="title-editing-container" @click.stop>
+                <input
+                  id="title-input"
+                  v-model="editingTitle"
+                  @keydown.stop.prevent="handleTitleKeydown"
+                  @blur.stop="onTitleInputBlur"
+                  class="title-input"
+                  type="text"
+                  maxlength="50"
+                />
+              </div>
+              <h3 v-else>{{ currentChatTitle }}</h3>
               <div class="title-actions">
-                <button class="title-action-button" @click="renameCurrentChat">
+                <button class="title-action-button" @click.stop="renameCurrentChat">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -1777,6 +1838,29 @@ onMounted(async () => {
   font-size: 1rem;
   font-weight: 500;
   color: var(--ai-accent);
+}
+
+.title-editing-container {
+  flex: 1;
+}
+
+.title-input {
+  background-color: rgba(26, 34, 52, 0.7);
+  border: 1px solid var(--ai-accent);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--ai-text-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  outline: none;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 0 8px rgba(97, 218, 251, 0.3);
+}
+
+.title-input:focus {
+  border-color: var(--ai-accent);
+  box-shadow: 0 0 12px rgba(97, 218, 251, 0.4);
 }
 
 .title-actions {
