@@ -4,8 +4,6 @@
  */
 import { ref, onMounted, onUnmounted, inject, watch } from 'vue'
 import * as echarts from 'echarts'
-// 删除直接导入 JSON 文件
-// import graphData from '@/mock/monitoringKnowledgeGraph.json'
 // 引入 algorithmStore
 import { useAlgorithmStore, ModuleType } from '@/stores/algorithmStore'
 // 引入Pinia状态管理和类型定义
@@ -25,6 +23,10 @@ const originalNodes = ref<NodeData[]>([])
 const originalLinks = ref<LinkData[]>([])
 // 当前聚焦的区域
 const focusedArea = ref<string | null>(null)
+// Unity全局聚焦状态
+const isUnityGlobalFocused = ref(false)
+// Unity全局聚焦区域列表
+const unityFocusAreas = ['PRO', 'REA', 'RMS', 'SEP', 'UTL']
 // 控制标签显示状态
 const showAllLabels = ref(false)
 
@@ -43,27 +45,6 @@ const graphData = ref<{
   links: [],
   categories: [],
 })
-
-// 添加加载数据方法
-const loadGraphData = async () => {
-  try {
-    // 使用 algorithmStore 获取模块2的数据
-    const knowledgeGraphModule = await algorithmStore.getModuleDataFile(ModuleType.Module2)
-
-    if (knowledgeGraphModule && knowledgeGraphModule.default) {
-      graphData.value = knowledgeGraphModule.default
-      const currentAlgorithm = algorithmStore.getModuleSelectedAlgorithm(ModuleType.Module2)
-      console.log(`成功加载知识图谱数据(${currentAlgorithm})`)
-
-      // 加载数据后初始化图表
-      initChart()
-    } else {
-      console.warn('知识图谱数据为空')
-    }
-  } catch (error) {
-    console.error('加载知识图谱数据失败:', error)
-  }
-}
 
 // 节点类别颜色映射
 const categoryColors = [
@@ -94,8 +75,6 @@ const sendHighlightToUnity = (areaCode: string | null, highlight: boolean): void
     nodes: {},
   }
 
-  // 添加传感器数据
-
   // 查找该区域下的所有传感器
   const areaSensors = originalNodes.value.filter((node: NodeData) => node.category === 1 && node.area_code === areaCode)
 
@@ -110,6 +89,37 @@ const sendHighlightToUnity = (areaCode: string | null, highlight: boolean): void
   const messageJson = JSON.stringify(message)
   console.log('向Unity发送消息:', messageJson)
   unityService.sendMessageToUnity('Sensor', 'KnowledgeHighlight', messageJson)
+}
+
+// 切换Unity全局聚焦状态
+const toggleUnityGlobalFocus = () => {
+  isUnityGlobalFocused.value = !isUnityGlobalFocused.value
+
+  unityFocusAreas.forEach((areaCode) => {
+    // 发送高亮或取消高亮消息
+    sendHighlightToUnity(areaCode, isUnityGlobalFocused.value)
+  })
+}
+
+// 加载数据
+const loadGraphData = async () => {
+  try {
+    // 使用 algorithmStore 获取模块2的数据
+    const knowledgeGraphModule = await algorithmStore.getModuleDataFile(ModuleType.Module2)
+
+    if (knowledgeGraphModule && knowledgeGraphModule.default) {
+      graphData.value = knowledgeGraphModule.default
+      const currentAlgorithm = algorithmStore.getModuleSelectedAlgorithm(ModuleType.Module2)
+      console.log(`成功加载知识图谱数据(${currentAlgorithm})`)
+
+      // 加载数据后初始化图表
+      initChart()
+    } else {
+      console.warn('知识图谱数据为空')
+    }
+  } catch (error) {
+    console.error('加载知识图谱数据失败:', error)
+  }
 }
 
 // 修改初始化图表方法
@@ -406,7 +416,7 @@ const initChart = () => {
   focusedArea.value = graphStore.focusedArea
   showAllLabels.value = graphStore.showLabels
 
-  // 添加双击事件 - 实现区域节点聚焦功能
+  // 双击事件 - 区域节点聚焦
   chart.on('dblclick', (params: any) => {
     if (params.dataType === 'node') {
       const nodeData = params.data
@@ -904,6 +914,32 @@ onUnmounted(() => {
       </div>
       <span>展开查看更多</span>
     </div>
+
+    <!-- 非展开状态下的Unity聚焦按钮 -->
+    <button
+      v-if="!isChartExpanded"
+      class="unity-focus-btn"
+      :class="{ focused: isUnityGlobalFocused }"
+      @click.stop="toggleUnityGlobalFocus"
+    >
+      <div class="unity-focus-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16">
+          <!-- 根据状态显示不同的图标 -->
+          <path
+            fill="currentColor"
+            v-if="!isUnityGlobalFocused"
+            d="M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5Z"
+          />
+          <!-- 已聚焦状态图标 -->
+          <path
+            fill="currentColor"
+            v-else
+            d="M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13.5,7V5.5C17.33,6.23 20,8.83 20,12C20,15.17 17.33,17.77 13.5,18.5V17C16.25,16.3 18.3,14.25 18.3,12C18.3,9.75 16.25,7.7 13.5,7M6.5,12C6.5,9.75 8.17,7.8 10.5,7.08V5.55C7.11,6.33 5,8.92 5,12C5,15.08 7.11,17.67 10.5,18.45V16.93C8.17,16.2 6.5,14.25 6.5,12Z"
+          />
+        </svg>
+      </div>
+      <span>{{ isUnityGlobalFocused ? '取消在Unity聚焦' : '在Unity中聚焦' }}</span>
+    </button>
   </div>
 </template>
 
@@ -1246,7 +1282,84 @@ onUnmounted(() => {
   color: #20a0ff;
 }
 
-/* 修复右上角图例文字样式 */
+/* Unity聚焦按钮样式 */
+.unity-focus-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: linear-gradient(135deg, rgba(20, 35, 65, 0.9), rgba(28, 50, 90, 0.9));
+  border: 1px solid rgba(74, 144, 226, 0.5);
+  border-radius: 6px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(220, 230, 240, 0.95);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.25),
+    0 0 5px rgba(32, 160, 255, 0.3);
+  z-index: 11; /* 确保按钮在其他元素之上 */
+  backdrop-filter: blur(2px);
+  letter-spacing: 0.2px;
+}
+
+.unity-focus-btn:hover {
+  background: linear-gradient(135deg, rgba(32, 50, 90, 0.95), rgba(42, 70, 120, 0.95));
+  border-color: rgba(74, 144, 226, 0.7);
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 0 8px rgba(32, 160, 255, 0.4);
+}
+
+.unity-focus-btn.focused {
+  background: linear-gradient(135deg, rgba(32, 120, 215, 0.25), rgba(32, 160, 255, 0.35));
+  border-color: rgba(32, 160, 255, 0.65);
+  color: rgba(255, 255, 255, 0.98);
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.3),
+    0 0 15px rgba(32, 160, 255, 0.4),
+    inset 0 0 8px rgba(32, 160, 255, 0.2);
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.unity-focus-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(74, 144, 226, 0.95);
+  filter: drop-shadow(0 0 3px rgba(32, 160, 255, 0.4));
+  width: 20px;
+  height: 20px;
+}
+
+.unity-focus-btn.focused .unity-focus-icon {
+  color: rgba(135, 206, 255, 1);
+  filter: drop-shadow(0 0 5px rgba(135, 206, 255, 0.8));
+  animation: pulse-light 1.5s infinite;
+}
+
+@keyframes pulse-light {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 8px rgba(135, 206, 255, 0.9));
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(0.92);
+  }
+}
+
+/* 右上角图例文字样式 */
 :deep(.echarts-tooltip) {
   background: rgba(20, 35, 65, 0.9) !important;
   border: 1px solid rgba(32, 160, 255, 0.3) !important;
