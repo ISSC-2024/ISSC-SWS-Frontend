@@ -3,6 +3,7 @@ import { useRouter } from 'vue-router'
 import { ref, provide } from 'vue'
 import UnityContainer from '../components/display/UnityContainer.vue'
 import IndustryRelationshipGraph from '../components/charts/IndustryRelationshipGraph.vue'
+import UnityService from '../services/UnityService'
 
 // 定义类型接口
 interface Industry {
@@ -237,6 +238,26 @@ const selectPlant = (industryId: string, plantId: string): void => {
   // 将所选厂区保存到会话存储中
   sessionStorage.setItem('selectedIndustry', industryId)
   sessionStorage.setItem('selectedPlant', plantId)
+
+  // 如果是化工行业，调用Unity的视角聚焦API
+  if (industryId === 'chemical') {
+    // 化工厂区ID到Unity区域代码的映射
+    const plantToUnityAreaMap: Record<string, string> = {
+      'material-storage': 'RMS', // 原料储存区
+      reactor: 'REA', // 反应器区
+      separation: 'SEP', // 分离提纯区
+      'product-storage': 'PRO', // 成品储存区
+      utility: 'UTL', // 公用工程区
+    }
+
+    // 获取对应的Unity区域代码
+    const areaCode = plantToUnityAreaMap[plantId]
+    if (areaCode) {
+      // 调用Unity接口切换视角
+      UnityService.sendMessageToUnity('MainCamera', 'SwitchArea', areaCode)
+      console.log(`切换Unity视角到化工行业的${getPlantName(industryId, plantId)}(${areaCode})`)
+    }
+  }
 
   // 这里将来会调用Unity WebGL的方法切换到对应厂区视图
   // 目前只是打印日志，等待Unity模型集成
