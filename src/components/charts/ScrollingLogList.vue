@@ -45,50 +45,70 @@
     </div>
 
     <div class="scrolling-log-body" ref="logBody">
-      <div
-        v-for="(log, index) in visibleLogs"
-        :key="log.timestamp + log.region"
-        class="log-row"
-        :class="{
-          'log-info': log.risk_level === 'safe',
-          'log-warning': log.risk_level === 'warning',
-          'log-danger': log.risk_level === 'danger',
-          'log-selected': isLogSelected(log),
-          'log-row-alt': index % 2 === 1,
-        }"
-        @click="handleLogClick(log)"
-        @mouseenter="handleLogHover(log)"
-        @mouseleave="handleLogLeave(log)"
-      >
-        <!-- 添加图标到时间戳 -->
-        <div class="log-time">
-          <clock-circle-outlined />
-          <span>{{ formatTime(log.timestamp) }}</span>
-        </div>
-        <!-- 添加图标到区域 -->
-        <div class="log-type">
-          <environment-outlined />
-          <span>{{ log.region }}</span>
-        </div>
-        <!-- 添加图标到消息，替换原来的 > 符号 -->
-        <div class="log-message" :class="{ expanded: isExpanded }" :title="log.message">
-          <message-outlined />
-          {{ log.message }}
-        </div>
+      <!-- 添加加载状态提示 -->
+      <div v-if="isLoading" class="loading-indicator">
+        <span>正在加载数据...</span>
       </div>
+      <div v-else-if="visibleLogs.length === 0" class="empty-data">
+        <span>暂无日志数据</span>
+      </div>
+      <template v-else>
+        <div
+          v-for="(log, index) in visibleLogs"
+          :key="log.timestamp + log.region"
+          class="log-row"
+          :class="{
+            'log-info': log.risk_level === 'safe',
+            'log-warning': log.risk_level === 'warning',
+            'log-danger': log.risk_level === 'danger',
+            'log-selected': isLogSelected(log),
+            'log-row-alt': index % 2 === 1,
+          }"
+          @click="handleLogClick(log)"
+          @mouseenter="handleLogHover(log)"
+          @mouseleave="handleLogLeave(log)"
+        >
+          <!-- 添加图标到时间戳 -->
+          <div class="log-time">
+            <clock-circle-outlined />
+            <span>{{ formatTime(log.timestamp) }}</span>
+          </div>
+          <!-- 添加图标到区域 -->
+          <div class="log-type">
+            <environment-outlined />
+            <span>{{ log.region }}</span>
+          </div>
+          <!-- 添加图标到消息，替换原来的 > 符号 -->
+          <div class="log-message" :class="{ expanded: isExpanded }" :title="log.message">
+            <message-outlined />
+            {{ log.message }}
+          </div>
+        </div>
+
+        <!-- 加载更多触发器元素 -->
+        <div v-if="isExpanded" ref="loadTriggerRef" class="load-more-trigger">
+          <div v-if="isLoadingMore" class="loading-more">
+            <span>加载更多...</span>
+          </div>
+          <div v-else-if="!hasMore" class="no-more-data">
+            <span>没有更多数据</span>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
-  <TextMessageDisplayBox />
+  <!-- <TextMessageDisplayBox /> -->
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, inject, onUnmounted, watch } from 'vue'
+import { ref, onMounted, computed, inject, onUnmounted, watch, nextTick } from 'vue'
 import unityService from '@/services/UnityService'
 import { message } from 'ant-design-vue'
-import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-import { useMessageStore } from '@/stores/messageStore'
-import { useAlgorithmStore, ModuleType } from '@/stores/algorithmStore'
+//import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
+//import { useMessageStore } from '@/stores/messageStore'
+import { useAlgorithmStore, ModuleType, AlgorithmType } from '@/stores/algorithmStore'
 import { ClockCircleOutlined, EnvironmentOutlined, MessageOutlined } from '@ant-design/icons-vue'
+import ScrollingLogListApi, { type AlgorithmResult } from '@/apis/ScrollingLogList'
 
 // 日志数据结构接口
 interface LogEntry {
@@ -113,22 +133,117 @@ const startIndex = ref(0)
 const visibleCount = 100
 let scrollTimer: ReturnType<typeof setInterval> | null = null
 
-// 加载日志数据
-const loadLogData = async () => {
-  try {
-    // 使用getModuleDataFile方法获取模块3的数据
-    const logModule = await algorithmStore.getModuleDataFile(ModuleType.Module3)
+// 加载状态
+const isLoading = ref(false)
+const isLoadingMore = ref(false)
+// 分页参数
+const pageSize = 50
+const currentSkip = ref(0)
+const hasMore = ref(true)
 
-    if (logModule && logModule.default) {
-      logs.value = logModule.default as LogEntry[]
+// 滚动相关
+const logBody = ref<HTMLElement | null>(null)
+let scrollObserver: IntersectionObserver | null = null
+const loadTriggerRef = ref<HTMLDivElement | null>(null)
+
+// 将API返回的数据转换为日志条目
+const convertToLogEntries = (results: AlgorithmResult[]): LogEntry[] => {
+  return results.map((result) => ({
+    timestamp: result.timestamp,
+    region: result.region,
+    risk_level: result.risk_level as 'safe' | 'warning' | 'danger',
+    message: result.message,
+  }))
+}
+
+// 加载日志数据
+const loadLogData = async (reset = true) => {
+  try {
+    if (reset) {
+      isLoading.value = true
+      currentSkip.value = 0
+      logs.value = []
+      hasMore.value = true
     } else {
-      console.warn('模块3日志数据为空')
-      logs.value = [] // 数据为空时清空日志
+      isLoadingMore.value = true
     }
+
+    // 获取当前选中的算法类型
+    const selectedAlgorithm = algorithmStore.getModuleSelectedAlgorithm(ModuleType.Module3)
+
+    // 获取当前算法的参数
+    const params = algorithmStore.getAlgorithmParams(selectedAlgorithm)
+
+    // 构建请求参数
+    const requestParams = {
+      algorithm: selectedAlgorithm,
+      learning_rate: Number(params.learning_rate) || 0.1,
+      max_depth:
+        selectedAlgorithm === AlgorithmType.xgboost || selectedAlgorithm === AlgorithmType.lightGBM
+          ? Number(params.max_depth)
+          : null,
+      max_epochs: selectedAlgorithm === AlgorithmType.TabNet ? Number(params.max_epochs) : null,
+      skip: currentSkip.value,
+      limit: pageSize,
+    }
+
+    // 调用API获取数据（带分页）
+    const response = await ScrollingLogListApi.getResultsWithPagination(requestParams)
+
+    // 更新分页信息
+    hasMore.value = response.pagination.has_more
+
+    // 转换数据格式并添加到当前列表
+    if (reset) {
+      logs.value = convertToLogEntries(response.data)
+    } else {
+      logs.value = [...logs.value, ...convertToLogEntries(response.data)]
+    }
+
+    // 更新下一页的偏移量
+    currentSkip.value += response.data.length
   } catch (error) {
     console.error(`加载模块3日志数据失败:`, error)
-    logs.value = [] // 加载失败时清空日志
+    message.error('加载日志数据失败，请稍后再试')
+    if (reset) logs.value = [] // 重置时才清空日志
+  } finally {
+    isLoading.value = false
+    isLoadingMore.value = false
   }
+}
+
+// 加载更多数据
+const loadMoreData = async () => {
+  if (!hasMore.value || isLoadingMore.value) return
+  await loadLogData(false)
+}
+
+// 设置滚动监听
+const setupScrollObserver = () => {
+  if (scrollObserver) {
+    scrollObserver.disconnect()
+  }
+
+  scrollObserver = new IntersectionObserver(
+    (entries) => {
+      // 只在展开状态下监听滚动加载更多
+      if (!isExpanded.value) return
+
+      const entry = entries[0]
+      if (entry && entry.isIntersecting && hasMore.value && !isLoadingMore.value) {
+        loadMoreData()
+      }
+    },
+    {
+      rootMargin: '100px',
+    },
+  )
+
+  nextTick(() => {
+    if (loadTriggerRef.value) {
+      scrollObserver?.observe(loadTriggerRef.value)
+    }
+  })
 }
 
 // 跟踪当前选中的日志项
@@ -221,7 +336,7 @@ const handleLogLeave = (log: LogEntry) => {
 }
 
 // 点击日志行时的处理函数 - 持续高亮/取消高亮
-const messageStore = useMessageStore()
+//const messageStore = useMessageStore()
 const handleLogClick = (log: LogEntry) => {
   // 检查Unity是否已加载
   if (!unityService.isUnityLoaded()) {
@@ -243,34 +358,7 @@ const handleLogClick = (log: LogEntry) => {
   // 无论是选中还是取消选中，都发送同一个消息
   unityService.sendMessageToUnity('Sensor', 'RegionContinuousHighlight', JSON.stringify(unityData))
 
-  // 将数据发送到文本框
-  const textFieldConfig = {
-    labelMap: {
-      region: '区域',
-      risk_level: '风险等级',
-      message: '详细信息',
-    },
-    valueFormatters: {
-      risk_level: (v: string) => {
-        switch (v) {
-          case 'safe':
-            return '安全'
-          case 'warning':
-            return '警告'
-          case 'danger':
-            return '危险'
-          default:
-            return '未知'
-        }
-      },
-    },
-  }
-  // 创建副本防止修改原始数据
-  const validatedLog = { ...log }
-  messageStore.showMessage(unityData, textFieldConfig, {
-    source: 'region', // 可选的消息来源标识
-    title: `日志-${validatedLog.region}`, // 设置特定标题
-  })
+  // 发送消息到文本框相关代码已被注释
 }
 
 // 格式化时间戳
@@ -292,6 +380,9 @@ const scrollList = () => {
 onMounted(async () => {
   // 初始加载数据
   await loadLogData()
+
+  // 设置滚动观察器
+  setupScrollObserver()
 
   // 非展开状态下设置滚动定时器
   scrollTimer = setInterval(scrollList, 2000)
@@ -317,6 +408,12 @@ onUnmounted(() => {
   if (scrollTimer) {
     clearInterval(scrollTimer)
     scrollTimer = null
+  }
+
+  // 清除滚动观察器
+  if (scrollObserver) {
+    scrollObserver.disconnect()
+    scrollObserver = null
   }
 })
 </script>
@@ -612,5 +709,38 @@ onUnmounted(() => {
   background: linear-gradient(to bottom, transparent 50%, rgba(32, 160, 255, 0.03) 50%);
   background-size: 100% 4px;
   z-index: 1;
+}
+
+/* 加载状态和空数据状态 */
+.loading-indicator,
+.empty-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100%;
+  color: rgba(32, 160, 255, 0.7);
+  font-size: 16px;
+  text-align: center;
+}
+
+/* 加载更多相关样式 */
+.load-more-trigger {
+  padding: 15px;
+  text-align: center;
+  color: rgba(32, 160, 255, 0.7);
+}
+
+.loading-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.no-more-data {
+  font-size: 14px;
+  color: rgba(180, 200, 220, 0.5);
+  padding: 10px;
 }
 </style>
