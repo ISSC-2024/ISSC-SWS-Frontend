@@ -37,9 +37,9 @@ export interface GetResultsParams {
   algorithm: string
   /** 学习率 */
   learning_rate: number
-  /** 最大深度（特定算法需要） */
+  /** 最大深度 */
   max_depth?: number | null
-  /** 最大训练轮数（特定算法需要） */
+  /** 最大训练轮数 */
   max_epochs?: number | null
   /** 可选的区域过滤 */
   region?: string
@@ -49,6 +49,26 @@ export interface GetResultsParams {
   limit?: number
   /** 是否获取所有结果，不分页 */
   get_all?: boolean
+}
+
+/**
+ * CSV下载参数接口
+ */
+export interface DownloadCsvParams {
+  /** 算法类型 */
+  algorithm: string
+  /** 学习率 */
+  learning_rate: number
+  /** 最大深度 */
+  max_depth?: number | null
+  /** 最大训练轮数 */
+  max_epochs?: number | null
+  /** 可选的区域过滤 */
+  region?: string
+  /** 下载文件名前缀 */
+  filename?: string
+  /** 是否本地化列名（中文显示） */
+  localize?: boolean
 }
 
 /**
@@ -76,6 +96,7 @@ export default class ScrollingLogListApi {
       throw error
     }
   }
+
   /**
    * 获取带分页信息的算法结果 - 根据算法参数组合查询
    * @param params 查询参数
@@ -96,6 +117,30 @@ export default class ScrollingLogListApi {
       })
     } catch (error) {
       console.error('获取算法3结果失败:', error)
+      throw error
+    }
+  }
+
+  /**
+   * 下载算法结果为CSV格式
+   * @param params 下载参数
+   * @returns Blob对象，代表CSV文件内容
+   */
+  static async downloadResultsCsv(params: DownloadCsvParams): Promise<Blob> {
+    try {
+      const requestParams: DownloadCsvParams = {
+        ...params,
+        // 添加默认参数
+        localize: params.localize ?? true,
+      }
+
+      const blobData = await http.downloadFile(`${this.BASE_PATH}/results/download-csv`, requestParams, {
+        requestId: `download-csv-results-${Date.now()}`,
+      })
+
+      return blobData
+    } catch (error) {
+      console.error('下载算法3结果CSV失败:', error)
       throw error
     }
   }

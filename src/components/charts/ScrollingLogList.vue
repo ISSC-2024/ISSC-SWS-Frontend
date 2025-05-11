@@ -13,7 +13,6 @@
    *
    -->
   <div class="scrolling-log-container" :class="{ expanded: isExpanded }">
-    <!-- 添加标题栏 -->
     <div class="graph-header">
       <div class="graph-title">
         <div class="title-icon">
@@ -26,9 +25,16 @@
         </div>
         <span>系统运行日志</span>
       </div>
+      <!-- 导出按钮，仅在展开状态下显示 -->
+      <div v-if="isExpanded" class="graph-actions">
+        <button class="export-button" @click="handleExport">
+          <download-outlined />
+          <span>导出</span>
+        </button>
+      </div>
     </div>
 
-    <!-- 添加表头 -->
+    <!-- 表头 -->
     <div class="log-header">
       <div class="header-time">
         <clock-circle-outlined />
@@ -45,7 +51,7 @@
     </div>
 
     <div class="scrolling-log-body" ref="logBody">
-      <!-- 添加加载状态提示 -->
+      <!-- 加载状态提示 -->
       <div v-if="isLoading" class="loading-indicator">
         <span>正在加载数据...</span>
       </div>
@@ -68,24 +74,24 @@
           @mouseenter="handleLogHover(log)"
           @mouseleave="handleLogLeave(log)"
         >
-          <!-- 添加图标到时间戳 -->
+          <!-- 时间戳 -->
           <div class="log-time">
             <clock-circle-outlined />
             <span>{{ formatTime(log.timestamp) }}</span>
           </div>
-          <!-- 添加图标到区域 -->
+          <!-- 区域 -->
           <div class="log-type">
             <environment-outlined />
             <span>{{ log.region }}</span>
           </div>
-          <!-- 添加图标到消息，替换原来的 > 符号 -->
+          <!-- 消息 -->
           <div class="log-message" :class="{ expanded: isExpanded }" :title="log.message">
             <message-outlined />
             {{ log.message }}
           </div>
         </div>
 
-        <!-- 加载更多触发器元素 -->
+        <!-- "加载更多"触发器元素 -->
         <div v-if="isExpanded" ref="loadTriggerRef" class="load-more-trigger">
           <div v-if="isLoadingMore" class="loading-more">
             <span>加载更多...</span>
@@ -104,11 +110,14 @@
 import { ref, onMounted, computed, inject, onUnmounted, watch, nextTick } from 'vue'
 import unityService from '@/services/UnityService'
 import { message } from 'ant-design-vue'
-//import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-//import { useMessageStore } from '@/stores/messageStore'
 import { useAlgorithmStore, ModuleType, AlgorithmType } from '@/stores/algorithmStore'
-import { ClockCircleOutlined, EnvironmentOutlined, MessageOutlined } from '@ant-design/icons-vue'
-import ScrollingLogListApi, { type AlgorithmResult } from '@/apis/ScrollingLogList'
+import {
+  ClockCircleOutlined,
+  EnvironmentOutlined,
+  MessageOutlined,
+  DownloadOutlined, // 添加下载图标
+} from '@ant-design/icons-vue'
+import ScrollingLogListApi, { type AlgorithmResult, type DownloadCsvParams } from '@/apis/ScrollingLogList'
 
 // 日志数据结构接口
 interface LogEntry {
@@ -361,6 +370,52 @@ const handleLogClick = (log: LogEntry) => {
   // 发送消息到文本框相关代码已被注释
 }
 
+/**
+ * 处理导出操作 - 下载CSV文件
+ */
+const handleExport = async () => {
+  try {
+    // 获取当前选中的算法类型
+    const selectedAlgorithm = algorithmStore.getModuleSelectedAlgorithm(ModuleType.Module3)
+
+    // 获取当前算法的参数
+    const params = algorithmStore.getAlgorithmParams(selectedAlgorithm)
+
+    // 构建下载参数
+    const downloadParams: DownloadCsvParams = {
+      algorithm: selectedAlgorithm,
+      learning_rate: Number(params.learning_rate) || 0.1,
+      max_depth:
+        selectedAlgorithm === AlgorithmType.xgboost || selectedAlgorithm === AlgorithmType.lightGBM
+          ? Number(params.max_depth)
+          : null,
+      max_epochs: selectedAlgorithm === AlgorithmType.TabNet ? Number(params.max_epochs) : null,
+      localize: true,
+      filename: `${selectedAlgorithm}_log`,
+    }
+
+    // 下载CSV文件
+    const blobData = await ScrollingLogListApi.downloadResultsCsv(downloadParams)
+
+    // 创建下载链接并触发下载
+    const url = window.URL.createObjectURL(blobData)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${downloadParams.filename || 'algorithm_results'}.csv`
+    document.body.appendChild(link)
+    link.click()
+
+    // 清理
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(link)
+
+    message.success('导出成功')
+  } catch (error) {
+    console.error('导出CSV文件失败:', error)
+    message.error('导出失败，请稍后再试')
+  }
+}
+
 // 格式化时间戳
 const formatTime = (timestamp: string): string => {
   const date = new Date(timestamp)
@@ -479,6 +534,58 @@ onUnmounted(() => {
   justify-content: center;
   color: #20a0ff;
   filter: drop-shadow(0 0 5px rgba(32, 160, 255, 0.5));
+}
+
+/* 标题栏 - 添加actions布局支持 */
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(12, 24, 48, 0.95) 0%,
+    rgba(20, 40, 80, 0.95) 50%,
+    rgba(12, 24, 48, 0.95) 100%
+  );
+  border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+  position: relative;
+  z-index: 5;
+}
+
+/* 标题栏右侧操作区域 */
+.graph-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 导出按钮样式 */
+.export-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(32, 160, 255, 0.15);
+  border: 1px solid rgba(32, 160, 255, 0.3);
+  color: rgba(220, 230, 240, 0.9);
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.export-button:hover {
+  background: rgba(32, 160, 255, 0.25);
+  border-color: rgba(32, 160, 255, 0.5);
+  box-shadow: 0 0 8px rgba(32, 160, 255, 0.4);
+}
+
+.export-button:active {
+  background: rgba(32, 160, 255, 0.35);
+  transform: translateY(1px);
 }
 
 /* 表头样式 */
