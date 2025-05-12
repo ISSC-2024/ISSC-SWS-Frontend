@@ -321,6 +321,25 @@ const sendMessage = (): void => {
     }, 500)
   }
 }
+
+// 处理键盘输入事件
+const handleKeyDown = (e: KeyboardEvent): void => {
+  // 阻止事件冒泡，防止被外部事件处理器捕获
+  e.stopPropagation()
+
+  // 对于退格键，确保它能正常工作
+  if (e.key === 'Backspace') {
+    // 由于使用v-model，Vue会自动处理输入，这里只需确保事件不被干扰
+    console.log('退格键被按下')
+    // 不要阻止默认行为，让浏览器处理退格键
+  }
+  // 对于回车键，我们在keydown事件中处理，而不是keyup
+  else if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+    sendMessage()
+  }
+  // 其他按键正常处理
+}
 </script>
 
 <template>
@@ -371,7 +390,8 @@ const sendMessage = (): void => {
               v-model="userInput"
               placeholder="在此输入您的问题..."
               rows="3"
-              @keyup.enter.prevent="sendMessage"
+              @keydown.enter.prevent="sendMessage"
+              @keydown="handleKeyDown"
             ></textarea>
             <button @click="sendMessage" class="send-btn">发送</button>
           </div>
@@ -407,12 +427,13 @@ const sendMessage = (): void => {
 }
 
 .main-content {
-  flex: 1; /* 占据剩余垂直空间 */
+  flex: 0.95; /* 占据剩余垂直空间 */
   display: flex;
   gap: 15px; /* 增加间距 */
   padding: 15px; /* 增加内边距 */
   overflow: hidden; /* 尽可能防止内部滚动条 */
-  height: calc(100vh - 70px); /* 明确的高度计算 */
+  height: calc(100vh - 75px); /* 明确的高度计算 */
+  box-sizing: border-box; /* 确保内边距计入总高度 */
 }
 
 /* 左列 */
@@ -467,10 +488,11 @@ const sendMessage = (): void => {
   flex-direction: column;
   background-color: #1a2940; /* 匹配关系面板背景 */
   overflow: hidden; /* 防止容器上的滚动条 */
+  margin-bottom: 5px;
 }
 
 .chat-history {
-  flex: 0.96; /* 占据可用空间 */
+  flex: 1; /* 占据可用空间 */
   padding: 15px;
   overflow-y: auto; /* 允许消息滚动 */
   display: flex;
@@ -521,7 +543,7 @@ const sendMessage = (): void => {
 
 .chat-input-area {
   border-top: 1px solid #444; /* 分隔线 */
-  padding: 15px;
+  padding: 5px 5px 5px 5px;
   background-color: #1a2940; /* 匹配背景 */
   flex-shrink: 0; /* 防止输入区域收缩 */
 }
@@ -536,13 +558,13 @@ const sendMessage = (): void => {
   flex: 1;
   border: 1px solid #444;
   border-radius: 4px;
-  padding: 10px 12px;
-  font-size: 14px;
+  padding: 5px 12px;
+  font-size: 16px;
   outline: none;
   background-color: #0c1e3e; /* 较暗的输入背景 */
   color: #e0e0e0; /* 浅色文字 */
   resize: none; /* 禁止手动调整大小 */
-  min-height: 40px; /* 确保最低高度 */
+  min-height: 150px; /* 确保最低高度 */
   line-height: 1.4;
 }
 
@@ -554,13 +576,14 @@ const sendMessage = (): void => {
   background-color: #409eff; /* 强调色 */
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 15px;
   padding: 0 15px;
   cursor: pointer;
-  height: 80px; /* 匹配textarea的最低高度 */
-  font-size: 14px;
+  height: 150px; /* 匹配textarea的最低高度 */
+  font-size: 16px;
   transition: background-color 0.2s ease;
   align-self: flex-end; /* 对齐到底部 */
+  width: 80px; /* 设置固定宽度 */
 }
 
 .send-btn:hover {
