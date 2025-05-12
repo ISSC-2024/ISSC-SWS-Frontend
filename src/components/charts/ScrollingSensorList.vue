@@ -25,6 +25,15 @@
         </div>
         <span>传感器数据实时监控</span>
       </div>
+      <!-- 导出按钮，仅在展开状态下显示 -->
+      <div v-if="isExpanded" class="graph-actions">
+        <button class="export-button" @click="handleExport">
+          <svg viewBox="0 0 24 24" width="14" height="14">
+            <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
+          </svg>
+          <span>导出</span>
+        </button>
+      </div>
     </div>
 
     <!-- 背景效果 -->
@@ -96,142 +105,161 @@
     </div>
     <!-- 注意添加.stop阻止事件冒泡，并明暗交替 -->
     <div class="scrolling-list-body" ref="listBody">
-      <div
-        v-for="(sensor, index) in visibleSensors"
-        :key="sensor.point_id"
-        class="list-row"
-        :class="{
-          'row-highlighted': highlightedSensorId === sensor.point_id,
-          'row-alt': index % 2 === 1,
-        }"
-        @mouseenter="handleHover(sensor)"
-        @mouseleave="handleHoverEnd"
-        @click.stop="handleClick(sensor)"
-      >
-        <div class="list-item timestamp">
-          <div class="timestamp-wrapper">
-            <svg viewBox="0 0 24 24" width="12" height="12" class="timestamp-icon">
-              <path
-                fill="currentColor"
-                d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"
-              />
-            </svg>
-            <span>{{ formatTimestamp(sensor.timestamp) }}</span>
-          </div>
-        </div>
-
-        <div class="list-item sensor-id">
-          <button
-            v-if="isExpanded"
-            class="sensor-btn"
-            @click.stop="showImage(sensor)"
-            :title="`点击查看${sensor.point_id}预测图表`"
-          >
-            <svg viewBox="0 0 24 24" width="12" height="12" class="sensor-icon">
-              <path
-                fill="currentColor"
-                d="M9,7V9H13V11H9V13H13V15H9V17H13A2,2 0 0,0 15,15V13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 15,10.5V9A2,2 0 0,0 13,7H9M16,7V17H18V7H16Z"
-              />
-            </svg>
-            <span>{{ sensor.point_id }}</span>
-          </button>
-          <div v-else class="sensor-id-text">
-            <svg viewBox="0 0 24 24" width="12" height="12" class="sensor-icon">
-              <path
-                fill="currentColor"
-                d="M9,7V9H13V11H9V13H13V15H9V17H13A2,2 0 0,0 15,15V13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 15,10.5V9A2,2 0 0,0 13,7H9M16,7V17H18V7H16Z"
-              />
-            </svg>
-            <span>{{ sensor.point_id }}</span>
-          </div>
-        </div>
-
-        <div class="list-item" v-for="attribute in selectedAttributes" :key="attribute">
-          <div
-            v-if="attribute === 'temperature'"
-            class="value-container"
-            :class="{ 'high-value': isHighValue(sensor.temperature, 'temperature', sensor.region) }"
-          >
-            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
-              <path
-                fill="currentColor"
-                d="M15 13V5A3 3 0 0 0 9 5V13A5 5 0 1 0 15 13M12 4A1 1 0 0 1 13 5V8H11V5A1 1 0 0 1 12 4Z"
-              />
-            </svg>
-            <span>{{ formatValue(sensor.temperature) }}°C</span>
-          </div>
-
-          <div
-            v-else-if="attribute === 'pressure'"
-            class="value-container"
-            :class="{ 'high-value': isHighValue(sensor.pressure, 'pressure', sensor.region) }"
-          >
-            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
-              <path
-                fill="currentColor"
-                d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,14.4 5,16.5 6.7,18C8.1,16.7 10,16 12,16C14,16 15.9,16.7 17.3,18C19,16.5 20,14.4 20,12A8,8 0 0,0 12,4M14,6A1,1 0 0,1 15,7A1,1 0 0,1 14,8A1,1 0 0,1 13,7A1,1 0 0,1 14,6M10,6A1,1 0 0,1 11,7A1,1 0 0,1 10,8A1,1 0 0,1 9,7A1,1 0 0,1 10,6M6.91,8.94C7.03,8.95 7.15,8.97 7.26,9.04C7.58,9.22 7.74,9.61 7.66,9.97L7.46,10.94C7.39,11.26 7.14,11.5 6.83,11.5C6.74,11.5 6.65,11.47 6.56,11.44C6.12,11.24 5.88,10.8 5.96,10.36C6.04,9.96 6.41,9.53 6.91,8.94M17.09,8.94C17.59,9.53 17.96,9.96 18.04,10.36C18.11,10.8 17.88,11.24 17.43,11.44C17.35,11.47 17.26,11.5 17.17,11.5C16.86,11.5 16.61,11.26 16.54,10.94L16.34,9.97C16.26,9.61 16.42,9.22 16.73,9.04C16.85,8.97 16.97,8.95 17.09,8.94M12,10C13.1,10 14,10.9 14,12C14,13.1 13.1,14 12,14C10.9,14 10,13.1 10,12C10,10.9 10.9,10 12,10M12,17.5C14.11,17.5 16.11,18.15 17.66,19.34L16.46,20.54C15.23,19.8 13.66,19.5 12,19.5C10.34,19.5 8.77,19.8 7.54,20.54L6.34,19.34C7.89,18.15 9.89,17.5 12,17.5Z"
-              />
-            </svg>
-            <span>{{ formatValue(sensor.pressure) }} kPa</span>
-          </div>
-
-          <div
-            v-else-if="attribute === 'flow_rate'"
-            class="value-container"
-            :class="{ 'high-value': isHighValue(sensor.flow_rate, 'flow_rate', sensor.region) }"
-          >
-            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
-              <path
-                fill="currentColor"
-                d="M22 17V19H14V17H22M12 17C12 17.5 11.5 18 11 18H8C7.5 18 7 17.5 7 17V3C7 2.5 7.5 2 8 2H11C11.5 2 12 2.5 12 3V17M12 17V14H14C15.1 14 16 13.1 16 12V10C16 8.9 15.1 8 14 8H12V5H16V3H12V17Z"
-              />
-            </svg>
-            <span>{{ formatValue(sensor.flow_rate) }} m³/h</span>
-          </div>
-
-          <div
-            v-else-if="attribute === 'level'"
-            class="value-container"
-            :class="{ 'high-value': isHighValue(sensor.level, 'level', sensor.region) }"
-          >
-            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
-              <path
-                fill="currentColor"
-                d="M12 3.25C12 3.25 6 10 6 14C6 17.32 8.69 20 12 20S18 17.32 18 14C18 10 12 3.25 12 3.25M14.47 9.97L15.53 11.03L9.53 17.03L8.47 15.97M9.75 10A1.25 1.25 0 0 1 11 11.25A1.25 1.25 0 0 1 9.75 12.5A1.25 1.25 0 0 1 8.5 11.25A1.25 1.25 0 0 1 9.75 10M14.25 14.5A1.25 1.25 0 0 1 15.5 15.75A1.25 1.25 0 0 1 14.25 17A1.25 1.25 0 0 1 13 15.75A1.25 1.25 0 0 1 14.25 14.5Z"
-              />
-            </svg>
-            <span>{{ formatValue(sensor.level) }} %</span>
-          </div>
-
-          <div v-else-if="attribute === 'gas_type'" class="value-container gas-type">
-            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
-              <path
-                fill="currentColor"
-                d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"
-              />
-            </svg>
-            <span>{{ sensor.gas_type }}</span>
-          </div>
-
-          <div
-            v-else-if="attribute === 'gas_concentration'"
-            class="value-container"
-            :class="{ 'high-value': isHighValue(sensor.gas_concentration, 'gas_concentration', sensor.gas_type) }"
-          >
-            <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
-              <path
-                fill="currentColor"
-                d="M13.35 20.13C12.59 20.82 11.42 20.82 10.66 20.12L4.4 14.46C3.42 13.56 3.42 12.03 4.4 11.13L10.66 5.47C11.42 4.77 12.59 4.77 13.35 5.47L19.6 11.13C20.58 12.03 20.58 13.56 19.6 14.46L13.35 20.13M12 7.9L6.76 12.6L12 17.3L17.24 12.6L12 7.9Z"
-              />
-            </svg>
-            <span>{{ formatValue(sensor.gas_concentration) }} ppm</span>
-          </div>
-
-          <div v-else class="value-container">
-            {{ getAttributeValue(sensor, attribute) }}
-          </div>
-        </div>
+      <!-- 添加加载状态提示 -->
+      <div v-if="isLoading" class="loading-indicator">
+        <span>正在加载数据...</span>
       </div>
+      <div v-else-if="visibleSensors.length === 0" class="empty-data">
+        <span>暂无传感器数据</span>
+      </div>
+      <template v-else>
+        <div
+          v-for="(sensor, index) in visibleSensors"
+          :key="sensor.point_id"
+          class="list-row"
+          :class="{
+            'row-highlighted': highlightedSensorId === sensor.point_id,
+            'row-alt': index % 2 === 1,
+          }"
+          @mouseenter="handleHover(sensor)"
+          @mouseleave="handleHoverEnd"
+          @click.stop="handleClick(sensor)"
+        >
+          <div class="list-item timestamp">
+            <div class="timestamp-wrapper">
+              <svg viewBox="0 0 24 24" width="12" height="12" class="timestamp-icon">
+                <path
+                  fill="currentColor"
+                  d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"
+                />
+              </svg>
+              <span>{{ formatTimestamp(sensor.timestamp) }}</span>
+            </div>
+          </div>
+
+          <div class="list-item sensor-id">
+            <button
+              v-if="isExpanded"
+              class="sensor-btn"
+              @click.stop="showImage(sensor)"
+              :title="`点击查看${sensor.point_id}预测图表`"
+            >
+              <svg viewBox="0 0 24 24" width="12" height="12" class="sensor-icon">
+                <path
+                  fill="currentColor"
+                  d="M9,7V9H13V11H9V13H13V15H9V17H13A2,2 0 0,0 15,15V13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 15,10.5V9A2,2 0 0,0 13,7H9M16,7V17H18V7H16Z"
+                />
+              </svg>
+              <span>{{ sensor.point_id }}</span>
+            </button>
+            <div v-else class="sensor-id-text">
+              <svg viewBox="0 0 24 24" width="12" height="12" class="sensor-icon">
+                <path
+                  fill="currentColor"
+                  d="M9,7V9H13V11H9V13H13V15H9V17H13A2,2 0 0,0 15,15V13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 15,10.5V9A2,2 0 0,0 13,7H9M16,7V17H18V7H16Z"
+                />
+              </svg>
+              <span>{{ sensor.point_id }}</span>
+            </div>
+          </div>
+
+          <div class="list-item" v-for="attribute in selectedAttributes" :key="attribute">
+            <div
+              v-if="attribute === 'temperature'"
+              class="value-container"
+              :class="{ 'high-value': isHighValue(sensor.temperature, 'temperature', sensor.region) }"
+            >
+              <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+                <path
+                  fill="currentColor"
+                  d="M15 13V5A3 3 0 0 0 9 5V13A5 5 0 1 0 15 13M12 4A1 1 0 0 1 13 5V8H11V5A1 1 0 0 1 12 4Z"
+                />
+              </svg>
+              <span>{{ formatValue(sensor.temperature) }}°C</span>
+            </div>
+
+            <div
+              v-else-if="attribute === 'pressure'"
+              class="value-container"
+              :class="{ 'high-value': isHighValue(sensor.pressure, 'pressure', sensor.region) }"
+            >
+              <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+                <path
+                  fill="currentColor"
+                  d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,14.4 5,16.5 6.7,18C8.1,16.7 10,16 12,16C14,16 15.9,16.7 17.3,18C19,16.5 20,14.4 20,12A8,8 0 0,0 12,4M14,6A1,1 0 0,1 15,7A1,1 0 0,1 14,8A1,1 0 0,1 13,7A1,1 0 0,1 14,6M10,6A1,1 0 0,1 11,7A1,1 0 0,1 10,8A1,1 0 0,1 9,7A1,1 0 0,1 10,6M6.91,8.94C7.03,8.95 7.15,8.97 7.26,9.04C7.58,9.22 7.74,9.61 7.66,9.97L7.46,10.94C7.39,11.26 7.14,11.5 6.83,11.5C6.74,11.5 6.65,11.47 6.56,11.44C6.12,11.24 5.88,10.8 5.96,10.36C6.04,9.96 6.41,9.53 6.91,8.94M17.09,8.94C17.59,9.53 17.96,9.96 18.04,10.36C18.11,10.8 17.88,11.24 17.43,11.44C17.35,11.47 17.26,11.5 17.17,11.5C16.86,11.5 16.61,11.26 16.54,10.94L16.34,9.97C16.26,9.61 16.42,9.22 16.73,9.04C16.85,8.97 16.97,8.95 17.09,8.94M12,10C13.1,10 14,10.9 14,12C14,13.1 13.1,14 12,14C10.9,14 10,13.1 10,12C10,10.9 10.9,10 12,10M12,17.5C14.11,17.5 16.11,18.15 17.66,19.34L16.46,20.54C15.23,19.8 13.66,19.5 12,19.5C10.34,19.5 8.77,19.8 7.54,20.54L6.34,19.34C7.89,18.15 9.89,17.5 12,17.5Z"
+                />
+              </svg>
+              <span>{{ formatValue(sensor.pressure) }} kPa</span>
+            </div>
+
+            <div
+              v-else-if="attribute === 'flow_rate'"
+              class="value-container"
+              :class="{ 'high-value': isHighValue(sensor.flow_rate, 'flow_rate', sensor.region) }"
+            >
+              <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+                <path
+                  fill="currentColor"
+                  d="M22 17V19H14V17H22M12 17C12 17.5 11.5 18 11 18H8C7.5 18 7 17.5 7 17V3C7 2.5 7.5 2 8 2H11C11.5 2 12 2.5 12 3V17M12 17V14H14C15.1 14 16 13.1 16 12V10C16 8.9 15.1 8 14 8H12V5H16V3H12V17Z"
+                />
+              </svg>
+              <span>{{ formatValue(sensor.flow_rate) }} m³/h</span>
+            </div>
+
+            <div
+              v-else-if="attribute === 'level'"
+              class="value-container"
+              :class="{ 'high-value': isHighValue(sensor.level, 'level', sensor.region) }"
+            >
+              <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+                <path
+                  fill="currentColor"
+                  d="M12 3.25C12 3.25 6 10 6 14C6 17.32 8.69 20 12 20S18 17.32 18 14C18 10 12 3.25 12 3.25M14.47 9.97L15.53 11.03L9.53 17.03L8.47 15.97M9.75 10A1.25 1.25 0 0 1 11 11.25A1.25 1.25 0 0 1 9.75 12.5A1.25 1.25 0 0 1 8.5 11.25A1.25 1.25 0 0 1 9.75 10M14.25 14.5A1.25 1.25 0 0 1 15.5 15.75A1.25 1.25 0 0 1 14.25 17A1.25 1.25 0 0 1 13 15.75A1.25 1.25 0 0 1 14.25 14.5Z"
+                />
+              </svg>
+              <span>{{ formatValue(sensor.level) }} %</span>
+            </div>
+
+            <div v-else-if="attribute === 'gas_type'" class="value-container gas-type">
+              <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+                <path
+                  fill="currentColor"
+                  d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"
+                />
+              </svg>
+              <span>{{ sensor.gas_type }}</span>
+            </div>
+
+            <div
+              v-else-if="attribute === 'gas_concentration'"
+              class="value-container"
+              :class="{ 'high-value': isHighValue(sensor.gas_concentration, 'gas_concentration', sensor.gas_type) }"
+            >
+              <svg viewBox="0 0 24 24" width="12" height="12" class="attribute-icon">
+                <path
+                  fill="currentColor"
+                  d="M13.35 20.13C12.59 20.82 11.42 20.82 10.66 20.12L4.4 14.46C3.42 13.56 3.42 12.03 4.4 11.13L10.66 5.47C11.42 4.77 12.59 4.77 13.35 5.47L19.6 11.13C20.58 12.03 20.58 13.56 19.6 14.46L13.35 20.13M12 7.9L6.76 12.6L12 17.3L17.24 12.6L12 7.9Z"
+                />
+              </svg>
+              <span>{{ formatValue(sensor.gas_concentration) }} ppm</span>
+            </div>
+
+            <div v-else class="value-container">
+              {{ getAttributeValue(sensor, attribute) }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 添加加载更多触发器元素 -->
+        <div v-if="isExpanded" ref="loadTriggerRef" class="load-more-trigger">
+          <div v-if="isLoadingMore" class="loading-more">
+            <span>加载更多...</span>
+          </div>
+          <div v-else-if="!hasMore" class="no-more-data">
+            <span>没有更多数据</span>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 
@@ -264,15 +292,17 @@
   </div>
 
   <!-- 文本框组件 -->
-  <TextMessageDisplayBox />
+  <!-- <TextMessageDisplayBox /> -->
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, inject, watch, onUnmounted } from 'vue'
-import sensorData from '@/mock/predictions_arima_auto.json'
+import { ref, onMounted, computed, inject, watch, onUnmounted, nextTick } from 'vue'
+import { message } from 'ant-design-vue' // 添加消息提示组件
 import UnityService from '@/services/UnityService'
-import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
-import { useMessageStore } from '@/stores/messageStore'
+// 移除静态导入
+// import sensorData from '@/mock/predictions_arima_auto.json'
+// 导入API
+import Algorithm1Api, { type ArimaResult } from '@/apis/Algorithm1'
 
 // 1. 定义明确的元组类型和接口
 type RangeTuple = [number, number]
@@ -371,7 +401,6 @@ interface Sensor {
 }
 
 const isExpanded = inject('isChartExpanded', ref(false))
-const messageStore = useMessageStore()
 
 // 响应式状态
 const selectedRegion = ref('')
@@ -381,6 +410,20 @@ const regionDropdownOpen = ref(false)
 
 // 添加高亮状态跟踪变量
 const highlightedSensorId = ref('')
+
+// 加载状态
+const isLoading = ref(false)
+const isLoadingMore = ref(false)
+
+// 分页参数
+const pageSize = 50
+const currentSkip = ref(0)
+const hasMore = ref(true)
+
+// 滚动相关
+const listBody = ref<HTMLElement | null>(null)
+let scrollObserver: IntersectionObserver | null = null
+const loadTriggerRef = ref<HTMLDivElement | null>(null)
 
 // 初始化加载状态
 const initializeState = () => {
@@ -406,29 +449,129 @@ const startIndex = ref(0)
 const visibleCount = 10
 let scrollTimer: number | null = null
 
-// 状态持久化监听
-watch(selectedRegion, (newVal) => {
-  localStorage.setItem('scrollingListSelectedRegion', newVal)
-})
+// 加载传感器数据
+const loadSensorData = async (reset = true) => {
+  try {
+    if (reset) {
+      isLoading.value = true
+      currentSkip.value = 0
+      sensors.value = []
+      hasMore.value = true
+    } else {
+      isLoadingMore.value = true
+    }
 
-watch(
-  selectedAttributes,
-  (newVal) => {
-    const sortedAttributes = newVal.sort((a, b) => {
-      const indexA = attributes.findIndex((attr) => attr.value === a)
-      const indexB = attributes.findIndex((attr) => attr.value === b)
-      return indexA - indexB
-    })
-    selectedAttributes.value = sortedAttributes
-    localStorage.setItem('scrollingListSelectedAttributes', JSON.stringify(sortedAttributes))
-  },
-  { deep: true },
-)
+    // 构建请求参数
+    const requestParams = {
+      region: selectedRegion.value || undefined,
+      skip: currentSkip.value,
+      limit: pageSize,
+    }
 
-const processSensorData = (rawData: any[]): Sensor[] => {
+    // 调用API获取数据（带分页）
+    const response = await Algorithm1Api.getArimaResultsWithPagination(requestParams)
+
+    // 更新分页信息
+    hasMore.value = response.pagination.has_more
+
+    // 处理返回的数据
+    const processedData = processSensorData(response.data)
+
+    // 转换数据格式并添加到当前列表
+    if (reset) {
+      sensors.value = processedData
+    } else {
+      sensors.value = [...sensors.value, ...processedData]
+    }
+
+    // 更新下一页的偏移量
+    currentSkip.value += response.data.length
+  } catch (error) {
+    console.error('加载传感器数据失败:', error)
+    message.error('加载传感器数据失败，请稍后再试')
+    if (reset) sensors.value = [] // 重置时才清空传感器数据
+  } finally {
+    isLoading.value = false
+    isLoadingMore.value = false
+  }
+}
+
+/**
+ * 处理导出操作 - 下载CSV文件
+ */
+const handleExport = async () => {
+  message.loading('正在导出数据...', 2)
+  try {
+    // 构建下载参数
+    const downloadParams = {
+      region: selectedRegion.value || undefined,
+      get_all: true, // 获取所有数据导出
+      localize: true, // 使用本地化字段名
+      filename: selectedRegion.value ? `sensor_data_${selectedRegion.value}` : 'sensor_data_all_regions',
+    }
+
+    // 下载CSV文件
+    const blobData = await Algorithm1Api.downloadArimaCsv(downloadParams)
+
+    // 创建下载链接并触发下载
+    const url = window.URL.createObjectURL(blobData)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${downloadParams.filename}.csv`
+    document.body.appendChild(link)
+    link.click()
+
+    // 清理
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(link)
+
+    message.success('导出成功')
+  } catch (error) {
+    console.error('导出CSV文件失败:', error)
+    message.error('导出失败，请稍后再试')
+  }
+}
+
+// 加载更多数据
+const loadMoreData = async () => {
+  if (!hasMore.value || isLoadingMore.value) return
+  await loadSensorData(false)
+}
+
+// 设置滚动监听
+const setupScrollObserver = () => {
+  if (scrollObserver) {
+    scrollObserver.disconnect()
+    scrollObserver = null
+  }
+
+  scrollObserver = new IntersectionObserver(
+    (entries) => {
+      // 只在展开状态下监听滚动加载更多
+      if (!isExpanded.value) return
+
+      const entry = entries[0]
+      if (entry && entry.isIntersecting && hasMore.value && !isLoadingMore.value) {
+        loadMoreData()
+      }
+    },
+    {
+      rootMargin: '100px',
+    },
+  )
+
+  nextTick(() => {
+    if (loadTriggerRef.value) {
+      scrollObserver?.observe(loadTriggerRef.value)
+    }
+  })
+}
+
+// 数据处理函数保持不变，但改为接受API返回的数据
+const processSensorData = (rawData: ArimaResult[]): Sensor[] => {
   return rawData.map((item) => {
     const pointIdPrefix = item.point_id.slice(0, 3).toUpperCase()
-    const region = pointIdPrefix
+    const region = item.region || pointIdPrefix
 
     return {
       timestamp: item.timestamp || new Date().toISOString(),
@@ -462,6 +605,7 @@ const isHighValue = (value: number, type: keyof typeof sensorMetadata, key: stri
 
 const handleRegionChange = () => {
   startIndex.value = 0
+  loadSensorData() // 区域变更时重新加载数据
 }
 
 const toggleAttributeDropdown = () => {
@@ -529,25 +673,44 @@ const scrollList = () => {
 // 只在必要时才重置 startIndex
 watch([filteredSensors], () => (startIndex.value = 0))
 
-onMounted(() => {
-  sensors.value = processSensorData(sensorData)
-
-  // 设置定时器，每2秒滚动一次
-  scrollTimer = setInterval(scrollList, 2000) as unknown as number
-
+onMounted(async () => {
   // 初始化选择状态
-  const savedState = loadSavedState()
-  selectedRegion.value = savedState.region
-  selectedAttributes.value = savedState.attributes
+  initializeState()
+
+  // 加载数据
+  await loadSensorData()
+
+  // 设置滚动观察器
+  setupScrollObserver()
+
+  // 设置定时器，每2秒滚动一次（保持不变）
+  scrollTimer = setInterval(scrollList, 2000) as unknown as number
+})
+
+// 监听区域选择变化
+watch(selectedRegion, async () => {
+  await loadSensorData()
+  // 重置开始索引
+  startIndex.value = 0
+  //! 设置滚动观察器
+  setupScrollObserver()
 })
 
 onUnmounted(() => {
+  // 清除定时器
   if (scrollTimer) {
     clearInterval(scrollTimer)
     scrollTimer = null
   }
+
+  // 清除滚动观察器
+  if (scrollObserver) {
+    scrollObserver.disconnect()
+    scrollObserver = null
+  }
 })
 
+// 处理鼠标悬停
 const handleHover = (sensor: Sensor) => {
   // 鼠标悬停时停止滚动
   if (scrollTimer) {
@@ -580,33 +743,33 @@ const handleClick = (sensor: Sensor) => {
   }
 
   // 显示传感器详情消息
-  messageStore.showMessage(
-    sensor,
-    {
-      labelMap: {
-        timestamp: '时间戳',
-        point_id: '传感器编号',
-        region: '区域',
-        temperature: '温度',
-        pressure: '压力',
-        flow_rate: '流量',
-        level: '液位',
-        gas_type: '气体类型',
-        gas_concentration: '气体浓度',
-      },
-      valueFormatters: {
-        temperature: (v: number) => `${v.toFixed(2)}°C`,
-        pressure: (v: number) => `${v.toFixed(2)}kPa`,
-        flow_rate: (v: number) => `${v.toFixed(2)}m³/h`,
-        level: (v: number) => `${v.toFixed(2)}%`,
-        gas_concentration: (v: number) => `${v.toFixed(2)}ppm`,
-      },
-    },
-    {
-      source: 'sensor', // 可选的消息来源标识
-      title: `传感器详情 - ${sensor.point_id}`, // 设置特定标题
-    },
-  )
+  // messageStore.showMessage(
+  //   sensor,
+  //   {
+  //     labelMap: {
+  //       timestamp: '时间戳',
+  //       point_id: '传感器编号',
+  //       region: '区域',
+  //       temperature: '温度',
+  //       pressure: '压力',
+  //       flow_rate: '流量',
+  //       level: '液位',
+  //       gas_type: '气体类型',
+  //       gas_concentration: '气体浓度',
+  //     },
+  //     valueFormatters: {
+  //       temperature: (v: number) => `${v.toFixed(2)}°C`,
+  //       pressure: (v: number) => `${v.toFixed(2)}kPa`,
+  //       flow_rate: (v: number) => `${v.toFixed(2)}m³/h`,
+  //       level: (v: number) => `${v.toFixed(2)}%`,
+  //       gas_concentration: (v: number) => `${v.toFixed(2)}ppm`,
+  //     },
+  //   },
+  //   {
+  //     source: 'sensor', // 可选的消息来源标识
+  //     title: `传感器详情 - ${sensor.point_id}`, // 设置特定标题
+  //   },
+  // )
 
   // 发送消息到Unity
   UnityService.sendMessageToUnity('Sensor', 'SensorContinuousHighlight', JSON.stringify(sensor))
@@ -633,6 +796,24 @@ watch([selectedRegion, selectedAttributes], () => {
   highlightedSensorId.value = ''
   startIndex.value = 0
 })
+
+watch(selectedRegion, (newVal) => {
+  localStorage.setItem('scrollingListSelectedRegion', newVal)
+})
+
+watch(
+  selectedAttributes,
+  (newVal) => {
+    const sortedAttributes = newVal.sort((a, b) => {
+      const indexA = attributes.findIndex((attr) => attr.value === a)
+      const indexB = attributes.findIndex((attr) => attr.value === b)
+      return indexA - indexB
+    })
+    selectedAttributes.value = sortedAttributes
+    localStorage.setItem('scrollingListSelectedAttributes', JSON.stringify(sortedAttributes))
+  },
+  { deep: true },
+)
 </script>
 
 <style scoped>
@@ -679,6 +860,7 @@ watch([selectedRegion, selectedAttributes], () => {
 
 .graph-title {
   display: flex;
+  flex: 1;
   align-items: center;
   gap: 10px;
   color: rgba(220, 230, 240, 0.95);
@@ -686,6 +868,65 @@ watch([selectedRegion, selectedAttributes], () => {
   font-size: 16px;
   text-shadow: 0 0 10px rgba(32, 160, 255, 0.3);
   letter-spacing: 0.5px;
+}
+
+.graph-actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.export-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgba(32, 160, 255, 0.15);
+  border: 1px solid rgba(32, 160, 255, 0.3);
+  color: rgba(220, 230, 240, 0.9);
+  padding: 3px 10px; /* 减小内边距 */
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px; /* 减小字体大小 */
+  font-weight: 500;
+  transition: all 0.2s ease;
+  outline: none;
+  height: 24px; /* 固定高度 */
+  line-height: 1; /* 确保文本垂直居中 */
+}
+
+.export-button:hover {
+  background: rgba(32, 160, 255, 0.25);
+  border-color: rgba(32, 160, 255, 0.5);
+  box-shadow: 0 0 8px rgba(32, 160, 255, 0.4);
+}
+
+.export-button:active {
+  background: rgba(32, 160, 255, 0.35);
+  transform: translateY(1px);
+}
+
+.export-button svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* 调整图标与文字的对齐 */
+.export-button span {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 展开状态下的导出按钮样式 */
+.expanded .export-button {
+  padding: 5px 12px;
+  font-size: 14px;
+  height: 28px;
+}
+
+.expanded .export-button svg {
+  width: 14px;
+  height: 14px;
 }
 
 .title-icon {
@@ -1437,5 +1678,38 @@ watch([selectedRegion, selectedAttributes], () => {
 .expanded .row-highlighted {
   transform: translateY(-2px) !important;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 加载状态和空数据状态样式 */
+.loading-indicator,
+.empty-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100%;
+  color: rgba(32, 160, 255, 0.7);
+  font-size: 16px;
+  text-align: center;
+}
+
+/* 加载更多相关样式 */
+.load-more-trigger {
+  padding: 15px;
+  text-align: center;
+  color: rgba(32, 160, 255, 0.7);
+}
+
+.loading-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.no-more-data {
+  font-size: 14px;
+  color: rgba(180, 200, 220, 0.5);
+  padding: 10px;
 }
 </style>

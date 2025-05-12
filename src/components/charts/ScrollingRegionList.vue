@@ -25,6 +25,13 @@
         </div>
         <span>区域状态实时监控</span>
       </div>
+      <!-- 导出按钮，仅在展开状态下显示 -->
+      <div v-if="isExpanded" class="graph-actions">
+        <button class="export-button" @click="handleExport">
+          <download-outlined />
+          <span>导出</span>
+        </button>
+      </div>
     </div>
 
     <div class="scrolling-list-header">
@@ -43,55 +50,75 @@
     </div>
 
     <div class="scrolling-list-body" ref="listBody">
-      <div
-        v-for="(region, index) in visibleRegions"
-        :key="index"
-        class="list-row"
-        :class="{
-          'row-selected': isRegionSelected(region),
-          'row-alt': index % 2 === 1,
-        }"
-        @mouseenter="handleRegionHover(region)"
-        @mouseleave="handleRegionLeave(region)"
-        @click="handleRegionClick(region)"
-      >
-        <div class="list-item list-time">
-          <clock-circle-outlined class="item-icon" />
-          <span>{{ region.timestamp }}</span>
-        </div>
-        <div class="list-item list-region">
-          <environment-outlined class="item-icon" />
-          <span>{{ region.region }}</span>
-        </div>
-        <div class="list-item">
-          <div
-            class="status-indicator"
-            :class="{
-              'status-safe': region.risk_level === 'safe',
-              'status-warning': region.risk_level === 'warning',
-              'status-danger': region.risk_level === 'danger',
-            }"
-          >
-            <check-circle-outlined v-if="region.risk_level === 'safe'" />
-            <warning-outlined v-else-if="region.risk_level === 'warning'" />
-            <exclamation-circle-outlined v-else-if="region.risk_level === 'danger'" />
-            <span>{{ getRiskLevelText(region.risk_level) }}</span>
+      <!-- 加载状态提示 -->
+      <div v-if="isLoading" class="loading-indicator">
+        <span>正在加载数据...</span>
+      </div>
+      <div v-else-if="visibleRegions.length === 0" class="empty-data">
+        <span>暂无区域数据</span>
+      </div>
+      <template v-else>
+        <div
+          v-for="(region, index) in visibleRegions"
+          :key="index"
+          class="list-row"
+          :class="{
+            'row-selected': isRegionSelected(region),
+            'row-alt': index % 2 === 1,
+          }"
+          @mouseenter="handleRegionHover(region)"
+          @mouseleave="handleRegionLeave(region)"
+          @click="handleRegionClick(region)"
+        >
+          <div class="list-item list-time">
+            <clock-circle-outlined class="item-icon" />
+            <span>{{ region.timestamp }}</span>
+          </div>
+          <div class="list-item list-region">
+            <environment-outlined class="item-icon" />
+            <span>{{ region.region }}</span>
+          </div>
+          <div class="list-item">
+            <div
+              class="status-indicator"
+              :class="{
+                'status-safe': region.risk_level === 'safe',
+                'status-warning': region.risk_level === 'warning',
+                'status-danger': region.risk_level === 'danger',
+              }"
+            >
+              <check-circle-outlined v-if="region.risk_level === 'safe'" />
+              <warning-outlined v-else-if="region.risk_level === 'warning'" />
+              <exclamation-circle-outlined v-else-if="region.risk_level === 'danger'" />
+              <span>{{ getRiskLevelText(region.risk_level) }}</span>
+            </div>
           </div>
         </div>
-      </div>
+
+        <!-- "加载更多"触发器元素 -->
+        <div v-if="isExpanded" ref="loadTriggerRef" class="load-more-trigger">
+          <div v-if="isLoadingMore" class="loading-more">
+            <span>加载更多...</span>
+          </div>
+          <div v-else-if="!hasMore" class="no-more-data">
+            <span>没有更多数据</span>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
   <TextMessageDisplayBox />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, inject, onUnmounted, watch } from 'vue'
-import { useAlgorithmStore, ModuleType } from '@/stores/algorithmStore'
+import { ref, onMounted, computed, inject, onUnmounted, watch, nextTick } from 'vue'
+import { useAlgorithmStore, ModuleType, AlgorithmType } from '@/stores/algorithmStore'
 import unityService from '@/services/UnityService'
 import { message } from 'ant-design-vue'
 // 导入文本框组件和消息管理
 import TextMessageDisplayBox from '../controls/windows/TextMessageDisplayBox.vue'
 import { useMessageStore } from '@/stores/messageStore'
+import Algorithm3Api, { type AlgorithmResult, type DownloadCsvParams } from '@/apis/Algorithm3'
 import {
   ClockCircleOutlined,
   EnvironmentOutlined,
@@ -99,6 +126,7 @@ import {
   CheckCircleOutlined,
   WarningOutlined,
   ExclamationCircleOutlined,
+  DownloadOutlined, // 添加下载图标
 } from '@ant-design/icons-vue'
 
 // 使用算法数据 store
@@ -146,6 +174,29 @@ let scrollTimer: number | null = null
 
 // 跟踪当前选中的区域
 const selectedRegion = ref<Region | null>(null)
+
+// 加载状态
+const isLoading = ref(false)
+const isLoadingMore = ref(false)
+// 分页参数
+const pageSize = 50
+const currentSkip = ref(0)
+const hasMore = ref(true)
+
+// 滚动相关
+const listBody = ref<HTMLElement | null>(null)
+let scrollObserver: IntersectionObserver | null = null
+const loadTriggerRef = ref<HTMLDivElement | null>(null)
+
+// 将API返回的数据转换为区域条目
+const convertToRegionEntries = (results: AlgorithmResult[]): Region[] => {
+  return results.map((result) => ({
+    timestamp: result.timestamp,
+    region: result.region,
+    risk_level: result.risk_level as 'safe' | 'warning' | 'danger',
+    message: result.message || '',
+  }))
+}
 
 // 计算当前可见的区域数据
 const visibleRegions = computed(() => {
@@ -269,40 +320,161 @@ const scrollList = () => {
   }
 }
 
-// 使用algorithmStore加载函数
-const loadRegionData = async () => {
+// 加载区域数据
+const loadRegionData = async (reset = true) => {
   try {
-    // 获取模块3的数据
-    const regionModule = await algorithmStore.getModuleDataFile(ModuleType.Module3)
-
-    if (regionModule && regionModule.default) {
-      regions.value = regionModule.default as Region[]
+    if (reset) {
+      isLoading.value = true
+      currentSkip.value = 0
+      regions.value = []
+      hasMore.value = true
     } else {
-      console.warn('模块3区域数据为空')
-      regions.value = [] // 数据为空时清空区域列表
+      isLoadingMore.value = true
     }
+
+    // 获取当前选中的算法类型
+    const selectedAlgorithm = algorithmStore.getModuleSelectedAlgorithm(ModuleType.Module3)
+
+    // 获取当前算法的参数
+    const params = algorithmStore.getAlgorithmParams(selectedAlgorithm)
+
+    // 构建请求参数
+    const requestParams = {
+      algorithm: selectedAlgorithm,
+      learning_rate: Number(params.learning_rate) || 0.1,
+      max_depth:
+        selectedAlgorithm === AlgorithmType.xgboost || selectedAlgorithm === AlgorithmType.lightGBM
+          ? Number(params.max_depth)
+          : null,
+      max_epochs: selectedAlgorithm === AlgorithmType.TabNet ? Number(params.max_epochs) : null,
+      skip: currentSkip.value,
+      limit: pageSize,
+    }
+
+    // 调用API获取数据（带分页）
+    const response = await Algorithm3Api.getResultsWithPagination(requestParams)
+
+    // 更新分页信息
+    hasMore.value = response.pagination.has_more
+
+    // 转换数据格式并添加到当前列表
+    if (reset) {
+      regions.value = convertToRegionEntries(response.data)
+    } else {
+      regions.value = [...regions.value, ...convertToRegionEntries(response.data)]
+    }
+
+    // 更新下一页的偏移量
+    currentSkip.value += response.data.length
   } catch (error) {
     console.error(`加载模块3区域数据失败:`, error)
-    regions.value = [] // 加载失败时清空区域列表
+    message.error('加载区域数据失败，请稍后再试')
+    if (reset) regions.value = [] // 重置时才清空区域列表
+  } finally {
+    isLoading.value = false
+    isLoadingMore.value = false
+  }
+}
+
+// 加载更多数据
+const loadMoreData = async () => {
+  if (!hasMore.value || isLoadingMore.value) return
+  await loadRegionData(false)
+}
+
+// 设置滚动监听
+const setupScrollObserver = () => {
+  if (scrollObserver) {
+    scrollObserver.disconnect()
+  }
+
+  scrollObserver = new IntersectionObserver(
+    (entries) => {
+      // 只在展开状态下监听滚动加载更多
+      if (!isExpanded.value) return
+
+      const entry = entries[0]
+      if (entry && entry.isIntersecting && hasMore.value && !isLoadingMore.value) {
+        loadMoreData()
+      }
+    },
+    {
+      rootMargin: '100px',
+    },
+  )
+
+  nextTick(() => {
+    if (loadTriggerRef.value) {
+      scrollObserver?.observe(loadTriggerRef.value)
+    }
+  })
+}
+
+/**
+ * 处理导出操作 - 下载CSV文件
+ */
+const handleExport = async () => {
+  try {
+    // 获取当前选中的算法类型
+    const selectedAlgorithm = algorithmStore.getModuleSelectedAlgorithm(ModuleType.Module3)
+
+    // 获取当前算法的参数
+    const params = algorithmStore.getAlgorithmParams(selectedAlgorithm)
+
+    // 构建下载参数
+    const downloadParams: DownloadCsvParams = {
+      algorithm: selectedAlgorithm,
+      learning_rate: Number(params.learning_rate) || 0.1,
+      max_depth:
+        selectedAlgorithm === AlgorithmType.xgboost || selectedAlgorithm === AlgorithmType.lightGBM
+          ? Number(params.max_depth)
+          : null,
+      max_epochs: selectedAlgorithm === AlgorithmType.TabNet ? Number(params.max_epochs) : null,
+      localize: true,
+      filename: `${selectedAlgorithm}_region`,
+    }
+
+    // 下载CSV文件
+    const blobData = await Algorithm3Api.downloadResultsCsv(downloadParams)
+
+    // 创建下载链接并触发下载
+    const url = window.URL.createObjectURL(blobData)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${downloadParams.filename || 'algorithm_results'}.csv`
+    document.body.appendChild(link)
+    link.click()
+
+    // 清理
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(link)
+
+    message.success('导出成功')
+  } catch (error) {
+    console.error('导出CSV文件失败:', error)
+    message.error('导出失败，请稍后再试')
   }
 }
 
 onMounted(async () => {
-  // 加载区域数据
+  // 初始加载数据
   await loadRegionData()
+
+  // 设置滚动观察器
+  setupScrollObserver()
 
   // 设置定时器，每2秒滚动一次
   scrollTimer = setInterval(scrollList, 2000) as unknown as number
 })
 
-// 监听算法变化
+// 监听模块3的任何变化（包括算法选择和参数）
 watch(
   () => [
     algorithmStore.selectedAlgorithms[ModuleType.Module3],
     algorithmStore.algorithms[algorithmStore.selectedAlgorithms[ModuleType.Module3]]?.params,
   ],
-  async (newAlgorithm) => {
-    console.log(`模块3选中的算法变更为: ${newAlgorithm}，重新加载数据`)
+  async () => {
+    console.log('模块3配置已更新，重新加载数据')
     await loadRegionData()
     // 重置开始索引
     startIndex.value = 0
@@ -317,6 +489,12 @@ onUnmounted(() => {
   if (scrollTimer) {
     clearInterval(scrollTimer)
     scrollTimer = null
+  }
+
+  // 清除滚动观察器
+  if (scrollObserver) {
+    scrollObserver.disconnect()
+    scrollObserver = null
   }
 })
 </script>
@@ -729,5 +907,72 @@ onUnmounted(() => {
 .list-row .status-danger ~ .list-item .item-icon,
 .list-row:has(.status-danger) .item-icon {
   color: rgba(245, 34, 45, 0.9);
+}
+
+/* 加载状态和空数据状态 */
+.loading-indicator,
+.empty-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100%;
+  color: rgba(32, 160, 255, 0.7);
+  font-size: 16px;
+  text-align: center;
+}
+
+/* 加载更多相关样式 */
+.load-more-trigger {
+  padding: 15px;
+  text-align: center;
+  color: rgba(32, 160, 255, 0.7);
+}
+
+.loading-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.no-more-data {
+  font-size: 14px;
+  color: rgba(180, 200, 220, 0.5);
+  padding: 10px;
+}
+
+/* 导出按钮样式 */
+.graph-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.export-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(32, 160, 255, 0.15);
+  border: 1px solid rgba(32, 160, 255, 0.3);
+  color: rgba(220, 230, 240, 0.9);
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.export-button:hover {
+  background: rgba(32, 160, 255, 0.25);
+  border-color: rgba(32, 160, 255, 0.5);
+  box-shadow: 0 0 8px rgba(32, 160, 255, 0.4);
+}
+
+.export-button:active {
+  background: rgba(32, 160, 255, 0.35);
+  transform: translateY(1px);
 }
 </style>
