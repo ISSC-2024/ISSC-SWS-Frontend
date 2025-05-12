@@ -117,7 +117,7 @@ import {
   MessageOutlined,
   DownloadOutlined, // 添加下载图标
 } from '@ant-design/icons-vue'
-import ScrollingLogListApi, { type AlgorithmResult, type DownloadCsvParams } from '@/apis/ScrollingLogList'
+import Algorithm3Api, { type AlgorithmResult, type DownloadCsvParams } from '@/apis/Algorithm3'
 
 // 日志数据结构接口
 interface LogEntry {
@@ -197,7 +197,7 @@ const loadLogData = async (reset = true) => {
     }
 
     // 调用API获取数据（带分页）
-    const response = await ScrollingLogListApi.getResultsWithPagination(requestParams)
+    const response = await Algorithm3Api.getResultsWithPagination(requestParams)
 
     // 更新分页信息
     hasMore.value = response.pagination.has_more
@@ -395,7 +395,7 @@ const handleExport = async () => {
     }
 
     // 下载CSV文件
-    const blobData = await ScrollingLogListApi.downloadResultsCsv(downloadParams)
+    const blobData = await Algorithm3Api.downloadResultsCsv(downloadParams)
 
     // 创建下载链接并触发下载
     const url = window.URL.createObjectURL(blobData)

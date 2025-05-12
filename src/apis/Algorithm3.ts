@@ -74,7 +74,7 @@ export interface DownloadCsvParams {
 /**
  * 滚动日志列表API服务
  */
-export default class ScrollingLogListApi {
+export default class Algorithm3Api {
   private static readonly BASE_PATH = '/algorithm3'
 
   /**
@@ -112,7 +112,7 @@ export default class ScrollingLogListApi {
       }
 
       return await http.get<AlgorithmResultResponse>(`${this.BASE_PATH}/results`, requestParams, {
-        requestId: `get-algorithm-results-${Date.now()}`,
+        requestId: `get-algorithm-results-${Date.now()}-${Math.random().toString(36).slice(2)}`,
         returnRaw: true,
       })
     } catch (error) {
