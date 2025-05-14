@@ -727,7 +727,7 @@ const sendMessage = async () => {
     // 调用API获取响应
     const { response, thinking } = await AIInterfaceAPI.queryLLM(selectedModel.value, content)
 
-    // 更新对话标题 - 如果是新对话（截取部分前缀）
+    // 更新对话标题（新对话）（截取部分前缀）
     if (currentConversation.value && currentConversation.value.title === '新对话') {
       const newTitle = content.length > 20 ? content.substring(0, 20) + '...' : content
       await renameConversationWithoutPrompt(currentConversationId.value as number, newTitle)
@@ -1012,7 +1012,7 @@ onMounted(async () => {
                 <input
                   id="title-input"
                   v-model="editingTitle"
-                  @keydown.stop.prevent="handleTitleKeydown"
+                  @keydown.stop="handleTitleKeydown"
                   @blur.stop="onTitleInputBlur"
                   class="title-input"
                   type="text"
@@ -1091,8 +1091,8 @@ onMounted(async () => {
                     <li @click="fillQuestion('原料存储区当前人力配置情况')">
                       <span class="suggestion-tag">资源</span> 原料存储区当前人力配置情况
                     </li>
-                    <li @click="fillQuestion('调用决策功能，重新进行检测异常数据')">
-                      <span class="suggestion-tag">操作</span> 调用决策功能，重新进行检测异常数据
+                    <li @click="fillQuestion('对厂区资源重新进行调度')">
+                      <span class="suggestion-tag">操作</span> 对厂区资源重新进行调度
                     </li>
                   </ul>
                 </div>

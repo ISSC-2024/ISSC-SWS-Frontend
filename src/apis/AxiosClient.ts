@@ -388,7 +388,7 @@ export default class AxiosClient {
       params,
       responseType: 'blob',
     })
-    return response.data
+    return response as unknown as Blob
   }
 
   /**
