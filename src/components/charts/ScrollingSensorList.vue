@@ -27,6 +27,21 @@
       </div>
       <!-- 导出按钮，仅在展开状态下显示 -->
       <div v-if="isExpanded" class="graph-actions">
+        <!-- 时间步控制 -->
+        <div class="timestep-control">
+          <button class="timestep-button" @click="decrementTimestep" :disabled="timestep === 0">
+            <svg viewBox="0 0 24 24" width="14" height="14">
+              <path fill="currentColor" d="M20,12H4V13H20V12Z" />
+            </svg>
+          </button>
+          <span class="timestep-value">{{ timestep }}</span>
+          <button class="timestep-button" @click="incrementTimestep" :disabled="timestep === 29">
+            <svg viewBox="0 0 24 24" width="14" height="14">
+              <path fill="currentColor" d="M20,12H13V5H11V12H4V13H11V20H13V13H20V12Z" />
+            </svg>
+          </button>
+        </div>
+        <!-- 导出按钮 -->
         <button class="export-button" @click="handleExport">
           <svg viewBox="0 0 24 24" width="14" height="14">
             <path fill="currentColor" d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
@@ -302,7 +317,7 @@ import UnityService from '@/services/UnityService'
 // 移除静态导入
 // import sensorData from '@/mock/predictions_arima_auto.json'
 // 导入API
-import Algorithm1Api, { type ArimaResult } from '@/apis/Algorithm1'
+import Algorithm1Api, { type Result } from '@/apis/Algorithm1'
 
 // 1. 定义明确的元组类型和接口
 type RangeTuple = [number, number]
@@ -448,6 +463,8 @@ const sensors = ref<Sensor[]>([])
 const startIndex = ref(0)
 const visibleCount = 10
 let scrollTimer: number | null = null
+// 添加数据更新定时器变量
+let updateDataTimer: number | null = null
 
 // 加载传感器数据
 const loadSensorData = async (reset = true) => {
@@ -464,12 +481,13 @@ const loadSensorData = async (reset = true) => {
     // 构建请求参数
     const requestParams = {
       region: selectedRegion.value || undefined,
+      timestep: timestep.value,
       skip: currentSkip.value,
       limit: pageSize,
     }
 
     // 调用API获取数据（带分页）
-    const response = await Algorithm1Api.getArimaResultsWithPagination(requestParams)
+    const response = await Algorithm1Api.getTimeMixerResultsWithPagination(requestParams)
 
     // 更新分页信息
     hasMore.value = response.pagination.has_more
@@ -496,6 +514,21 @@ const loadSensorData = async (reset = true) => {
   }
 }
 
+// 展开状态下修改时间步
+const incrementTimestep = () => {
+  if (timestep.value < 29) {
+    timestep.value += 1
+    loadSensorData()
+  }
+}
+
+const decrementTimestep = () => {
+  if (timestep.value > 0) {
+    timestep.value -= 1
+    loadSensorData()
+  }
+}
+
 /**
  * 处理导出操作 - 下载CSV文件
  */
@@ -511,7 +544,7 @@ const handleExport = async () => {
     }
 
     // 下载CSV文件
-    const blobData = await Algorithm1Api.downloadArimaCsv(downloadParams)
+    const blobData = await Algorithm1Api.downloadTimeMixerCsv(downloadParams)
 
     // 创建下载链接并触发下载
     const url = window.URL.createObjectURL(blobData)
@@ -568,7 +601,7 @@ const setupScrollObserver = () => {
 }
 
 // 数据处理函数保持不变，但改为接受API返回的数据
-const processSensorData = (rawData: ArimaResult[]): Sensor[] => {
+const processSensorData = (rawData: Result[]): Sensor[] => {
   return rawData.map((item) => {
     const pointIdPrefix = item.point_id.slice(0, 3).toUpperCase()
     const region = item.region || pointIdPrefix
@@ -673,6 +706,9 @@ const scrollList = () => {
 // 只在必要时才重置 startIndex
 watch([filteredSensors], () => (startIndex.value = 0))
 
+// 添加timestep响应式变量
+const timestep = ref(0)
+
 onMounted(async () => {
   // 初始化选择状态
   initializeState()
@@ -685,6 +721,15 @@ onMounted(async () => {
 
   // 设置定时器，每2秒滚动一次（保持不变）
   scrollTimer = setInterval(scrollList, 2000) as unknown as number
+
+  // 设置数据更新定时器，每10秒更新一次（仅在非展开状态下）
+  if (!isExpanded.value) {
+    updateDataTimer = setInterval(async () => {
+      // 更新timestep，最大29
+      timestep.value = (timestep.value + 1) % 30
+      await loadSensorData()
+    }, 10000) as unknown as number
+  }
 })
 
 // 监听区域选择变化
@@ -708,6 +753,12 @@ onUnmounted(() => {
     scrollObserver.disconnect()
     scrollObserver = null
   }
+
+  // 清除数据更新定时器
+  if (updateDataTimer) {
+    clearInterval(updateDataTimer)
+    updateDataTimer = null
+  }
 })
 
 // 处理鼠标悬停
@@ -716,6 +767,10 @@ const handleHover = (sensor: Sensor) => {
   if (scrollTimer) {
     clearInterval(scrollTimer)
     scrollTimer = null
+  }
+  if (updateDataTimer) {
+    clearInterval(updateDataTimer)
+    updateDataTimer = null
   }
   // 向Unity发送消息，高亮传感器
   const SensorJson = JSON.stringify(sensor)
@@ -728,6 +783,13 @@ const handleHoverEnd = () => {
   // 如果不在展开状态，重新开始滚动
   if (!isExpanded.value && !scrollTimer) {
     scrollTimer = setInterval(scrollList, 2000) as unknown as number
+  }
+  if (!isExpanded.value && !updateDataTimer) {
+    updateDataTimer = setInterval(async () => {
+      // 更新timestep，最大29
+      timestep.value = (timestep.value + 1) % 30
+      await loadSensorData()
+    }, 10000) as unknown as number
   }
   // 向Unity发送消息，取消高亮传感器
   UnityService.sendMessageToUnity('Sensor', 'SensorHighlightOff')
@@ -780,12 +842,42 @@ const showImageModal = ref(false)
 const currentImage = ref('')
 const currentSensorId = ref('')
 
+/*
 const showImage = (sensor: Sensor) => {
   // 图片路径
   currentImage.value = '/images/image.png'
   currentSensorId.value = sensor.point_id
   showImageModal.value = true
+}*/
+
+const showImage = async (sensor: Sensor) => {
+  try {
+    // 显示加载状态
+    currentImage.value = ''
+    currentSensorId.value = sensor.point_id
+    showImageModal.value = true
+
+    // 从后端获取图片数据
+    const imageBlob = await Algorithm1Api.getPredictionChart({
+      point_id: sensor.point_id,
+      timestamp: sensor.timestamp,
+    })
+
+    // 将 Blob 转换为可显示的 URL
+    currentImage.value = URL.createObjectURL(imageBlob)
+  } catch (error) {
+    console.error('获取预测图表失败:', error)
+    message.error('获取预测图表失败，请稍后重试')
+    showImageModal.value = false
+  }
 }
+
+// 在组件卸载时清理 URL
+onUnmounted(() => {
+  if (currentImage.value.startsWith('blob:')) {
+    URL.revokeObjectURL(currentImage.value)
+  }
+})
 
 const closeImageModal = () => {
   showImageModal.value = false
@@ -874,6 +966,60 @@ watch(
   display: flex;
   align-items: center;
   margin-left: auto;
+}
+
+.timestep-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 16px;
+}
+
+.timestep-button {
+  width: 28px;
+  height: 28px;
+  background: rgba(32, 160, 255, 0.1);
+  border: 1px solid rgba(32, 160, 255, 0.3);
+  border-radius: 4px;
+  color: rgba(220, 230, 240, 0.9);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.timestep-button:hover:not(:disabled) {
+  background: rgba(32, 160, 255, 0.2);
+  border-color: rgba(32, 160, 255, 0.5);
+}
+
+.timestep-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.timestep-value {
+  min-width: 24px;
+  text-align: center;
+  font-family: 'Consolas', monospace;
+  color: rgba(220, 230, 240, 0.9);
+  font-size: 14px;
+}
+
+/* 展开状态下的样式调整 */
+.expanded .timestep-control {
+  gap: 12px;
+}
+
+.expanded .timestep-button {
+  width: 32px;
+  height: 32px;
+}
+
+.expanded .timestep-value {
+  font-size: 16px;
+  min-width: 28px;
 }
 
 .export-button {
