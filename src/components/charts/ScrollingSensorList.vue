@@ -302,7 +302,17 @@
       </div>
       <div class="modal-body">
         <div class="modal-image-container">
-          <img :src="currentImage" :alt="currentSensorId" class="modal-image" />
+          <div v-if="isImageLoading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">加载图表中...</span>
+          </div>
+          <img
+            v-else
+            :src="currentImage"
+            :alt="currentSensorId"
+            class="modal-image"
+            :class="{ 'image-fade-in': !isImageLoading }"
+          />
         </div>
       </div>
     </div>
@@ -844,14 +854,7 @@ const handleClick = (sensor: Sensor) => {
 const showImageModal = ref(false)
 const currentImage = ref('')
 const currentSensorId = ref('')
-
-/*
-const showImage = (sensor: Sensor) => {
-  // 图片路径
-  currentImage.value = '/images/image.png'
-  currentSensorId.value = sensor.point_id
-  showImageModel.value = true
-}*/
+const isImageLoading = ref(false) // 添加加载状态变量
 
 const showImage = async (sensor: Sensor) => {
   //!  清理旧的 URL，防止内存泄露
@@ -863,6 +866,7 @@ const showImage = async (sensor: Sensor) => {
     currentImage.value = ''
     currentSensorId.value = sensor.point_id
     showImageModal.value = true
+    isImageLoading.value = true
 
     // 从后端获取图片数据
     const imageBlob = await Algorithm1Api.getPredictionChart({
@@ -876,6 +880,8 @@ const showImage = async (sensor: Sensor) => {
     console.error('获取预测图表失败:', error)
     message.error('获取预测图表失败，请稍后重试')
     showImageModal.value = false
+  } finally {
+    isImageLoading.value = false
   }
 }
 
@@ -1909,5 +1915,53 @@ watch(
   font-size: 14px;
   color: rgba(180, 200, 220, 0.5);
   padding: 10px;
+}
+
+/* 加载图表时显示的loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(32, 160, 255, 0.1);
+  border-top: 3px solid rgba(32, 160, 255, 0.8);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  color: rgba(220, 230, 240, 0.9);
+  font-size: 14px;
+  text-shadow: 0 0 10px rgba(32, 160, 255, 0.3);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.image-fade-in {
+  animation: imageFadeIn 0.3s ease-in-out;
+}
+
+@keyframes imageFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
