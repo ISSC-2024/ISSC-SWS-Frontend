@@ -377,7 +377,7 @@ onMounted(() => {
   bottom: 0;
   background-color: rgba(5, 10, 25, 0.8);
   backdrop-filter: blur(6px);
-  z-index: 1000;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -474,7 +474,7 @@ onMounted(() => {
   position: absolute;
   width: 30px;
   height: 30px;
-  z-index: 10;
+  z-index: 3;
   pointer-events: none;
 }
 
@@ -557,7 +557,7 @@ onMounted(() => {
   padding: 15px 20px;
   border-bottom: 1px solid rgba(32, 160, 255, 0.15);
   position: relative;
-  z-index: 15;
+  z-index: 5;
 }
 
 .expanded-title {

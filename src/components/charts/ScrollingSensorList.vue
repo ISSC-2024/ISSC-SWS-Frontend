@@ -301,7 +301,9 @@
         </button>
       </div>
       <div class="modal-body">
-        <img :src="currentImage" :alt="currentSensorId" class="modal-image" />
+        <div class="modal-image-container">
+          <img :src="currentImage" :alt="currentSensorId" class="modal-image" />
+        </div>
       </div>
     </div>
   </div>
@@ -314,9 +316,6 @@
 import { ref, onMounted, computed, inject, watch, onUnmounted, nextTick } from 'vue'
 import { message } from 'ant-design-vue' // 添加消息提示组件
 import UnityService from '@/services/UnityService'
-// 移除静态导入
-// import sensorData from '@/mock/predictions_arima_auto.json'
-// 导入API
 import Algorithm1Api, { type Result } from '@/apis/Algorithm1'
 
 // 1. 定义明确的元组类型和接口
@@ -603,7 +602,6 @@ const setupScrollObserver = () => {
   })
 }
 
-// 数据处理函数保持不变，但改为接受API返回的数据
 const processSensorData = (rawData: Result[]): Sensor[] => {
   return rawData.map((item) => {
     const pointIdPrefix = item.point_id.slice(0, 3).toUpperCase()
@@ -852,7 +850,7 @@ const showImage = (sensor: Sensor) => {
   // 图片路径
   currentImage.value = '/images/image.png'
   currentSensorId.value = sensor.point_id
-  showImageModal.value = true
+  showImageModel.value = true
 }*/
 
 const showImage = async (sensor: Sensor) => {
@@ -1039,15 +1037,15 @@ watch(
   background: rgba(32, 160, 255, 0.15);
   border: 1px solid rgba(32, 160, 255, 0.3);
   color: rgba(220, 230, 240, 0.9);
-  padding: 3px 10px; /* 减小内边距 */
+  padding: 3px 10px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 12px; /* 减小字体大小 */
+  font-size: 12px;
   font-weight: 500;
   transition: all 0.2s ease;
   outline: none;
-  height: 24px; /* 固定高度 */
-  line-height: 1; /* 确保文本垂直居中 */
+  height: 24px;
+  line-height: 1;
 }
 
 .export-button:hover {
@@ -1350,7 +1348,6 @@ watch(
 }
 
 /* 表头样式 */
-/* 调整表头样式，防止与下拉框重叠 */
 .scrolling-list-header {
   display: flex;
   background: linear-gradient(90deg, rgba(12, 24, 48, 0.9) 0%, rgba(20, 40, 80, 0.9) 50%, rgba(12, 24, 48, 0.9) 100%);
@@ -1361,7 +1358,7 @@ watch(
   position: sticky;
   top: 0;
   z-index: 5;
-  margin-top: 38px; /* 增加上边距，为下拉框留出空间 */
+  margin-top: 38px;
   color: rgba(120, 180, 255, 0.95);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -1393,7 +1390,7 @@ watch(
   flex: 1;
   overflow-y: auto;
   font-size: 12px;
-  height: calc(100% - 135px); /* 调整高度，考虑标题栏、下拉框和表头 */
+  height: calc(100% - 135px);
   scrollbar-width: thin;
   scrollbar-color: rgba(32, 160, 255, 0.6) rgba(11, 19, 43, 0.3);
 }
@@ -1524,7 +1521,6 @@ watch(
   color: rgba(220, 230, 240, 0.9);
 }
 
-/* 模态框样式 */
 .image-modal {
   position: fixed;
   top: 0;
@@ -1536,17 +1532,8 @@ watch(
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  animation: modalFadeIn 0.3s ease;
-}
-
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  z-index: 1500;
+  padding: 20px;
 }
 
 .modal-content {
@@ -1556,15 +1543,26 @@ watch(
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.4),
     0 0 20px rgba(32, 160, 255, 0.15);
-  width: 85%;
-  max-width: 900px;
-  overflow: hidden;
+  width: 90%;
+  height: 90%;
+  max-width: 1200px;
   display: flex;
   flex-direction: column;
-  animation: modalContentZoom 0.3s ease;
+  animation: ModelContentZoom 0.3s ease;
+  position: relative;
+  z-index: 1501;
 }
 
-@keyframes modalContentZoom {
+@keyframes ImageModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ImageModalContentZoom {
   from {
     transform: scale(0.95);
   }
@@ -1573,7 +1571,16 @@ watch(
   }
 }
 
+.image-modal {
+  animation: ImageModalFadeIn 0.3s ease;
+}
+
+.modal-content {
+  animation: ImageModalContentZoom 0.3s ease;
+}
+
 .modal-header {
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1618,7 +1625,22 @@ watch(
 }
 
 .modal-body {
+  flex: 1;
+  position: relative;
   padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* 图片容器 */
+.modal-image-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1626,8 +1648,28 @@ watch(
 
 .modal-image {
   max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   border-radius: 6px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* 滚动条样式 */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: rgba(11, 19, 43, 0.3);
+  border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background-color: rgba(32, 160, 255, 0.6);
+  border-radius: 3px;
 }
 
 /* 响应式设计 */
