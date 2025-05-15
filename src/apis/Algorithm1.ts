@@ -11,9 +11,9 @@ export interface PaginationInfo {
 }
 
 /**
- * ARIMA预测结果数据接口
+ * 预测结果数据接口
  */
-export interface ArimaResult {
+export interface Result {
   timestamp: string
   point_id: string
   region: string
@@ -26,17 +26,17 @@ export interface ArimaResult {
 }
 
 /**
- * 带分页信息的ARIMA结果响应接口
+ * 带分页信息的结果响应接口
  */
-export interface ArimaResultResponse {
+export interface ResultResponse {
   pagination: PaginationInfo
-  data: ArimaResult[]
+  data: Result[]
 }
 
 /**
- * 获取ARIMA预测结果的请求参数接口
+ * 获取预测结果的请求参数接口
  */
-export interface GetArimaParams {
+export interface GetParams {
   /** 区域代码，不提供则返回所有区域结果 */
   region?: string | null
   /** 可选的监测点ID */
@@ -52,59 +52,64 @@ export interface GetArimaParams {
 /**
  * 算法1 API服务
  */
+export interface ChartParams {
+  point_id: string
+  timestamp: string
+}
+
 export default class Algorithm1Api {
   private static readonly BASE_PATH = '/algorithm1'
 
   /**
-   * 获取ARIMA预测结果 - 按区域过滤，返回所有结果
+   * 获取TimeMixer预测结果 - 按区域过滤，返回所有结果
    * @param params 查询参数
-   * @returns ARIMA预测结果列表（仅数据部分）（包含所有结果）
+   * @returns TimeMixer预测结果列表（仅数据部分）（包含所有结果）
    */
-  static async getArimaResults(params: Omit<GetArimaParams, 'get_all'>): Promise<ArimaResult[]> {
+  static async getTimeMixerResults(params: Omit<GetParams, 'get_all'>): Promise<Result[]> {
     try {
-      const requestParams: GetArimaParams = {
+      const requestParams: GetParams = {
         ...params,
         get_all: true,
       }
 
-      const response = await this.getArimaResultsWithPagination(requestParams)
+      const response = await this.getTimeMixerResultsWithPagination(requestParams)
       return response.data
     } catch (error) {
-      console.error('获取ARIMA预测结果失败:', error)
+      console.error('获取TimeMixer预测结果失败:', error)
       throw error
     }
   }
 
   /**
-   * 获取带分页信息的ARIMA预测结果
+   * 获取带分页信息的TimeMixer预测结果
    * @param params 查询参数
-   * @returns 带分页信息的ARIMA预测结果
+   * @returns 带分页信息的TimeMixer预测结果
    */
-  static async getArimaResultsWithPagination(params: GetArimaParams): Promise<ArimaResultResponse> {
+  static async getTimeMixerResultsWithPagination(params: GetParams): Promise<ResultResponse> {
     try {
       // 默认值处理
-      const requestParams: GetArimaParams = {
+      const requestParams: GetParams = {
         ...params,
         skip: params.get_all ? undefined : (params.skip ?? 0),
         limit: params.get_all ? undefined : (params.limit ?? 100),
       }
 
-      return await http.get<ArimaResultResponse>(`${this.BASE_PATH}/arima`, requestParams, {
+      return await http.get<ResultResponse>(`${this.BASE_PATH}/TimeMixer`, requestParams, {
         returnRaw: true,
-        requestId: `get-arima-results-${Date.now()} - ${Math.random().toString(36).slice(2)}`,
+        requestId: `get-TimeMixer-results-${Date.now()} - ${Math.random().toString(36).slice(2)}`,
       })
     } catch (error) {
-      console.error('获取ARIMA预测结果失败:', error)
+      console.error('获取TimeMixer预测结果失败:', error)
       throw error
     }
   }
 
   /**
-   * 下载ARIMA预测结果为CSV格式
+   * 下载TimeMixer预测结果为CSV格式
    * @param params 下载参数
    * @returns Blob对象，代表CSV文件内容
    */
-  static async downloadArimaCsv(params: GetArimaParams & { filename?: string; localize?: boolean }): Promise<Blob> {
+  static async downloadTimeMixerCsv(params: GetParams & { filename?: string; localize?: boolean }): Promise<Blob> {
     try {
       const requestParams = {
         ...params,
@@ -112,32 +117,50 @@ export default class Algorithm1Api {
         localize: params.localize ?? true,
       }
 
-      const blobData = await http.downloadFile(`${this.BASE_PATH}/arima/results/download-csv`, requestParams, {
-        requestId: `download-arima-csv-${Date.now()}`,
+      const blobData = await http.downloadFile(`${this.BASE_PATH}/TimeMixer/results/download-csv`, requestParams, {
+        requestId: `download-TimeMixer-csv-${Date.now()}`,
       })
 
       return blobData
     } catch (error) {
-      console.error('下载ARIMA预测结果CSV失败:', error)
+      console.error('下载TimeMixer预测结果CSV失败:', error)
       throw error
     }
   }
 
   /**
-   * 按监测点ID获取ARIMA预测结果
+   * 按监测点ID获取TimeMixer预测结果
    * @param pointId 监测点ID
-   * @returns ARIMA预测结果列表
+   * @returns TimeMixer预测结果列表
    */
-  static async getArimaResultsByPointId(pointId: string): Promise<ArimaResult[]> {
-    return this.getArimaResults({ point_id: pointId })
+  static async getTimeMixerResultsByPointId(pointId: string): Promise<Result[]> {
+    return this.getTimeMixerResults({ point_id: pointId })
   }
 
   /**
-   * 按区域获取ARIMA预测结果
+   * 按区域获取TimeMixer预测结果
    * @param region 区域代码
-   * @returns ARIMA预测结果列表
+   * @returns TimeMixer预测结果列表
    */
-  static async getArimaResultsByRegion(region: string): Promise<ArimaResult[]> {
-    return this.getArimaResults({ region })
+  static async getTimeMixerResultsByRegion(region: string): Promise<Result[]> {
+    return this.getTimeMixerResults({ region })
+  }
+
+  /**
+   * 获取传感器预测图表
+   * @param params 图表参数，包含监测点ID和时间戳
+   * @returns Blob对象，代表图表图片内容
+   */
+  static async getPredictionChart(params: ChartParams): Promise<Blob> {
+    try {
+      const blobData = await http.downloadFile(`${this.BASE_PATH}/TimeMixer/prediction-chart`, params, {
+        requestId: `get-prediction-chart-${Date.now()}`,
+      })
+
+      return blobData
+    } catch (error) {
+      console.error('获取预测图表失败:', error)
+      throw error
+    }
   }
 }
