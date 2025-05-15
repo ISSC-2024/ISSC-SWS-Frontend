@@ -9,6 +9,7 @@
  * 4. 响应式设计，自适应容器大小
  */
 import { ref, onMounted, onUnmounted } from 'vue'
+import UnityService from '../../services/UnityService'
 
 // 定义Unity实例
 const unityInstance = ref<any>(null)
@@ -57,6 +58,12 @@ onMounted(() => {
             unityInstance.value = instance
             ;(window as any).MyGameInstance = instance
             unityLoaded.value = true
+
+            // 确保全局Unity聊天请求处理方法已设置
+            if (!(window as any).RecvUnityAIReq) {
+              ;(window as any).RecvUnityAIReq = UnityService.handleUnityChatRequest
+              console.log('已设置Unity聊天请求处理方法')
+            }
           })
           .catch((message: string) => {
             console.error('Unity WebGL加载失败:', message)

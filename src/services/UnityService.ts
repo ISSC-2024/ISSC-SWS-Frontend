@@ -27,6 +27,13 @@
  * ```
  */
 
+// 扩展Window接口，添加Unity全局回调方法
+declare global {
+  interface Window {
+    RecvUnityAIReq?: (data: any) => void
+  }
+}
+
 /**
  * 获取Unity实例
  *
@@ -134,9 +141,28 @@ export const isUnityLoaded = (): boolean => {
   return getUnityInstance() !== null && getUnityInstance() !== undefined
 }
 
+/**
+ * 全局处理Unity聊天请求
+ *
+ * 此全局方法供Unity直接调用，用于在点击Unity场景中的聊天图标时触发
+ *
+ * @param areaCode 区域代码，如'RMS'、'REA'等
+ */
+export const handleUnityChatRequest = (areaCode: string) => {
+  // 创建并分发事件，使组件能够接收到聊天请求
+  const event = new CustomEvent('chat_request', { detail: { arr: areaCode } })
+  window.dispatchEvent(event)
+
+  console.log(`UnityService: 收到聊天请求，区域代码: ${areaCode}`)
+}
+
+// 将handleUnityChatRequest挂载到全局
+window.RecvUnityAIReq = handleUnityChatRequest
+
 export default {
   sendMessageToUnity,
   addUnityEventListener,
   removeUnityEventListener,
   isUnityLoaded,
+  handleUnityChatRequest,
 }
