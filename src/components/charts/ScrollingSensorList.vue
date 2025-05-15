@@ -265,7 +265,7 @@
           </div>
         </div>
 
-        <!-- 添加加载更多触发器元素 -->
+        <!-- 加载更多触发器元素 -->
         <div v-if="isExpanded" ref="loadTriggerRef" class="load-more-trigger">
           <div v-if="isLoadingMore" class="loading-more">
             <span>加载更多...</span>
@@ -439,6 +439,11 @@ const hasMore = ref(true)
 const listBody = ref<HTMLElement | null>(null)
 let scrollObserver: IntersectionObserver | null = null
 const loadTriggerRef = ref<HTMLDivElement | null>(null)
+// 展开状态下调整timestep，控制滚动监视器重设置
+const isTimeStepChangedExpanded = ref(false)
+
+// timestep响应式变量
+const timestep = ref(0)
 
 // 初始化加载状态
 const initializeState = () => {
@@ -446,8 +451,6 @@ const initializeState = () => {
   selectedRegion.value = savedState.region
   selectedAttributes.value = savedState.attributes
 }
-
-onMounted(initializeState)
 
 const attributes = [
   { value: 'temperature', label: '温度' },
@@ -518,14 +521,14 @@ const loadSensorData = async (reset = true) => {
 const incrementTimestep = () => {
   if (timestep.value < 29) {
     timestep.value += 1
-    loadSensorData()
+    isTimeStepChangedExpanded.value = !isTimeStepChangedExpanded.value
   }
 }
 
 const decrementTimestep = () => {
   if (timestep.value > 0) {
     timestep.value -= 1
-    loadSensorData()
+    isTimeStepChangedExpanded.value = !isTimeStepChangedExpanded.value
   }
 }
 
@@ -703,12 +706,6 @@ const scrollList = () => {
   }
 }
 
-// 只在必要时才重置 startIndex
-watch([filteredSensors], () => (startIndex.value = 0))
-
-// 添加timestep响应式变量
-const timestep = ref(0)
-
 onMounted(async () => {
   // 初始化选择状态
   initializeState()
@@ -732,12 +729,20 @@ onMounted(async () => {
   }
 })
 
+// 只在必要时才重置 startIndex
+watch([filteredSensors], () => (startIndex.value = 0))
+
 // 监听区域选择变化
 watch(selectedRegion, async () => {
   await loadSensorData()
   // 重置开始索引
   startIndex.value = 0
   //! 设置滚动观察器
+  setupScrollObserver()
+})
+
+watch(isTimeStepChangedExpanded, async () => {
+  await loadSensorData()
   setupScrollObserver()
 })
 
@@ -851,6 +856,10 @@ const showImage = (sensor: Sensor) => {
 }*/
 
 const showImage = async (sensor: Sensor) => {
+  //!  清理旧的 URL，防止内存泄露
+  if (currentImage.value && currentImage.value.startsWith('blob:')) {
+    URL.revokeObjectURL(currentImage.value)
+  }
   try {
     // 显示加载状态
     currentImage.value = ''
@@ -1124,6 +1133,7 @@ watch(
   position: absolute;
   top: 50px;
   left: 10px;
+  padding-top: 4px;
   display: flex;
   gap: 12px;
   z-index: 10;
