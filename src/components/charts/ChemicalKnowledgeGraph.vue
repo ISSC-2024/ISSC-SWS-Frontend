@@ -938,7 +938,7 @@ onUnmounted(() => {
           />
         </svg>
       </div>
-      <span>{{ isUnityGlobalFocused ? '取消在Unity聚焦' : '在Unity中聚焦' }}</span>
+      <span class="unity-focus-text">{{ isUnityGlobalFocused ? '取消在Unity聚焦' : '在Unity中聚焦' }}</span>
     </button>
   </div>
 </template>
@@ -1290,21 +1290,22 @@ onUnmounted(() => {
   background: linear-gradient(135deg, rgba(20, 35, 65, 0.9), rgba(28, 50, 90, 0.9));
   border: 1px solid rgba(74, 144, 226, 0.5);
   border-radius: 6px;
-  padding: 6px 12px;
+  padding: 6px;
+  padding-right: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  font-size: 12px;
-  font-weight: 500;
   color: rgba(220, 230, 240, 0.95);
   cursor: pointer;
   transition: all 0.25s ease;
   box-shadow:
     0 3px 10px rgba(0, 0, 0, 0.25),
     0 0 5px rgba(32, 160, 255, 0.3);
-  z-index: 11; /* 确保按钮在其他元素之上 */
+  z-index: 11;
   backdrop-filter: blur(2px);
-  letter-spacing: 0.2px;
+  width: 32px;
+  overflow: hidden;
 }
 
 .unity-focus-btn:hover {
@@ -1314,6 +1315,9 @@ onUnmounted(() => {
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.3),
     0 0 8px rgba(32, 160, 255, 0.4);
+  padding: 6px 12px;
+  width: auto;
+  justify-content: flex-start;
 }
 
 .unity-focus-btn.focused {
@@ -1341,6 +1345,29 @@ onUnmounted(() => {
   color: rgba(135, 206, 255, 1);
   filter: drop-shadow(0 0 5px rgba(135, 206, 255, 0.8));
   animation: pulse-light 1.5s infinite;
+}
+
+.unity-focus-text {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* 悬停时显示文本 */
+.unity-focus-btn:hover .unity-focus-text {
+  opacity: 1;
+  width: auto;
+  margin-right: 4px;
+}
+
+/* 在聚焦状态下永久显示文本 */
+.unity-focus-btn.focused:hover {
+  padding: 6px 12px;
 }
 
 @keyframes pulse-light {

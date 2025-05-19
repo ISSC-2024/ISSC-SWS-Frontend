@@ -417,4 +417,4 @@ export default class AxiosClient {
   }
 }
 
-export const http = new AxiosClient(import.meta.env.VITE_API_URL, 90000)
+export const http = new AxiosClient('http://150.158.82.42:8000/api', 90000)

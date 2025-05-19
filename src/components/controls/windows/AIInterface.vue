@@ -387,9 +387,9 @@ watch(
 
 const fillQuestion = (question: string) => {
   inputText.value = question
-  if (textareaRef.value) {
-    textareaRef.value.focus()
-  }
+  nextTick(() => {
+    sendMessage()
+  })
 }
 
 // 处理回车键的函数，手动实现Shift+Enter换行
