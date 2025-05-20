@@ -1264,7 +1264,24 @@ onMounted(async () => {
   </transition>
 </template>
 
-<style>
+<style lang="scss">
+// 颜色变量
+$ai-accent: #61dafb;
+$ai-accent-hover: #4bc0e3;
+$ai-bg-dark: #121826;
+$ai-bg-medium: #1a2234;
+$ai-bg-light: #232b3c;
+$ai-text-primary: #ffffff;
+
+// 颜色函数
+@function ai-accent-alpha($alpha) {
+  @return rgba($ai-accent, $alpha);
+}
+
+@function ai-text-alpha($alpha) {
+  @return rgba($ai-text-primary, $alpha);
+}
+
 /* 确保重置样式应用到所有相关元素 */
 .ai-window * {
   box-sizing: border-box;
@@ -1274,30 +1291,30 @@ onMounted(async () => {
 
 /* 全局覆盖Ant Design样式 */
 .ai-window .ant-btn-primary {
-  background-color: #61dafb !important;
-  border-color: #61dafb !important;
-  color: #121826 !important;
+  background-color: $ai-accent !important;
+  border-color: $ai-accent !important;
+  color: $ai-bg-dark !important;
 }
 
 .ai-window .ant-btn-primary:hover {
-  background-color: #4bc0e3 !important;
-  border-color: #4bc0e3 !important;
+  background-color: $ai-accent-hover !important;
+  border-color: $ai-accent-hover !important;
 }
 
 .ai-window .ant-btn-primary:disabled,
 .ai-window .ant-btn-primary[disabled] {
-  background-color: #232b3c !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  color: rgba(255, 255, 255, 0.4) !important;
+  background-color: $ai-bg-light !important;
+  border-color: ai-text-alpha(0.1) !important;
+  color: ai-text-alpha(0.4) !important;
 }
 
 .ai-window .ant-btn-text {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: #ffffff !important;
+  background: ai-text-alpha(0.1) !important;
+  color: $ai-text-primary !important;
 }
 
 .ai-window .ant-btn-text:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
+  background: ai-text-alpha(0.2) !important;
 }
 
 /* 强制应用于markdown元素的全局样式 */
@@ -1330,7 +1347,7 @@ onMounted(async () => {
 .ai-window .message-text pre {
   background-color: rgba(0, 0, 0, 0.3) !important;
   border-radius: 8px !important;
-  border: 1px solid rgba(97, 218, 251, 0.15) !important;
+  border: 1px solid ai-accent-alpha(0.15) !important;
   margin: 14px 0 !important;
   padding: 16px !important;
   overflow-x: auto !important;
@@ -1348,12 +1365,12 @@ onMounted(async () => {
 .ai-window .message-text h1 code,
 .ai-window .message-text h2 code,
 .ai-window .message-text h3 code {
-  background-color: rgba(97, 218, 251, 0.1) !important;
-  color: #61dafb !important;
+  background-color: ai-accent-alpha(0.1) !important;
+  color: $ai-accent !important;
   padding: 0.2em 0.4em !important;
   border-radius: 3px !important;
   font-size: 0.85em !important;
-  border: 1px solid rgba(97, 218, 251, 0.2) !important;
+  border: 1px solid ai-accent-alpha(0.2) !important;
   margin: 0 2px !important;
 }
 
@@ -1370,7 +1387,7 @@ onMounted(async () => {
 .ai-window .message-text h1,
 .ai-window .message-text h2,
 .ai-window .message-text h3 {
-  color: #61dafb !important;
+  color: $ai-accent !important;
   margin-top: 20px !important;
   margin-bottom: 12px !important;
   font-weight: 500 !important;
@@ -1379,13 +1396,13 @@ onMounted(async () => {
 
 .ai-window .message-text h1 {
   font-size: 1.8em !important;
-  border-bottom: 1px solid rgba(97, 218, 251, 0.2) !important;
+  border-bottom: 1px solid ai-accent-alpha(0.2) !important;
   padding-bottom: 8px !important;
 }
 
 .ai-window .message-text h2 {
   font-size: 1.4em !important;
-  border-bottom: 1px solid rgba(97, 218, 251, 0.1) !important;
+  border-bottom: 1px solid ai-accent-alpha(0.1) !important;
   padding-bottom: 6px !important;
 }
 
@@ -1398,36 +1415,36 @@ onMounted(async () => {
   border-collapse: collapse !important;
   width: 100% !important;
   margin: 16px 0 !important;
-  background-color: rgba(26, 34, 52, 0.5) !important;
+  background-color: rgba($ai-bg-medium, 0.5) !important;
   border-radius: 6px !important;
   overflow: hidden !important;
 }
 
 .ai-window .message-text th,
 .ai-window .message-text td {
-  border: 1px solid rgba(97, 218, 251, 0.15) !important;
+  border: 1px solid ai-accent-alpha(0.15) !important;
   padding: 8px 12px !important;
   text-align: left !important;
 }
 
 .ai-window .message-text th {
-  background-color: rgba(97, 218, 251, 0.08) !important;
-  color: #61dafb !important;
+  background-color: ai-accent-alpha(0.08) !important;
+  color: $ai-accent !important;
   font-weight: 500 !important;
 }
 
 .ai-window .message-text tr:nth-child(even) {
-  background-color: rgba(97, 218, 251, 0.02) !important;
+  background-color: ai-accent-alpha(0.02) !important;
 }
 
 /* 块引用样式 */
 .ai-window .message-text blockquote {
-  border-left: 3px solid rgba(97, 218, 251, 0.4) !important;
+  border-left: 3px solid ai-accent-alpha(0.4) !important;
   padding: 0.5em 1em !important;
   margin: 1em 0 !important;
-  background-color: rgba(97, 218, 251, 0.05) !important;
+  background-color: ai-accent-alpha(0.05) !important;
   border-radius: 0 4px 4px 0 !important;
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: ai-text-alpha(0.8) !important;
 }
 
 .ai-window .message-text blockquote p:last-child {
