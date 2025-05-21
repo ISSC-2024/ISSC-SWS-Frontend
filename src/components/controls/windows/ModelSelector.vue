@@ -317,7 +317,7 @@ const close = () => {
 
 /* 覆盖浮窗最大宽度 */
 .floating-window {
-  max-width: 800px; // ModelSelector需要更宽的布局
+  max-width: 800px;
 }
 
 /* 模型选择窗口特定样式 */
