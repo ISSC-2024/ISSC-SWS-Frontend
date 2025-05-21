@@ -10,7 +10,7 @@ import { Input, Button } from 'ant-design-vue'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 
 // 定义指标项接口
-interface IndicatorItem {
+export interface IndicatorItem {
   id: string
   name: string
   children?: IndicatorItem[]
@@ -46,16 +46,16 @@ const tableData = ref<IndicatorItem[]>(
                 id: '1-1',
                 name: '二级指标1-1',
                 children: [
-                  { id: '1-1-1', name: '三级指标1-1-1', value: 100, editable: true },
-                  { id: '1-1-2', name: '三级指标1-1-2', value: 90, editable: true },
+                  { id: '1-1-1', name: '三级指标1-1-1', value: '', editable: true },
+                  { id: '1-1-2', name: '三级指标1-1-2', value: '', editable: true },
                 ],
               },
               {
                 id: '1-2',
                 name: '二级指标1-2',
                 children: [
-                  { id: '1-2-1', name: '三级指标1-2-1', value: 80, editable: true },
-                  { id: '1-2-2', name: '三级指标1-2-2', value: 70, editable: true },
+                  { id: '1-2-1', name: '三级指标1-2-1', value: '', editable: true },
+                  { id: '1-2-2', name: '三级指标1-2-2', value: '', editable: true },
                 ],
               },
             ],
@@ -68,8 +68,8 @@ const tableData = ref<IndicatorItem[]>(
                 id: '2-1',
                 name: '二级指标2-1',
                 children: [
-                  { id: '2-1-1', name: '三级指标2-1-1', value: 85, editable: true },
-                  { id: '2-1-2', name: '三级指标2-1-2', value: 75, editable: true },
+                  { id: '2-1-1', name: '三级指标2-1-1', value: '', editable: true },
+                  { id: '2-1-2', name: '三级指标2-1-2', value: '', editable: true },
                 ],
               },
             ],
@@ -197,7 +197,7 @@ const addIndicator = (level: number, parentId: string) => {
         parent.children.push({
           id: newId,
           name: `三级指标${parent.children.length + 1}`,
-          value: 0,
+          value: '',
           editable: true,
         })
         break
@@ -417,37 +417,6 @@ const renderCell = (item: any, level: number) => {
             ),
       ]),
 
-      level === 3 &&
-        h('div', { class: 'indicator-value-wrapper' }, [
-          editingState.value.key === actualItem.id && editingState.value.field === 'value'
-            ? h(Input, {
-                value: editingState.value.value,
-                'onUpdate:value': (val: any) => {
-                  editingState.value.value = val
-                },
-                onPressEnter: () => saveEdit(actualItem),
-                onBlur: () => saveEdit(actualItem),
-                onKeydown: (e: KeyboardEvent) => {
-                  // 允许退格键和删除键正常工作
-                  e.stopPropagation()
-                },
-                autoFocus: true,
-                class: 'edit-input',
-                onClick: (e: Event) => e.stopPropagation(),
-              })
-            : h(
-                'div',
-                {
-                  class: 'indicator-value',
-                  onDblclick: (e: Event) => {
-                    e.stopPropagation()
-                    startEdit(actualItem, 'value')
-                  },
-                },
-                actualItem.value,
-              ),
-        ]),
-
       h(
         'div',
         {
@@ -653,24 +622,6 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
 
         &:hover {
           background-color: rgba(64, 169, 255, 0.1);
-        }
-      }
-    }
-
-    .indicator-value-wrapper {
-      display: flex;
-      justify-content: center;
-      margin-top: 6px;
-
-      .indicator-value {
-        background: rgba(32, 160, 255, 0.1);
-        padding: 2px 12px;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-
-        &:hover {
-          background: rgba(32, 160, 255, 0.2);
         }
       }
     }

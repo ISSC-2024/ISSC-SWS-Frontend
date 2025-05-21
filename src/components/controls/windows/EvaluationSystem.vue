@@ -6,17 +6,7 @@
  * 从主控制组件中拆分出来，使代码结构更加清晰
  */
 import { ref } from 'vue'
-import MultiLevelIndicatorTable from '@/components/tables/MultiLevelIndicatorTable.vue'
-
-// 指标项接口定义
-interface IndicatorItem {
-  id: string
-  name: string
-  children?: IndicatorItem[]
-  value?: number | string
-  editable?: boolean
-  colSpan?: number
-}
+import MultiLevelIndicatorTable, { type IndicatorItem } from '@/components/tables/MultiLevelIndicatorTable.vue'
 
 // 定义组件向外发出的事件
 const emit = defineEmits(['close'])
