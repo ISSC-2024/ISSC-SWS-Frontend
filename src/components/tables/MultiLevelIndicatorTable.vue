@@ -17,7 +17,6 @@ export interface IndicatorItem {
   value?: number | string
   editable?: boolean
   colSpan?: number // 用于计算单元格跨列数
-  _hover?: boolean // 用于标记鼠标悬停状态
 }
 
 // 定义组件属性
@@ -78,6 +77,9 @@ const tableData = ref<IndicatorItem[]>(
   ),
 )
 
+// 当前悬停的单元格ID
+const hoveredItemId = ref<string | null>(null)
+
 // 编辑状态
 const editingState = ref<{
   key: string | null
@@ -97,39 +99,13 @@ const processedTableData = ref({
 })
 
 // 鼠标悬停处理
-const handleMouseEnter = (id: string) => {
-  const findAndSetHover = (items: IndicatorItem[], id: string) => {
-    for (const item of items) {
-      if (item.id === id) {
-        item._hover = true
-        return true
-      }
-      if (item.children) {
-        if (findAndSetHover(item.children, id)) return true
-      }
-    }
-    return false
-  }
-
-  findAndSetHover(tableData.value, id)
+const handleMouseEnter = (itemId: string) => {
+  hoveredItemId.value = itemId
 }
 
 // 鼠标离开处理
-const handleMouseLeave = (id: string) => {
-  const findAndClearHover = (items: IndicatorItem[], id: string) => {
-    for (const item of items) {
-      if (item.id === id) {
-        item._hover = false
-        return true
-      }
-      if (item.children) {
-        if (findAndClearHover(item.children, id)) return true
-      }
-    }
-    return false
-  }
-
-  findAndClearHover(tableData.value, id)
+const handleMouseLeave = () => {
+  hoveredItemId.value = null
 }
 
 // 开始编辑
@@ -383,7 +359,7 @@ const renderCell = (item: any, level: number) => {
     {
       class: `indicator-cell level${level}-cell`,
       onMouseenter: () => handleMouseEnter(actualItem.id),
-      onMouseleave: () => handleMouseLeave(actualItem.id),
+      onMouseleave: () => handleMouseLeave(),
       onClick: (e: Event) => e.stopPropagation(),
     },
     [
@@ -417,44 +393,46 @@ const renderCell = (item: any, level: number) => {
             ),
       ]),
 
-      h(
-        'div',
-        {
-          class: 'action-buttons',
-        },
-        [
-          level < 3 &&
+      // 鼠标悬停时才渲染按钮
+      actualItem.id === hoveredItemId.value &&
+        h(
+          'div',
+          {
+            class: 'action-buttons',
+          },
+          [
+            level < 3 &&
+              h(
+                Button,
+                {
+                  type: 'primary',
+                  size: 'small',
+                  onClick: (e: Event) => {
+                    e.stopPropagation()
+                    addIndicator(level + 1, actualItem.id)
+                  },
+                  class: 'action-btn',
+                },
+                { icon: () => h(PlusOutlined) },
+              ),
+
             h(
               Button,
               {
                 type: 'primary',
+                danger: true,
                 size: 'small',
                 onClick: (e: Event) => {
                   e.stopPropagation()
-                  addIndicator(level + 1, actualItem.id)
+                  removeIndicator(level, actualItem.id)
                 },
                 class: 'action-btn',
               },
-              { icon: () => h(PlusOutlined) },
+              { icon: () => h(DeleteOutlined) },
             ),
-
-          h(
-            Button,
-            {
-              type: 'primary',
-              danger: true,
-              size: 'small',
-              onClick: (e: Event) => {
-                e.stopPropagation()
-                removeIndicator(level, actualItem.id)
-              },
-              class: 'action-btn',
-            },
-            { icon: () => h(DeleteOutlined) },
-          ),
-        ],
-      ),
-    ],
+          ].filter(Boolean),
+        ),
+    ].filter(Boolean),
   )
 }
 
@@ -574,7 +552,8 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
         border-right: 1px solid $border-color;
         padding: 10px;
         display: flex;
-        align-items: stretch;
+        align-items: center;
+        justify-content: center;
         position: relative;
 
         &:last-child {
@@ -602,7 +581,7 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
     width: 100%;
     min-height: 100%;
     justify-content: center;
-    padding-bottom: 38px;
+    align-items: center;
 
     .cell-content {
       display: flex;
@@ -610,6 +589,7 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
       justify-content: center;
       align-items: center;
       text-align: center;
+      width: 100%;
       height: 100%;
       padding: 8px;
 
@@ -619,6 +599,8 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
         cursor: pointer;
         border-radius: 4px;
         transition: background-color 0.2s;
+        text-align: center;
+        width: 100%;
 
         &:hover {
           background-color: rgba(64, 169, 255, 0.1);
@@ -638,10 +620,6 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
     .action-buttons {
       display: flex;
       gap: 8px;
-      position: absolute;
-      bottom: 6px;
-      left: 0;
-      right: 0;
       justify-content: center;
     }
 
