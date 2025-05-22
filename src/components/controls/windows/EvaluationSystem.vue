@@ -47,25 +47,98 @@ const toggleFeature = (feature: 'debate' | 'indicators' | 'adversarial') => {
   }
 }
 
+// 获取AI功能工具配置
+const getAIToolsConfig = () => {
+  const enabledTools = []
+
+  if (aiDebateEnabled.value) {
+    enabledTools.push({
+      id: 'debate',
+      name: '多智能体辩论评价',
+      enabled: true,
+    })
+  }
+
+  if (autoIndicatorsEnabled.value) {
+    enabledTools.push({
+      id: 'auto_indicators',
+      name: '评价指标自生成',
+      enabled: true,
+    })
+  }
+
+  if (adversarialEvaluationEnabled.value) {
+    enabledTools.push({
+      id: 'adversarial',
+      name: '对抗式评价判别',
+      enabled: true,
+    })
+  }
+
+  return enabledTools
+}
+
+// 格式化专家数据
+const formatExpertData = (experts: string[], expertNames: string[]) => {
+  return experts.map((id, index) => ({
+    id,
+    name: expertNames[index] || `专家${index + 1}`,
+  }))
+}
+
+// 递归处理指标数据，提取有值的指标
+const processIndicators = (indicators: IndicatorItem[]): any[] => {
+  return indicators.map((item) => {
+    const result: any = {
+      id: item.id,
+      name: item.name,
+    }
+
+    // 如果有值，添加值
+    if (item.value !== undefined && item.value !== '') {
+      result.value = item.value
+    }
+
+    // 如果有子指标，递归处理
+    if (item.children && item.children.length > 0) {
+      result.children = processIndicators(item.children)
+    }
+
+    return result
+  })
+}
+
 // 提交处理函数
 const handleSubmit = () => {
-  // 获取专家选择
-  const selectedExperts = expertCarouselRef.value?.getSelectedExperts() || []
-  const selectedExpertNames = expertCarouselRef.value?.getSelectedExpertNames() || []
+  try {
+    // 1. 获取专家选择
+    const selectedExpertIds = expertCarouselRef.value?.getSelectedExperts() || []
+    const selectedExpertNames = expertCarouselRef.value?.getSelectedExpertNames() || []
 
-  // 获取当前表格数据
-  const currentTableData = indicatorTableRef.value?.getCurrentData() || []
+    // 2. 获取当前表格数据
+    const currentTableData = indicatorTableRef.value?.getCurrentData() || []
 
-  console.log('提交评价数据')
-  console.log('- 选中专家ID:', selectedExperts)
-  console.log('- 选中专家:', selectedExpertNames)
-  console.log('- 指标数据:', currentTableData)
-  console.log('- 功能开关状态:')
-  console.log('  - 多智能体辩论:', aiDebateEnabled.value)
-  console.log('  - 指标自生成:', autoIndicatorsEnabled.value)
-  console.log('  - 对抗式评价:', adversarialEvaluationEnabled.value)
+    // 3. 获取AI工具配置
+    const aiTools = getAIToolsConfig()
 
-  // 后续可以添加提交逻辑
+    // 4. 组装三部分数据JSON
+    const evaluationData = {
+      experts: formatExpertData(selectedExpertIds, selectedExpertNames as string[]),
+      indicators: processIndicators(currentTableData),
+      ai_tools: aiTools,
+    }
+
+    console.log('提交评价数据:')
+    console.log(JSON.stringify(evaluationData, null, 2))
+
+    // 弹窗显示成功消息
+    alert('评价数据已提交！')
+
+    return evaluationData
+  } catch (error) {
+    console.error('提交数据时出错:', error)
+    alert('提交数据时出错，请查看控制台获取详情')
+  }
 }
 
 // 重置处理函数
