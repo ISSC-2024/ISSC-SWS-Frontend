@@ -8,6 +8,10 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons-vue'
 import ExpertCard from './ExpertCard.vue'
+import { useEvaluationStore } from '@/stores/evaluationStore'
+
+// 使用评价体系store
+const evaluationStore = useEvaluationStore()
 
 // 容器和卡片区域的引用
 const containerRef = ref<HTMLElement | null>(null)
@@ -61,26 +65,26 @@ const scrollRight = () => {
   setTimeout(checkScroll, 500)
 }
 
-// 获取当前选中的专家ID
+// 获取当前选中的专家ID（从store获取）
 const getSelectedExperts = () => {
-  return expertCardRef.value?.selectedExperts || []
+  return evaluationStore.selectedExperts.map((expert) => expert.id)
 }
 
-// 获取当前选中的专家名称
+// 获取当前选中的专家名称（从store获取）
 const getSelectedExpertNames = () => {
-  return expertCardRef.value?.selectedExpertNames || []
+  return evaluationStore.selectedExperts.map((expert) => expert.name)
 }
 
 // 重置专家选择
 const resetSelection = () => {
-  if (expertCardRef.value) {
-    // 清空选中的专家ID
-    expertCardRef.value.selectedExperts.splice(0, expertCardRef.value.selectedExperts.length)
+  try {
+    evaluationStore.clearExperts()
     console.log('已重置专家选择')
     return true
+  } catch (error) {
+    console.warn('重置专家选择失败:', error)
+    return false
   }
-  console.warn('重置专家选择失败：无法访问选中数据')
-  return false
 }
 
 // 组件挂载后初始化

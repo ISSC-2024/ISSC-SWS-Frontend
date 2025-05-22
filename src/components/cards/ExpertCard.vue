@@ -6,6 +6,7 @@
  * 包含专家头像、姓名、简要介绍
  */
 import { ref, computed } from 'vue'
+import { useEvaluationStore } from '@/stores/evaluationStore'
 
 // 专家信息接口
 export interface ExpertInfo {
@@ -14,6 +15,9 @@ export interface ExpertInfo {
   avatar: string
   introduction: string
 }
+
+// 使用评价体系store
+const evaluationStore = useEvaluationStore()
 
 // 默认头像路径
 const defaultAvatar = '/images/experts/default-avatar.png'
@@ -61,12 +65,14 @@ const expertData = [
 // 卡片容器的引用
 const cardsElement = ref<HTMLElement | null>(null)
 
-// 记录选中的专家ID
-const selectedExperts = ref<string[]>([])
+// 直接使用store中的选中专家ID列表
+const selectedExpertIds = computed(() => {
+  return evaluationStore.selectedExperts.map((expert) => expert.id)
+})
 
-// 也可以提供选中专家的名称，方便父组件使用
+// 计算选中专家的名称
 const selectedExpertNames = computed(() => {
-  return selectedExperts.value.map((id) => expertData.find((expert) => expert.id === id)?.name).filter(Boolean)
+  return evaluationStore.selectedExperts.map((expert) => expert.name)
 })
 
 // 处理图片加载失败
@@ -82,29 +88,30 @@ const handleImageError = (e: Event) => {
 
 // 处理专家卡片点击
 const toggleSelectExpert = (expert: ExpertInfo) => {
-  const index = selectedExperts.value.indexOf(expert.id)
-  if (index === -1) {
+  const currentExperts = evaluationStore.selectedExperts
+  const existingIndex = currentExperts.findIndex((e) => e.id === expert.id)
+
+  if (existingIndex === -1) {
     // 添加到选中列表
-    selectedExperts.value.push(expert.id)
+    evaluationStore.addExpert({ id: expert.id, name: expert.name })
   } else {
     // 从选中列表移除
-    selectedExperts.value.splice(index, 1)
+    evaluationStore.removeExpert(expert.id)
   }
 
-  // 在控制台打印选择结果，便于调试
-  console.log('选中专家ID:', selectedExperts.value)
+  console.log('选中专家ID:', selectedExpertIds.value)
   console.log('选中专家名称:', selectedExpertNames.value)
 }
 
 // 检查专家是否被选中
 const isExpertSelected = (expertId: string) => {
-  return selectedExperts.value.includes(expertId)
+  return selectedExpertIds.value.includes(expertId)
 }
 
-// 暴露卡片元素给父组件
+// 暴露卡片元素和状态给父组件
 defineExpose({
   cardsElement,
-  selectedExperts,
+  selectedExpertIds,
   selectedExpertNames,
 })
 </script>

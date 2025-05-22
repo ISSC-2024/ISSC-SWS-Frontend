@@ -5,9 +5,13 @@
  * 该组件用于显示1,2,3级指标的表格，支持用户自定义内容和结构
  * 使用Ant Design Vue实现
  */
-import { ref, onMounted, watch, h } from 'vue'
+import { ref, onMounted, watch, h, computed } from 'vue'
 import { Input, Button } from 'ant-design-vue'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { useEvaluationStore } from '@/stores/evaluationStore'
+
+// 使用评价体系store
+const evaluationStore = useEvaluationStore()
 
 // 定义指标项接口
 export interface IndicatorItem {
@@ -19,51 +23,19 @@ export interface IndicatorItem {
   colSpan?: number // 用于计算单元格跨列数
 }
 
-// 默认指标数据结构
-const DEFAULT_INDICATOR_DATA: IndicatorItem[] = [
-  {
-    id: '1',
-    name: '一级指标1',
-    children: [
-      {
-        id: '1-1',
-        name: '二级指标1-1',
-        children: [
-          { id: '1-1-1', name: '三级指标1-1-1', value: '', editable: true },
-          { id: '1-1-2', name: '三级指标1-1-2', value: '', editable: true },
-        ],
-      },
-      {
-        id: '1-2',
-        name: '二级指标1-2',
-        children: [
-          { id: '1-2-1', name: '三级指标1-2-1', value: '', editable: true },
-          { id: '1-2-2', name: '三级指标1-2-2', value: '', editable: true },
-        ],
-      },
-    ],
-  },
-  {
-    id: '2',
-    name: '一级指标2',
-    children: [
-      {
-        id: '2-1',
-        name: '二级指标2-1',
-        children: [
-          { id: '2-1-1', name: '三级指标2-1-1', value: '', editable: true },
-          { id: '2-1-2', name: '三级指标2-1-2', value: '', editable: true },
-        ],
-      },
-    ],
-  },
-]
-
 // 定义组件向外发出的事件
 const emit = defineEmits(['change'])
 
-// 表格数据 - 使用默认数据
-const tableData = ref<IndicatorItem[]>(structuredClone(DEFAULT_INDICATOR_DATA))
+// 直接使用store中的表格数据
+const tableData = computed({
+  get: () => {
+    return evaluationStore.indicatorData
+  },
+  set: (newData: IndicatorItem[]) => {
+    evaluationStore.updateIndicatorData(newData)
+    emit('change', newData)
+  },
+})
 
 // 当前悬停的单元格ID
 const hoveredItemId = ref<string | null>(null)
@@ -85,169 +57,6 @@ const processedTableData = ref({
   level2: [] as any[],
   level3: [] as any[],
 })
-
-// 鼠标悬停处理
-const handleMouseEnter = (itemId: string) => {
-  hoveredItemId.value = itemId
-}
-
-// 鼠标离开处理
-const handleMouseLeave = () => {
-  hoveredItemId.value = null
-}
-
-// 开始编辑
-const startEdit = (item: IndicatorItem, field: 'name' | 'value') => {
-  editingState.value = {
-    key: item.id,
-    field,
-    value: field === 'name' ? item.name : item.value || '',
-  }
-}
-
-// 保存编辑
-const saveEdit = (item: IndicatorItem) => {
-  if (editingState.value.key === item.id) {
-    if (editingState.value.field === 'name') {
-      item.name = editingState.value.value as string
-    } else {
-      item.value = editingState.value.value
-    }
-
-    editingState.value = {
-      key: null,
-      field: 'name',
-      value: '',
-    }
-
-    emit('change', tableData.value)
-
-    // 重新处理数据
-    prepareData()
-  }
-}
-
-// 添加指标
-const addIndicator = (level: number, parentId: string) => {
-  const newId = Date.now().toString()
-
-  if (level === 1) {
-    // 添加一级指标
-    tableData.value.push({
-      id: newId,
-      name: `一级指标${tableData.value.length + 1}`,
-      children: [],
-    })
-  } else if (level === 2) {
-    // 添加二级指标
-    const parent = findItem(tableData.value, parentId)
-    if (parent) {
-      if (!parent.children) parent.children = []
-      parent.children.push({
-        id: newId,
-        name: `二级指标${parent.children.length + 1}`,
-        children: [],
-      })
-    }
-  } else if (level === 3) {
-    // 添加三级指标
-    for (const level1 of tableData.value) {
-      if (!level1.children) continue
-
-      const parent = level1.children.find((item) => item.id === parentId)
-      if (parent) {
-        if (!parent.children) parent.children = []
-        parent.children.push({
-          id: newId,
-          name: `三级指标${parent.children.length + 1}`,
-          value: '',
-          editable: true,
-        })
-        break
-      }
-    }
-  }
-
-  emit('change', tableData.value)
-
-  // 重新准备数据
-  prepareData()
-}
-
-// 删除指标
-const removeIndicator = (level: number, id: string) => {
-  if (level === 1) {
-    // 删除一级指标
-    const index = tableData.value.findIndex((item) => item.id === id)
-    if (index !== -1) {
-      tableData.value.splice(index, 1)
-    }
-  } else if (level === 2) {
-    // 删除二级指标
-    for (const level1 of tableData.value) {
-      if (!level1.children) continue
-
-      const index = level1.children.findIndex((item) => item.id === id)
-      if (index !== -1) {
-        level1.children.splice(index, 1)
-        break
-      }
-    }
-  } else if (level === 3) {
-    // 删除三级指标
-    for (const level1 of tableData.value) {
-      if (!level1.children) continue
-
-      for (const level2 of level1.children) {
-        if (!level2.children) continue
-
-        const index = level2.children.findIndex((item) => item.id === id)
-        if (index !== -1) {
-          level2.children.splice(index, 1)
-          break
-        }
-      }
-    }
-  }
-
-  emit('change', tableData.value)
-
-  // 重新准备数据
-  prepareData()
-}
-
-// 查找指标项
-const findItem = (items: IndicatorItem[], id: string): IndicatorItem | null => {
-  for (const item of items) {
-    if (item.id === id) return item
-
-    if (item.children) {
-      const found = findItem(item.children, id)
-      if (found) return found
-    }
-  }
-
-  return null
-}
-
-// 获取当前表格数据
-const getCurrentData = () => {
-  return tableData.value
-}
-
-// 重置到默认数据
-const resetToDefaultData = () => {
-  // 使用与组件初始化时相同的默认数据
-  tableData.value = structuredClone(DEFAULT_INDICATOR_DATA)
-
-  // 重新处理数据
-  prepareData()
-
-  // 发出变更事件
-  emit('change', tableData.value)
-
-  return true
-}
 
 // 计算每个级别指标的列跨度
 const calculateColSpans = () => {
@@ -283,6 +92,11 @@ const calculateColSpans = () => {
 
 // 准备表格数据
 const prepareData = () => {
+  console.log('prepareData 被调用，tableData:', tableData.value)
+  if (!tableData.value || tableData.value.length === 0) {
+    console.warn('tableData为空，store应该已经包含默认数据')
+    return
+  }
   calculateColSpans()
 
   // 清空现有数据
@@ -348,6 +162,181 @@ const prepareData = () => {
       })
     }
   })
+}
+
+// 组件挂载时初始化数据
+onMounted(() => {
+  console.log('MultiLevelIndicatorTable onMounted, store数据:', evaluationStore.indicatorData)
+  prepareData()
+})
+
+// 监听tableData变化
+watch(
+  tableData,
+  () => {
+    prepareData()
+  },
+  { deep: true },
+)
+
+// 鼠标悬停处理
+const handleMouseEnter = (itemId: string) => {
+  hoveredItemId.value = itemId
+}
+
+// 鼠标离开处理
+const handleMouseLeave = () => {
+  hoveredItemId.value = null
+}
+
+// 开始编辑
+const startEdit = (item: IndicatorItem, field: 'name' | 'value') => {
+  editingState.value = {
+    key: item.id,
+    field,
+    value: field === 'name' ? item.name : item.value || '',
+  }
+}
+
+// 保存编辑
+const saveEdit = (item: IndicatorItem) => {
+  if (editingState.value.key === item.id) {
+    if (editingState.value.field === 'name') {
+      item.name = editingState.value.value as string
+    } else {
+      item.value = editingState.value.value
+    }
+
+    editingState.value = {
+      key: null,
+      field: 'name',
+      value: '',
+    }
+
+    // 重新处理数据
+    prepareData()
+  }
+}
+
+// 添加指标
+const addIndicator = (level: number, parentId: string) => {
+  const newId = Date.now().toString()
+
+  if (level === 1) {
+    // 添加一级指标
+    tableData.value.push({
+      id: newId,
+      name: `一级指标${tableData.value.length + 1}`,
+      children: [],
+    })
+  } else if (level === 2) {
+    // 添加二级指标
+    const parent = findItem(tableData.value, parentId)
+    if (parent) {
+      if (!parent.children) parent.children = []
+      parent.children.push({
+        id: newId,
+        name: `二级指标${parent.children.length + 1}`,
+        children: [],
+      })
+    }
+  } else if (level === 3) {
+    // 添加三级指标
+    for (const level1 of tableData.value) {
+      if (!level1.children) continue
+
+      const parent = level1.children.find((item) => item.id === parentId)
+      if (parent) {
+        if (!parent.children) parent.children = []
+        parent.children.push({
+          id: newId,
+          name: `三级指标${parent.children.length + 1}`,
+          value: '',
+          editable: true,
+        })
+        break
+      }
+    }
+  }
+
+  // 重新准备数据
+  prepareData()
+}
+
+// 删除指标
+const removeIndicator = (level: number, id: string) => {
+  if (level === 1) {
+    // 删除一级指标
+    const index = tableData.value.findIndex((item) => item.id === id)
+    if (index !== -1) {
+      tableData.value.splice(index, 1)
+    }
+  } else if (level === 2) {
+    // 删除二级指标
+    for (const level1 of tableData.value) {
+      if (!level1.children) continue
+
+      const index = level1.children.findIndex((item) => item.id === id)
+      if (index !== -1) {
+        level1.children.splice(index, 1)
+        break
+      }
+    }
+  } else if (level === 3) {
+    // 删除三级指标
+    for (const level1 of tableData.value) {
+      if (!level1.children) continue
+
+      for (const level2 of level1.children) {
+        if (!level2.children) continue
+
+        const index = level2.children.findIndex((item) => item.id === id)
+        if (index !== -1) {
+          level2.children.splice(index, 1)
+          break
+        }
+      }
+    }
+  }
+
+  // 重新准备数据
+  prepareData()
+}
+
+// 查找指标项
+const findItem = (items: IndicatorItem[], id: string): IndicatorItem | null => {
+  for (const item of items) {
+    if (item.id === id) return item
+
+    if (item.children) {
+      const found = findItem(item.children, id)
+      if (found) return found
+    }
+  }
+
+  return null
+}
+
+// 获取当前表格数据
+const getCurrentData = () => {
+  return tableData.value
+}
+
+// 设置表格数据（用于从外部恢复状态）
+const setData = (data: IndicatorItem[]) => {
+  tableData.value = JSON.parse(JSON.stringify(data))
+  prepareData()
+}
+
+// 重置到默认数据
+const resetToDefaultData = () => {
+  // 调用store的重置方法，会自动使用默认数据
+  evaluationStore.resetIndicatorData()
+
+  // 重新处理数据
+  prepareData()
+
+  return true
 }
 
 // 构建单元格内容
@@ -440,23 +429,10 @@ const renderCell = (item: any, level: number) => {
   )
 }
 
-// 初始化
-onMounted(() => {
-  prepareData()
-})
-
-// 监听tableData变化
-watch(
-  () => tableData.value,
-  () => {
-    prepareData()
-  },
-  { deep: true },
-)
-
 // 暴露方法给父组件
 defineExpose({
   getCurrentData,
+  setData,
   resetToDefaultData,
 })
 </script>
