@@ -7,6 +7,7 @@
  */
 import { ref } from 'vue'
 import MultiLevelIndicatorTable, { type IndicatorItem } from '@/components/tables/MultiLevelIndicatorTable.vue'
+import ExpertCardCarousel from '@/components/cards/ExpertCardCarousel.vue'
 
 // 定义组件向外发出的事件
 const emit = defineEmits(['close'])
@@ -14,10 +15,48 @@ const emit = defineEmits(['close'])
 // 表格数据
 const tableData = ref<IndicatorItem[]>([])
 
+// 专家轮播组件引用
+const expertCarouselRef = ref<InstanceType<typeof ExpertCardCarousel> | null>(null)
+
+// 功能开关状态
+const aiDebateEnabled = ref(false)
+const autoIndicatorsEnabled = ref(false)
+const adversarialEvaluationEnabled = ref(false)
+
 // 数据变更处理
 const handleDataChange = (newData: IndicatorItem[]) => {
   tableData.value = newData
   // 可以在这里添加保存数据的逻辑
+}
+
+// 功能开关切换处理
+const toggleFeature = (feature: 'debate' | 'indicators' | 'adversarial') => {
+  switch (feature) {
+    case 'debate':
+      aiDebateEnabled.value = !aiDebateEnabled.value
+      console.log('多智能体辩论评价生成:', aiDebateEnabled.value ? '已开启' : '已关闭')
+      break
+    case 'indicators':
+      autoIndicatorsEnabled.value = !autoIndicatorsEnabled.value
+      console.log('评价指标自生成:', autoIndicatorsEnabled.value ? '已开启' : '已关闭')
+      break
+    case 'adversarial':
+      adversarialEvaluationEnabled.value = !adversarialEvaluationEnabled.value
+      console.log('对抗式评价判别:', adversarialEvaluationEnabled.value ? '已开启' : '已关闭')
+      break
+  }
+}
+
+// 提交处理函数
+const handleSubmit = () => {
+  console.log('提交评价数据')
+  // 后续可以添加提交逻辑
+}
+
+// 重置处理函数
+const handleReset = () => {
+  console.log('重置评价数据')
+  // 后续可以添加重置逻辑
 }
 
 /**
@@ -50,8 +89,60 @@ const close = () => {
             <div class="title-underline"></div>
 
             <div class="form-container">
-              <!-- 使用多级指标表格组件 -->
-              <MultiLevelIndicatorTable v-model:data="tableData" @change="handleDataChange" />
+              <!-- 专家卡片轮播 -->
+              <div class="experts-section">
+                <h3 class="section-title">评价专家团队</h3>
+                <div class="experts-carousel-wrapper">
+                  <ExpertCardCarousel ref="expertCarouselRef" />
+                </div>
+              </div>
+
+              <!-- 多级指标表格部分 -->
+              <div class="indicators-section">
+                <h3 class="section-title">评价指标体系</h3>
+                <MultiLevelIndicatorTable v-model:data="tableData" @change="handleDataChange" />
+              </div>
+
+              <!-- 智能评价功能开关 -->
+              <div class="ai-features-section">
+                <h3 class="section-title">智能评价工具</h3>
+                <div class="feature-buttons">
+                  <button class="feature-button" :class="{ active: aiDebateEnabled }" @click="toggleFeature('debate')">
+                    <span class="button-icon">🔄</span>
+                    <span class="button-text">多智能体辩论评价</span>
+                  </button>
+
+                  <button
+                    class="feature-button"
+                    :class="{ active: autoIndicatorsEnabled }"
+                    @click="toggleFeature('indicators')"
+                  >
+                    <span class="button-icon">📊</span>
+                    <span class="button-text">评价指标自生成</span>
+                  </button>
+
+                  <button
+                    class="feature-button"
+                    :class="{ active: adversarialEvaluationEnabled }"
+                    @click="toggleFeature('adversarial')"
+                  >
+                    <span class="button-icon">⚖️</span>
+                    <span class="button-text">对抗式评价判别</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 操作按钮 -->
+              <div class="action-buttons">
+                <button class="submit-button" @click="handleSubmit">
+                  <span class="button-icon">✓</span>
+                  提交
+                </button>
+                <button class="reset-button" @click="handleReset">
+                  <span class="button-icon">↺</span>
+                  重置
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -65,13 +156,13 @@ const close = () => {
 
 /* 评价体系窗口特定样式 */
 .floating-window {
-  top: 0%;
+  top: 2%;
 }
 
 .evaluation-window-container {
   width: 90%;
   max-width: 1200px;
-  height: 800px;
+  height: 900px;
   display: flex;
   flex-direction: column;
 }
@@ -86,16 +177,18 @@ const close = () => {
   }
 
   .title-underline {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
   }
 
   .form-container {
-    height: 500px;
     overflow-y: auto;
     padding: 0 15px 15px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
 
     &::-webkit-scrollbar {
       width: 6px;
@@ -110,6 +203,143 @@ const close = () => {
     &::-webkit-scrollbar-thumb {
       background: rgba(64, 169, 255, 0.5);
       border-radius: 3px;
+    }
+  }
+
+  .experts-section,
+  .indicators-section,
+  .ai-features-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+
+    .section-title {
+      font-size: 16px;
+      color: rgba(220, 240, 255, 0.95);
+      margin-bottom: 6px;
+      position: relative;
+      padding-left: 15px;
+
+      &:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 16px;
+        background: rgba(64, 169, 255, 0.8);
+        border-radius: 2px;
+      }
+    }
+  }
+
+  .experts-section {
+    flex: 0.8;
+    min-height: 220px;
+
+    .experts-carousel-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .ai-features-section {
+    margin-top: 10px;
+
+    .feature-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 10px;
+
+      .feature-button {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        background: rgba(20, 30, 50, 0.7);
+        border: 1px solid rgba(64, 169, 255, 0.3);
+        border-radius: 6px;
+        color: rgba(220, 240, 255, 0.9);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 180px;
+
+        &:hover {
+          background: rgba(30, 40, 60, 0.8);
+          border-color: rgba(64, 169, 255, 0.5);
+          transform: translateY(-2px);
+        }
+
+        &.active {
+          background: rgba(20, 60, 100, 0.7);
+          border-color: rgba(64, 169, 255, 0.8);
+          box-shadow: 0 0 10px rgba(64, 169, 255, 0.3);
+        }
+
+        .button-icon {
+          margin-right: 8px;
+          font-size: 18px;
+        }
+
+        .button-text {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .action-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 25px;
+    padding-bottom: 20px;
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 30px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      .button-icon {
+        margin-right: 8px;
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+    }
+
+    .submit-button {
+      background: rgba(0, 120, 212, 0.8);
+      color: white;
+      border: 1px solid rgba(0, 150, 255, 0.5);
+
+      &:hover {
+        background: rgba(0, 140, 230, 0.9);
+        box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+      }
+    }
+
+    .reset-button {
+      background: rgba(40, 50, 70, 0.7);
+      color: rgba(220, 240, 255, 0.9);
+      border: 1px solid rgba(100, 120, 150, 0.5);
+
+      &:hover {
+        background: rgba(50, 60, 80, 0.8);
+        box-shadow: 0 4px 12px rgba(20, 30, 50, 0.3);
+      }
     }
   }
 }
