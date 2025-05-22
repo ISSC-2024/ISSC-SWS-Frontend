@@ -19,63 +19,51 @@ export interface IndicatorItem {
   colSpan?: number // 用于计算单元格跨列数
 }
 
-// 定义组件属性
-const props = defineProps({
-  // 初始数据
-  initialData: {
-    type: Array as () => IndicatorItem[],
-    default: () => [],
+// 默认指标数据结构
+const DEFAULT_INDICATOR_DATA: IndicatorItem[] = [
+  {
+    id: '1',
+    name: '一级指标1',
+    children: [
+      {
+        id: '1-1',
+        name: '二级指标1-1',
+        children: [
+          { id: '1-1-1', name: '三级指标1-1-1', value: '', editable: true },
+          { id: '1-1-2', name: '三级指标1-1-2', value: '', editable: true },
+        ],
+      },
+      {
+        id: '1-2',
+        name: '二级指标1-2',
+        children: [
+          { id: '1-2-1', name: '三级指标1-2-1', value: '', editable: true },
+          { id: '1-2-2', name: '三级指标1-2-2', value: '', editable: true },
+        ],
+      },
+    ],
   },
-})
+  {
+    id: '2',
+    name: '一级指标2',
+    children: [
+      {
+        id: '2-1',
+        name: '二级指标2-1',
+        children: [
+          { id: '2-1-1', name: '三级指标2-1-1', value: '', editable: true },
+          { id: '2-1-2', name: '三级指标2-1-2', value: '', editable: true },
+        ],
+      },
+    ],
+  },
+]
 
 // 定义组件向外发出的事件
-const emit = defineEmits(['update:data', 'change'])
+const emit = defineEmits(['change'])
 
-// 表格数据
-const tableData = ref<IndicatorItem[]>(
-  structuredClone(
-    props.initialData.length > 0
-      ? props.initialData
-      : [
-          {
-            id: '1',
-            name: '一级指标1',
-            children: [
-              {
-                id: '1-1',
-                name: '二级指标1-1',
-                children: [
-                  { id: '1-1-1', name: '三级指标1-1-1', value: '', editable: true },
-                  { id: '1-1-2', name: '三级指标1-1-2', value: '', editable: true },
-                ],
-              },
-              {
-                id: '1-2',
-                name: '二级指标1-2',
-                children: [
-                  { id: '1-2-1', name: '三级指标1-2-1', value: '', editable: true },
-                  { id: '1-2-2', name: '三级指标1-2-2', value: '', editable: true },
-                ],
-              },
-            ],
-          },
-          {
-            id: '2',
-            name: '一级指标2',
-            children: [
-              {
-                id: '2-1',
-                name: '二级指标2-1',
-                children: [
-                  { id: '2-1-1', name: '三级指标2-1-1', value: '', editable: true },
-                  { id: '2-1-2', name: '三级指标2-1-2', value: '', editable: true },
-                ],
-              },
-            ],
-          },
-        ],
-  ),
-)
+// 表格数据 - 使用默认数据
+const tableData = ref<IndicatorItem[]>(structuredClone(DEFAULT_INDICATOR_DATA))
 
 // 当前悬停的单元格ID
 const hoveredItemId = ref<string | null>(null)
@@ -133,7 +121,6 @@ const saveEdit = (item: IndicatorItem) => {
     }
 
     emit('change', tableData.value)
-    emit('update:data', tableData.value)
 
     // 重新处理数据
     prepareData()
@@ -182,7 +169,6 @@ const addIndicator = (level: number, parentId: string) => {
   }
 
   emit('change', tableData.value)
-  emit('update:data', tableData.value)
 
   // 重新准备数据
   prepareData()
@@ -225,7 +211,6 @@ const removeIndicator = (level: number, id: string) => {
   }
 
   emit('change', tableData.value)
-  emit('update:data', tableData.value)
 
   // 重新准备数据
   prepareData()
@@ -243,6 +228,25 @@ const findItem = (items: IndicatorItem[], id: string): IndicatorItem | null => {
   }
 
   return null
+}
+
+// 获取当前表格数据
+const getCurrentData = () => {
+  return tableData.value
+}
+
+// 重置到默认数据
+const resetToDefaultData = () => {
+  // 使用与组件初始化时相同的默认数据
+  tableData.value = structuredClone(DEFAULT_INDICATOR_DATA)
+
+  // 重新处理数据
+  prepareData()
+
+  // 发出变更事件
+  emit('change', tableData.value)
+
+  return true
 }
 
 // 计算每个级别指标的列跨度
@@ -449,6 +453,12 @@ watch(
   },
   { deep: true },
 )
+
+// 暴露方法给父组件
+defineExpose({
+  getCurrentData,
+  resetToDefaultData,
+})
 </script>
 
 <template>

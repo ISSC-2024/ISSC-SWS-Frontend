@@ -71,6 +71,18 @@ const getSelectedExpertNames = () => {
   return expertCardRef.value?.selectedExpertNames || []
 }
 
+// 重置专家选择
+const resetSelection = () => {
+  if (expertCardRef.value) {
+    // 清空选中的专家ID
+    expertCardRef.value.selectedExperts.splice(0, expertCardRef.value.selectedExperts.length)
+    console.log('已重置专家选择')
+    return true
+  }
+  console.warn('重置专家选择失败：无法访问选中数据')
+  return false
+}
+
 // 组件挂载后初始化
 onMounted(() => {
   // 初始化检查是否可以滚动
@@ -99,6 +111,8 @@ onBeforeUnmount(() => {
 defineExpose({
   getSelectedExperts,
   getSelectedExpertNames,
+  resetSelection,
+  expertCardRef,
 })
 </script>
 

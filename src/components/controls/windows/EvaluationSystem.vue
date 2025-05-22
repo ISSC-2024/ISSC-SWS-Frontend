@@ -12,11 +12,11 @@ import ExpertCardCarousel from '@/components/cards/ExpertCardCarousel.vue'
 // 定义组件向外发出的事件
 const emit = defineEmits(['close'])
 
-// 表格数据
-const tableData = ref<IndicatorItem[]>([])
-
 // 专家轮播组件引用
 const expertCarouselRef = ref<InstanceType<typeof ExpertCardCarousel> | null>(null)
+
+// 多级指标表格引用
+const indicatorTableRef = ref<InstanceType<typeof MultiLevelIndicatorTable> | null>(null)
 
 // 功能开关状态
 const aiDebateEnabled = ref(false)
@@ -25,8 +25,8 @@ const adversarialEvaluationEnabled = ref(false)
 
 // 数据变更处理
 const handleDataChange = (newData: IndicatorItem[]) => {
-  tableData.value = newData
-  // 可以在这里添加保存数据的逻辑
+  // 这里可以添加数据变更时的处理逻辑
+  console.log('指标数据已更新', newData)
 }
 
 // 功能开关切换处理
@@ -49,14 +49,56 @@ const toggleFeature = (feature: 'debate' | 'indicators' | 'adversarial') => {
 
 // 提交处理函数
 const handleSubmit = () => {
+  // 获取专家选择
+  const selectedExperts = expertCarouselRef.value?.getSelectedExperts() || []
+  const selectedExpertNames = expertCarouselRef.value?.getSelectedExpertNames() || []
+
+  // 获取当前表格数据
+  const currentTableData = indicatorTableRef.value?.getCurrentData() || []
+
   console.log('提交评价数据')
+  console.log('- 选中专家ID:', selectedExperts)
+  console.log('- 选中专家:', selectedExpertNames)
+  console.log('- 指标数据:', currentTableData)
+  console.log('- 功能开关状态:')
+  console.log('  - 多智能体辩论:', aiDebateEnabled.value)
+  console.log('  - 指标自生成:', autoIndicatorsEnabled.value)
+  console.log('  - 对抗式评价:', adversarialEvaluationEnabled.value)
+
   // 后续可以添加提交逻辑
 }
 
 // 重置处理函数
 const handleReset = () => {
   console.log('重置评价数据')
-  // 后续可以添加重置逻辑
+
+  // 1. 重置专家选择
+  if (expertCarouselRef.value) {
+    try {
+      // 使用组件提供的重置方法
+      const resetResult = expertCarouselRef.value.resetSelection()
+      console.log('专家选择重置' + (resetResult ? '成功' : '失败'))
+    } catch (error) {
+      console.error('重置专家选择时出错:', error)
+    }
+  }
+
+  // 2. 重置指标表格数据
+  if (indicatorTableRef.value && indicatorTableRef.value.resetToDefaultData) {
+    try {
+      // 使用表格组件的重置方法
+      indicatorTableRef.value.resetToDefaultData()
+      console.log('已重置评价指标表格到默认值')
+    } catch (error) {
+      console.error('重置指标表格时出错:', error)
+    }
+  }
+
+  // 3. 重置功能开关状态
+  aiDebateEnabled.value = false
+  autoIndicatorsEnabled.value = false
+  adversarialEvaluationEnabled.value = false
+  console.log('已重置功能开关')
 }
 
 /**
@@ -100,7 +142,7 @@ const close = () => {
               <!-- 多级指标表格部分 -->
               <div class="indicators-section">
                 <h3 class="section-title">评价指标体系</h3>
-                <MultiLevelIndicatorTable v-model:data="tableData" @change="handleDataChange" />
+                <MultiLevelIndicatorTable @change="handleDataChange" ref="indicatorTableRef" />
               </div>
 
               <!-- 智能评价功能开关 -->
