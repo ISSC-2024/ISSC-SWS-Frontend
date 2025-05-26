@@ -2,40 +2,76 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { IndicatorItem } from '@/components/tables/MultiLevelIndicatorTable.vue'
 
-// 默认指标数据结构
+// 默认指标数据结构（基于test.json）
 const DEFAULT_INDICATOR_DATA: IndicatorItem[] = [
   {
     id: '1',
-    name: '一级指标1',
+    name: '智能化管理水平',
     children: [
       {
         id: '1-1',
-        name: '二级指标1-1',
+        name: '基础设施智能化程度',
         children: [
-          { id: '1-1-1', name: '三级指标1-1-1', value: '', editable: true },
-          { id: '1-1-2', name: '三级指标1-1-2', value: '', editable: true },
+          { id: '1-1-1', name: '关键工艺段自动化控制率（%）', value: '', editable: true },
+          { id: '1-1-2', name: '关键节点传感器覆盖率（%）', value: '', editable: true },
+          { id: '1-1-3', name: '智能管网实时监测数据上传频次（次/天）', value: '', editable: true },
         ],
       },
       {
         id: '1-2',
-        name: '二级指标1-2',
+        name: '信息系统与数据集成水平',
         children: [
-          { id: '1-2-1', name: '三级指标1-2-1', value: '', editable: true },
-          { id: '1-2-2', name: '三级指标1-2-2', value: '', editable: true },
+          { id: '1-2-1', name: '生产调度系统（MES）运行稳定性（月均故障率）', value: '', editable: true },
+          { id: '1-2-2', name: '设备数据接入率（%联网设备占比）', value: '', editable: true },
+          { id: '1-2-3', name: '能源与物流调度系统数据同步周期（秒）', value: '', editable: true },
         ],
       },
     ],
   },
   {
     id: '2',
-    name: '一级指标2',
+    name: '绿色低碳发展水平',
     children: [
       {
         id: '2-1',
-        name: '二级指标2-1',
+        name: '碳排放控制与资源循环利用',
         children: [
-          { id: '2-1-1', name: '三级指标2-1-1', value: '', editable: true },
-          { id: '2-1-2', name: '三级指标2-1-2', value: '', editable: true },
+          { id: '2-1-1', name: '二氧化碳排放实时监测覆盖率（%工段）', value: '', editable: true },
+          { id: '2-1-2', name: 'CO₂捕集量/排放总量（%）', value: '', editable: true },
+          { id: '2-1-3', name: '副产物在线回收利用比例（%）', value: '', editable: true },
+        ],
+      },
+      {
+        id: '2-2',
+        name: '清洁能源与绿色技术应用',
+        children: [
+          { id: '2-2-1', name: '清洁能源实时用量占比（%）', value: '', editable: true },
+          { id: '2-2-2', name: '绿色工艺产线数/总产线数（%）', value: '', editable: true },
+          { id: '2-2-3', name: '碳足迹标识产品出货占比（%）', value: '', editable: true },
+        ],
+      },
+    ],
+  },
+  {
+    id: '3',
+    name: '产业协同创新能力',
+    children: [
+      {
+        id: '3-1',
+        name: '产业链协同深度',
+        children: [
+          { id: '3-1-1', name: '原料跨企业直供流量占比（%）', value: '', editable: true },
+          { id: '3-1-2', name: '跨企业物料交换实时记录数（条/日）', value: '', editable: true },
+          { id: '3-1-3', name: '共享设施使用率（%）', value: '', editable: true },
+        ],
+      },
+      {
+        id: '3-2',
+        name: '安全监测与应急响应能力',
+        children: [
+          { id: '3-2-1', name: '关键危险源在线监测覆盖率（%）', value: '', editable: true },
+          { id: '3-2-2', name: '安全报警响应平均时间（秒）', value: '', editable: true },
+          { id: '3-2-3', name: '应急演练数据记录频次（次/季度）', value: '', editable: true },
         ],
       },
     ],
@@ -79,13 +115,6 @@ export const useEvaluationStore = defineStore('evaluation', () => {
   // 基础专家数据
   const defaultExpertsData: FullExpertInfo[] = [
     {
-      id: '1',
-      name: '张教授',
-      avatar: '/images/experts/default-avatar.png',
-      desc: '环境科学专家，在海洋污染治理领域有20年研究经验',
-      prompt: '你是一位环境科学专家，在海洋污染治理领域有20年研究经验。请基于你的专业知识进行评价。',
-    },
-    {
       id: '2',
       name: '李博士',
       avatar: '/images/experts/default-avatar.png',
@@ -97,29 +126,41 @@ export const useEvaluationStore = defineStore('evaluation', () => {
       id: '3',
       name: '王工程师',
       avatar: '/images/experts/default-avatar.png',
-      desc: '设备安全专家，具有丰富的工业设备安全检测经验',
-      prompt: '你是一位设备安全专家，具有丰富的工业设备安全检测经验。请基于你的专业知识进行评价。',
+      desc: '低碳过程工程与碳管理专家，专注于煤气化、焦炉煤气制氢、碳捕集与资源梯级利用技术',
+      prompt:
+        '你是一位低碳过程工程与碳管理专家，专注于煤气化、焦炉煤气制氢、碳捕集与资源梯级利用技术。在园区绿色转型与碳资产监控平台建设方面具有深厚的工程与政策研究基础，熟悉碳排放实时监测、绿色产线认证与碳足迹核算机制。以"绿色低碳发展水平"为切入点，请评价该园区在碳排放控制、清洁能源利用及副产物回收方面的系统智能化能力。请参考实时监测覆盖率、CCUS 效率、绿色产线与产品标识占比等指标，判断该园区在低碳高值路径中的智能化支撑程度与改进方向。',
     },
     {
       id: '4',
       name: '陈研究员',
       avatar: '/images/experts/default-avatar.png',
-      desc: '风险评估专家，参与制定多项国家安全标准',
-      prompt: '你是一位风险评估专家，参与制定多项国家安全标准。请基于你的专业知识进行评价。',
+      desc: '化工园区运营安全与产业协同机制专家，拥有跨园区应急联动机制设计和安全数据实时接入体系建设经验',
+      prompt:
+        '你是一名化工园区运营安全与产业协同机制专家，拥有跨园区应急联动机制设计、安全数据实时接入体系建设以及共生网络的运营优化经验。擅长从产业流通与安全监控的融合视角分析工业互联网络的风险与协同效率。请基于"产业协同创新能力"视角，重点评估园区在原料直供、共享设施使用、危险源在线监控与应急响应机制方面的智能化水平。结合物料交换数据频度、安全数据覆盖率与响应速度等指标，判断该园区在高密度化工协同系统中的安全可控性与协同效率。',
     },
     {
       id: '5',
-      name: '刘顾问',
+      name: '李博士',
       avatar: '/images/experts/default-avatar.png',
-      desc: '应急管理专家，曾参与多起重大事故的应急处置工作',
-      prompt: '你是一位应急管理专家，曾参与多起重大事故的应急处置工作。请基于你的专业知识进行评价。',
+      desc: '工业智能化系统专家，擅长DCS/PLC系统架构、MES/SCADA应用部署与OT-IT融合',
+      prompt:
+        '你是一位在化工流程工业领域深耕20年的工业智能化系统专家，擅长 DCS/PLC 系统架构、MES/SCADA 应用部署与 OT-IT 融合。你对园区级别的传感网络、工业边缘计算与智能管网有深入理解，尤其关注生产全流程的数字化闭环与数据互通性。从"智能化管理水平"出发，结合化工流程控制与数据系统集成原理，请评价该产业园在关键工艺自动化、设备联网、数据同步频次等方面的智能运行能力。请依据指标反映的系统完备性、实时性与稳定性，为其智能化成熟度打分，并指出可能的短板与优化路径。',
     },
     {
       id: '6',
-      name: '赵研究员',
+      name: '王工程师',
       avatar: '/images/experts/default-avatar.png',
-      desc: '环境科学专家，在海洋污染治理领域有20年研究经验',
-      prompt: '你是一位环境科学专家，在海洋污染治理领域有20年研究经验。请基于你的专业知识进行评价。',
+      desc: '低碳过程工程与碳管理专家，专注于煤气化、焦炉煤气制氢、碳捕集与资源梯级利用技术',
+      prompt:
+        '你是一位低碳过程工程与碳管理专家，专注于煤气化、焦炉煤气制氢、碳捕集与资源梯级利用技术。在园区绿色转型与碳资产监控平台建设方面具有深厚的工程与政策研究基础，熟悉碳排放实时监测、绿色产线认证与碳足迹核算机制。以"绿色低碳发展水平"为切入点，请评价该园区在碳排放控制、清洁能源利用及副产物回收方面的系统智能化能力。请参考实时监测覆盖率、CCUS 效率、绿色产线与产品标识占比等指标，判断该园区在低碳高值路径中的智能化支撑程度与改进方向。',
+    },
+    {
+      id: '1',
+      name: '陈研究员',
+      avatar: '/images/experts/default-avatar.png',
+      desc: '化工园区运营安全与产业协同机制专家，拥有跨园区应急联动机制设计和安全数据实时接入体系建设经验',
+      prompt:
+        '你是一名化工园区运营安全与产业协同机制专家，拥有跨园区应急联动机制设计、安全数据实时接入体系建设以及共生网络的运营优化经验。擅长从产业流通与安全监控的融合视角分析工业互联网络的风险与协同效率。请基于"产业协同创新能力"视角，重点评估园区在原料直供、共享设施使用、危险源在线监控与应急响应机制方面的智能化水平。结合物料交换数据频度、安全数据覆盖率与响应速度等指标，判断该园区在高密度化工协同系统中的安全可控性与协同效率。',
     },
   ]
 
@@ -261,34 +302,27 @@ export const useEvaluationStore = defineStore('evaluation', () => {
     }
   }
 
-  // 获取启用的AI工具配置
+  // 获取所有AI工具配置（包括未启用的工具）
   const getEnabledAITools = (): AIToolConfig[] => {
-    const tools: AIToolConfig[] = []
-
-    if (aiDebateEnabled.value) {
-      tools.push({
+    const tools: AIToolConfig[] = [
+      {
         id: 'debate',
         name: '多智能体辩论评价',
-        enabled: true,
-      })
-    }
-
-    if (autoIndicatorsEnabled.value) {
-      tools.push({
+        enabled: aiDebateEnabled.value,
+      },
+      {
         id: 'auto_indicators',
         name: '评价指标自生成',
-        enabled: true,
-      })
-    }
-
-    if (adversarialEvaluationEnabled.value) {
-      tools.push({
+        enabled: autoIndicatorsEnabled.value,
+      },
+      {
         id: 'adversarial',
         name: '对抗式评价判别',
-        enabled: true,
-      })
-    }
+        enabled: adversarialEvaluationEnabled.value,
+      },
+    ]
 
+    // 返回所有工具（不过滤，与test.json保持一致）
     return tools
   }
 

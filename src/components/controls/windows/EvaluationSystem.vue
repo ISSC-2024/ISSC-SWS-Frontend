@@ -3,13 +3,13 @@
  * EvaluationSystem.vue - 评价体系组件
  *
  * 该组件负责显示评价体系相关内容
- * 从主控制组件中拆分出来，使代码结构更加清晰
  */
 import { ref, nextTick } from 'vue'
 import MultiLevelIndicatorTable, { type IndicatorItem } from '@/components/tables/MultiLevelIndicatorTable.vue'
 import ExpertCardCarousel from '@/components/cards/ExpertCardCarousel.vue'
 import MarkdownRenderer from '@/components/common/MarkdownRenderer.vue'
 import { useEvaluationStore } from '@/stores/evaluationStore'
+import { validateEvaluationData, processIndicators, generateConfigMarkdown } from '@/utils/evaluationUtils'
 
 // 定义组件向外发出的事件
 const emit = defineEmits(['close'])
@@ -47,240 +47,6 @@ const toggleFeature = (feature: 'debate' | 'indicators' | 'adversarial') => {
   console.log(`${toolName}:`, isEnabled ? '已开启' : '已关闭')
 }
 
-// 格式化专家数据函数已移除，现在直接使用store中的专家数据
-
-// 递归处理指标数据，提取有值的指标
-const processIndicators = (indicators: IndicatorItem[]): any[] => {
-  return indicators.map((item) => {
-    const result: any = {
-      id: item.id,
-      name: item.name,
-    }
-
-    // 如果有值，添加值
-    if (item.value !== undefined && item.value !== '') {
-      result.value = item.value
-    }
-
-    // 如果有子指标，递归处理
-    if (item.children && item.children.length > 0) {
-      result.children = processIndicators(item.children)
-    }
-
-    return result
-  })
-}
-
-// 生成指标表格的Markdown文本
-const generateIndicatorsTableMarkdown = (indicators: any[]): string => {
-  if (!indicators || indicators.length === 0) {
-    return '暂未配置评价指标\n\n'
-  }
-
-  // 收集所有三级指标作为表格的最终列
-  const allLevel3Items: any[] = []
-  const level1Info: { name: string; startCol: number; endCol: number }[] = []
-  const level2Info: { name: string; startCol: number; endCol: number; parentName: string }[] = []
-
-  let currentCol = 0
-
-  indicators.forEach((level1) => {
-    const level1StartCol = currentCol
-
-    if (level1.children && level1.children.length > 0) {
-      level1.children.forEach((level2: any) => {
-        const level2StartCol = currentCol
-
-        if (level2.children && level2.children.length > 0) {
-          level2.children.forEach((level3: any) => {
-            allLevel3Items.push({
-              name: level3.name,
-              value: level3.value || '',
-              level1Name: level1.name,
-              level2Name: level2.name,
-            })
-            currentCol++
-          })
-        } else {
-          // 如果没有三级指标，添加占位符
-          allLevel3Items.push({
-            name: '未设置',
-            value: '',
-            level1Name: level1.name,
-            level2Name: level2.name,
-            isEmpty: true,
-          })
-          currentCol++
-        }
-
-        level2Info.push({
-          name: level2.name,
-          startCol: level2StartCol,
-          endCol: currentCol - 1,
-          parentName: level1.name,
-        })
-      })
-    } else {
-      // 如果没有二级指标，添加占位符
-      allLevel3Items.push({
-        name: '未设置',
-        value: '',
-        level1Name: level1.name,
-        level2Name: '未设置',
-        isEmpty: true,
-      })
-      level2Info.push({
-        name: '未设置',
-        startCol: currentCol,
-        endCol: currentCol,
-        parentName: level1.name,
-      })
-      currentCol++
-    }
-
-    level1Info.push({
-      name: level1.name,
-      startCol: level1StartCol,
-      endCol: currentCol - 1,
-    })
-  })
-
-  const totalCols = allLevel3Items.length
-
-  // 生成一级指标行 - 每个一级指标重复填充其跨越的列数
-  const level1Cells: string[] = new Array(totalCols)
-  level1Info.forEach((info) => {
-    for (let i = info.startCol; i <= info.endCol; i++) {
-      level1Cells[i] = `**${info.name}**`
-    }
-  })
-
-  // 生成二级指标行 - 每个二级指标重复填充其跨越的列数
-  const level2Cells: string[] = new Array(totalCols)
-  level2Info.forEach((info) => {
-    const displayName = info.name === '未设置' ? '*未设置*' : `**${info.name}**`
-    for (let i = info.startCol; i <= info.endCol; i++) {
-      level2Cells[i] = displayName
-    }
-  })
-
-  // 生成三级指标行
-  const level3Cells = allLevel3Items.map((item) => {
-    if (item.isEmpty) {
-      return '*未设置*'
-    }
-    const valueText = item.value ? ` (${item.value})` : ''
-    return `${item.name}${valueText}`
-  })
-
-  // 生成分隔符行
-  const separatorRow = new Array(totalCols).fill('---')
-
-  let markdown = ''
-  markdown += `| ${level1Cells.join(' | ')} |\n`
-  markdown += `| ${separatorRow.join(' | ')} |\n`
-  markdown += `| ${level2Cells.join(' | ')} |\n`
-  markdown += `| ${level3Cells.join(' | ')} |\n\n`
-
-  return markdown
-}
-
-// 统计各级指标数量
-const countIndicatorsByLevel = (indicators: any[]) => {
-  let level1Count = 0
-  let level2Count = 0
-  let level3Count = 0
-
-  indicators.forEach((level1) => {
-    level1Count++
-
-    if (level1.children && level1.children.length > 0) {
-      level1.children.forEach((level2: any) => {
-        level2Count++
-
-        if (level2.children && level2.children.length > 0) {
-          level3Count += level2.children.length
-        }
-      })
-    }
-  })
-
-  return { level1Count, level2Count, level3Count }
-}
-
-// 生成配置摘要的Markdown
-const generateConfigMarkdown = (evaluationData: any): string => {
-  const currentTime = new Date().toLocaleString('zh-CN')
-
-  let markdown = `# 评价体系配置摘要
-
-> 📅 **生成时间**: ${currentTime}
->
-> 🔄 **状态**: 系统正在执行评价流程...
-
----
-
-## 👥 评价专家团队
-
-`
-  if (evaluationData.experts.length > 0) {
-    evaluationData.experts.forEach((expert: any, index: number) => {
-      markdown += `${index + 1}. **${expert.name}** \`ID: ${expert.id}\`\n`
-      if (expert.desc) {
-        markdown += `   - ${expert.desc}\n`
-      }
-    })
-  } else {
-    markdown += '暂未选择专家\n'
-  }
-
-  markdown += `\n---\n\n## 📊 评价指标体系\n\n`
-
-  if (evaluationData.indicators.length > 0) {
-    markdown += generateIndicatorsTableMarkdown(evaluationData.indicators)
-  } else {
-    markdown += '暂未配置评价指标\n\n'
-  }
-
-  markdown += `---\n\n## 🤖 智能评价工具\n\n`
-
-  if (evaluationData.ai_tools.length > 0) {
-    evaluationData.ai_tools.forEach((tool: any, index: number) => {
-      const statusIcon = tool.enabled ? '✅' : '❌'
-      markdown += `${index + 1}. ${statusIcon} **${tool.name}**\n`
-    })
-  } else {
-    markdown += '暂未启用智能评价工具\n'
-  }
-
-  // 统计各级指标数量
-  const indicatorCounts = countIndicatorsByLevel(evaluationData.indicators)
-
-  markdown += `\n---\n\n## 📋 配置统计
-
-| 项目 | 数量 |
-|------|------|
-| 选择专家 | ${evaluationData.experts.length} 位 |
-| 一级指标 | ${indicatorCounts.level1Count} 项 |
-| 二级指标 | ${indicatorCounts.level2Count} 项 |
-| 三级指标 | ${indicatorCounts.level3Count} 项 |
-| 启用工具 | ${evaluationData.ai_tools.length} 个 |
-
----
-
-## 🚀 下一步操作
-
-1. **数据验证**: 系统将验证所有配置项的完整性
-2. **专家通知**: 向选定的专家发送评价邀请
-3. **指标初始化**: 根据配置的指标体系初始化评价框架
-4. **AI工具启动**: 激活选定的智能评价工具
-5. **开始评价**: 正式启动评价流程
-
-> 💡 **提示**: 如需修改配置，请点击"返回编辑"按钮重新配置。`
-
-  return markdown
-}
-
 // 提交处理函数
 const handleSubmit = async () => {
   try {
@@ -288,7 +54,14 @@ const handleSubmit = async () => {
     isTransitioning.value = true
 
     // 1. 直接从store获取专家数据
-    const selectedExperts = evaluationStore.selectedExperts
+    const storeExperts = evaluationStore.selectedExperts
+
+    const selectedExperts = storeExperts.map((expert) => ({
+      id: expert.id,
+      name: expert.name,
+      desc: expert.desc || '',
+      prompt: expert.prompt || '',
+    }))
 
     // 2. 获取当前表格数据
     const currentTableData = indicatorTableRef.value?.getCurrentData() || []
@@ -298,13 +71,29 @@ const handleSubmit = async () => {
 
     // 4. 组装三部分数据JSON
     const evaluationData = {
-      experts: selectedExperts, // 直接使用store中的专家数据
-      indicators: processIndicators(currentTableData),
-      ai_tools: aiTools,
+      experts: selectedExperts, // 格式化后的专家数据
+      indicators: {
+        id: 'root',
+        name: '智能化园区评价指标体系',
+        children: processIndicators(currentTableData),
+      },
+      tools: aiTools,
     }
 
-    console.log('提交评价数据:')
-    console.log(JSON.stringify(evaluationData, null, 2))
+    // 验证数据结构是否符合要求
+    const validationResult = validateEvaluationData(evaluationData)
+
+    // 如果格式不符合就显示提示框
+    if (!validationResult.valid) {
+      console.warn('评价数据格式验证警告:')
+      validationResult.errors.forEach((error) => console.warn(`- ${error}`))
+      alert('提交数据格式不符合要求，请检查配置后重新提交。')
+
+      // 结束提交过程
+      isTransitioning.value = false
+      return
+    }
+    console.log(JSON.stringify(evaluationData))
 
     // 5. 保存专家和指标数据到store
     evaluationStore.setSelectedExperts(evaluationData.experts)
@@ -365,7 +154,7 @@ const close = () => {
 <template>
   <!-- 评价体系浮窗 -->
   <transition name="fade">
-    <div class="overlay" @click="close">
+    <div class="overlay" v-if="true" @click="close">
       <div class="floating-window evaluation-window-container" @click.stop>
         <div class="corner top-left"></div>
         <div class="corner top-right"></div>
@@ -473,6 +262,7 @@ const close = () => {
                   </button>
                 </div>
 
+                <!-- Markdown内容 -->
                 <div class="markdown-content">
                   <MarkdownRenderer :content="evaluationStore.markdownContent" />
                 </div>
