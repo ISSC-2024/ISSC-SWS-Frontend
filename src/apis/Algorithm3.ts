@@ -1,14 +1,5 @@
 import { http } from './AxiosClient'
-
-/**
- * 分页信息接口
- */
-export interface PaginationInfo {
-  total: number
-  skip: number
-  limit: number
-  has_more: boolean
-}
+import type { PaginationInfo } from '@/types/common'
 
 /**
  * 单条算法结果数据接口

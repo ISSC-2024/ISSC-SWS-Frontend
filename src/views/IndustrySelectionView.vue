@@ -11,6 +11,7 @@ import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css' // 使用暗色主题
 import AIInterfaceAPI from '../apis/AIInterface'
 import type { AIModelType } from '../apis/AIInterface'
+import type { ChatMessage } from '@/types/common'
 import AIInterface from '../components/controls/windows/AIInterface.vue'
 
 // 定义类型接口
@@ -233,15 +234,6 @@ const renderMarkdown = (content: string): string => {
   return DOMPurify.sanitize(html as string)
 }
 
-// 消息类型定义
-interface ChatMessage {
-  role: 'user' | 'assistant'
-  content: string
-  isThinking?: boolean
-  thinking?: string
-  isThinkingExpanded?: boolean
-}
-
 // 当前使用的AI模型
 const currentModel: AIModelType = 'top-llm'
 // 控制AI对话框显示
@@ -461,7 +453,7 @@ onBeforeUnmount(() => {
 })
 
 // 处理Unity发来的聊天请求
-const handleUnityChatRequest = (data: any) => {
+const handleUnityChatRequest = (data: string) => {
   // 根据Unity发送的区域代码设置模型
   const areaToModel: Record<string, AIModelType> = {
     RMS: 'sub-llm1', // 原料存储区

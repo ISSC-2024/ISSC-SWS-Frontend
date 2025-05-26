@@ -76,7 +76,7 @@ export interface EvaluationState {
 }
 
 export const useEvaluationStore = defineStore('evaluation', () => {
-  // 基础专家数据 - 从localStorage加载或使用默认值
+  // 基础专家数据
   const defaultExpertsData: FullExpertInfo[] = [
     {
       id: '1',

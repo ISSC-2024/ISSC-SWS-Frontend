@@ -5,17 +5,9 @@
  * 该组件用于展示评价体系中的各类专家信息
  * 包含专家头像、姓名、简要介绍
  */
-import { ref, computed, nextTick } from 'vue'
-import { useEvaluationStore } from '@/stores/evaluationStore'
-
-// 专家信息接口 - 与store保持一致
-export interface ExpertInfo {
-  id: string
-  name: string
-  avatar: string
-  desc?: string
-  prompt?: string
-}
+import { ref, computed } from 'vue'
+import { useEvaluationStore, type FullExpertInfo } from '@/stores/evaluationStore'
+import ExpertConfigModal from '@/components/controls/windows/ExpertConfigModal.vue'
 
 // 使用评价体系store
 const evaluationStore = useEvaluationStore()
@@ -31,15 +23,7 @@ const cardsElement = ref<HTMLElement | null>(null)
 
 // 配置弹窗状态
 const showConfigModal = ref(false)
-const currentEditingExpert = ref<ExpertInfo | null>(null)
-const editForm = ref({
-  name: '',
-  desc: '',
-  prompt: '',
-})
-
-// 输入框引用
-const nameInputRef = ref<HTMLInputElement | null>(null)
+const currentEditingExpert = ref<FullExpertInfo | null>(null)
 
 // 直接使用store中的选中专家ID列表
 const selectedExpertIds = computed(() => {
@@ -63,7 +47,7 @@ const handleImageError = (e: Event) => {
 }
 
 // 处理专家卡片点击
-const toggleSelectExpert = (expert: ExpertInfo) => {
+const toggleSelectExpert = (expert: FullExpertInfo) => {
   const currentExperts = evaluationStore.selectedExperts
   const existingIndex = currentExperts.findIndex((e) => e.id === expert.id)
 
@@ -90,21 +74,10 @@ const isExpertSelected = (expertId: string) => {
 }
 
 // 打开配置弹窗
-const openConfigModal = async (expert: ExpertInfo, event: Event) => {
-  event.stopPropagation() // 阻止事件冒泡
+const openConfigModal = (expert: FullExpertInfo, event: Event) => {
+  event.stopPropagation()
   currentEditingExpert.value = expert
-  editForm.value = {
-    name: expert.name,
-    desc: expert.desc || '',
-    prompt: expert.prompt || '',
-  }
   showConfigModal.value = true
-
-  // 等待DOM更新后自动聚焦到第一个输入框
-  await nextTick()
-  if (nameInputRef.value) {
-    nameInputRef.value.focus()
-  }
 }
 
 // 关闭配置弹窗
@@ -114,17 +87,15 @@ const closeConfigModal = () => {
 }
 
 // 保存配置
-const saveConfig = () => {
+const handleSaveConfig = (data: { name: string; desc: string; prompt: string }) => {
   if (!currentEditingExpert.value) return
 
   // 使用 store 的 updateBaseExpert 方法更新基础专家数据
   evaluationStore.updateBaseExpert(currentEditingExpert.value.id, {
-    name: editForm.value.name,
-    desc: editForm.value.desc,
-    prompt: editForm.value.prompt,
+    name: data.name,
+    desc: data.desc,
+    prompt: data.prompt,
   })
-
-  closeConfigModal()
 }
 
 // 暴露卡片元素和状态给父组件
@@ -156,47 +127,13 @@ defineExpose({
         <div class="config-icon" @click="openConfigModal(expert, $event)">📖</div>
       </div>
     </div>
-    <!-- 配置弹窗 -->
-    <div v-if="showConfigModal" class="config-modal-overlay" @click="closeConfigModal" @keydown.stop>
-      <div class="config-modal" @click.stop tabindex="-1">
-        <h3 class="modal-title">编辑专家信息</h3>
-        <div class="modal-content">
-          <label for="expert-name" class="modal-label">姓名</label>
-          <input
-            id="expert-name"
-            ref="nameInputRef"
-            v-model="editForm.name"
-            type="text"
-            class="modal-input"
-            placeholder="请输入专家姓名"
-            @keydown.stop
-          />
-
-          <label for="expert-desc" class="modal-label">简介</label>
-          <textarea
-            id="expert-desc"
-            v-model="editForm.desc"
-            class="modal-textarea"
-            placeholder="请输入专家简介"
-            rows="3"
-            @keydown.stop
-          ></textarea>
-          <label for="expert-prompt" class="modal-label">评价提示语</label>
-          <textarea
-            id="expert-prompt"
-            v-model="editForm.prompt"
-            class="modal-textarea"
-            placeholder="请输入专家评价提示语"
-            rows="5"
-            @keydown.stop
-          ></textarea>
-        </div>
-        <div class="modal-actions">
-          <button class="modal-save-btn" @click="saveConfig">保存</button>
-          <button class="modal-cancel-btn" @click="closeConfigModal">取消</button>
-        </div>
-      </div>
-    </div>
+    <!-- 专家配置弹窗 -->
+    <ExpertConfigModal
+      v-model:visible="showConfigModal"
+      :expert="currentEditingExpert"
+      @save="handleSaveConfig"
+      @cancel="closeConfigModal"
+    />
   </div>
 </template>
 
@@ -333,93 +270,6 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
       &:hover {
         background: rgba(255, 193, 7, 1);
         transform: scale(1.1);
-      }
-    }
-  }
-
-  .config-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-
-  .config-modal {
-    background: rgba(20, 30, 50, 0.95);
-    border-radius: 8px;
-    padding: 20px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    position: relative;
-
-    .modal-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin: 0 0 15px 0;
-      color: $text-color;
-      text-align: center;
-    }
-
-    .modal-content {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .modal-label {
-      font-size: 14px;
-      color: $text-color;
-      margin-bottom: 6px;
-    }
-
-    .modal-input,
-    .modal-textarea {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 4px;
-      padding: 10px;
-      font-size: 14px;
-      color: $text-color;
-      width: 100%;
-      box-sizing: border-box;
-
-      &::placeholder {
-        color: rgba(220, 240, 255, 0.7);
-      }
-    }
-
-    .modal-textarea {
-      resize: none;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .modal-save-btn,
-    .modal-cancel-btn {
-      background: $accent-color;
-      border: none;
-      border-radius: 4px;
-      padding: 10px 15px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #0a1525;
-      cursor: pointer;
-      transition: background 0.2s;
-
-      &:hover {
-        background: rgba(64, 169, 255, 0.8);
       }
     }
   }
