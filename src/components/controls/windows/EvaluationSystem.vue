@@ -26,8 +26,6 @@ const indicatorTableRef = ref<InstanceType<typeof MultiLevelIndicatorTable> | nu
 // 视图状态控制
 const isTransitioning = ref(false)
 
-// 注意：状态恢复通过store实现，子组件会自动同步状态
-
 // 数据变更处理
 const handleDataChange = (newData: IndicatorItem[]) => {
   // 更新store中的指标数据
@@ -225,10 +223,12 @@ const generateConfigMarkdown = (evaluationData: any): string => {
 ## 👥 评价专家团队
 
 `
-
   if (evaluationData.experts.length > 0) {
     evaluationData.experts.forEach((expert: any, index: number) => {
       markdown += `${index + 1}. **${expert.name}** \`ID: ${expert.id}\`\n`
+      if (expert.desc) {
+        markdown += `   - ${expert.desc}\n`
+      }
     })
   } else {
     markdown += '暂未选择专家\n'

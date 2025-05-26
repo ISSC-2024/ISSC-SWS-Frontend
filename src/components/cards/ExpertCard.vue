@@ -5,15 +5,16 @@
  * 该组件用于展示评价体系中的各类专家信息
  * 包含专家头像、姓名、简要介绍
  */
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { useEvaluationStore } from '@/stores/evaluationStore'
 
-// 专家信息接口
+// 专家信息接口 - 与store保持一致
 export interface ExpertInfo {
   id: string
   name: string
   avatar: string
-  introduction: string
+  desc?: string
+  prompt?: string
 }
 
 // 使用评价体系store
@@ -22,48 +23,23 @@ const evaluationStore = useEvaluationStore()
 // 默认头像路径
 const defaultAvatar = '/images/experts/default-avatar.png'
 
-// 专家数据
-const expertData = [
-  {
-    id: '1',
-    name: '张教授',
-    avatar: defaultAvatar,
-    introduction: '环境科学专家，在海洋污染治理领域有20年研究经验',
-  },
-  {
-    id: '2',
-    name: '李博士',
-    avatar: defaultAvatar,
-    introduction: '化学工程专家，专注于化工安全评估和风险管理',
-  },
-  {
-    id: '3',
-    name: '王工程师',
-    avatar: defaultAvatar,
-    introduction: '设备安全专家，具有丰富的工业设备安全检测经验',
-  },
-  {
-    id: '4',
-    name: '陈研究员',
-    avatar: defaultAvatar,
-    introduction: '风险评估专家，参与制定多项国家安全标准',
-  },
-  {
-    id: '5',
-    name: '刘顾问',
-    avatar: defaultAvatar,
-    introduction: '应急管理专家，曾参与多起重大事故的应急处置工作',
-  },
-  {
-    id: '6',
-    name: '赵研究员',
-    avatar: defaultAvatar,
-    introduction: '环境科学专家，在海洋污染治理领域有20年研究经验',
-  },
-]
+// 专家数据 - 从store获取
+const expertData = computed(() => evaluationStore.getBaseExperts())
 
 // 卡片容器的引用
 const cardsElement = ref<HTMLElement | null>(null)
+
+// 配置弹窗状态
+const showConfigModal = ref(false)
+const currentEditingExpert = ref<ExpertInfo | null>(null)
+const editForm = ref({
+  name: '',
+  desc: '',
+  prompt: '',
+})
+
+// 输入框引用
+const nameInputRef = ref<HTMLInputElement | null>(null)
 
 // 直接使用store中的选中专家ID列表
 const selectedExpertIds = computed(() => {
@@ -93,7 +69,12 @@ const toggleSelectExpert = (expert: ExpertInfo) => {
 
   if (existingIndex === -1) {
     // 添加到选中列表
-    evaluationStore.addExpert({ id: expert.id, name: expert.name })
+    evaluationStore.addExpert({
+      id: expert.id,
+      name: expert.name,
+      desc: expert.desc || '',
+      prompt: expert.prompt || '',
+    })
   } else {
     // 从选中列表移除
     evaluationStore.removeExpert(expert.id)
@@ -106,6 +87,44 @@ const toggleSelectExpert = (expert: ExpertInfo) => {
 // 检查专家是否被选中
 const isExpertSelected = (expertId: string) => {
   return selectedExpertIds.value.includes(expertId)
+}
+
+// 打开配置弹窗
+const openConfigModal = async (expert: ExpertInfo, event: Event) => {
+  event.stopPropagation() // 阻止事件冒泡
+  currentEditingExpert.value = expert
+  editForm.value = {
+    name: expert.name,
+    desc: expert.desc || '',
+    prompt: expert.prompt || '',
+  }
+  showConfigModal.value = true
+
+  // 等待DOM更新后自动聚焦到第一个输入框
+  await nextTick()
+  if (nameInputRef.value) {
+    nameInputRef.value.focus()
+  }
+}
+
+// 关闭配置弹窗
+const closeConfigModal = () => {
+  showConfigModal.value = false
+  currentEditingExpert.value = null
+}
+
+// 保存配置
+const saveConfig = () => {
+  if (!currentEditingExpert.value) return
+
+  // 使用 store 的 updateBaseExpert 方法更新基础专家数据
+  evaluationStore.updateBaseExpert(currentEditingExpert.value.id, {
+    name: editForm.value.name,
+    desc: editForm.value.desc,
+    prompt: editForm.value.prompt,
+  })
+
+  closeConfigModal()
 }
 
 // 暴露卡片元素和状态给父组件
@@ -131,9 +150,51 @@ defineExpose({
         </div>
         <div class="expert-info">
           <h3 class="expert-name">{{ expert.name }}</h3>
-          <p class="expert-intro">{{ expert.introduction }}</p>
+          <p class="expert-intro">{{ expert.desc }}</p>
         </div>
         <div class="select-indicator" v-show="isExpertSelected(expert.id)">✓</div>
+        <div class="config-icon" @click="openConfigModal(expert, $event)">📖</div>
+      </div>
+    </div>
+    <!-- 配置弹窗 -->
+    <div v-if="showConfigModal" class="config-modal-overlay" @click="closeConfigModal" @keydown.stop>
+      <div class="config-modal" @click.stop tabindex="-1">
+        <h3 class="modal-title">编辑专家信息</h3>
+        <div class="modal-content">
+          <label for="expert-name" class="modal-label">姓名</label>
+          <input
+            id="expert-name"
+            ref="nameInputRef"
+            v-model="editForm.name"
+            type="text"
+            class="modal-input"
+            placeholder="请输入专家姓名"
+            @keydown.stop
+          />
+
+          <label for="expert-desc" class="modal-label">简介</label>
+          <textarea
+            id="expert-desc"
+            v-model="editForm.desc"
+            class="modal-textarea"
+            placeholder="请输入专家简介"
+            rows="3"
+            @keydown.stop
+          ></textarea>
+          <label for="expert-prompt" class="modal-label">评价提示语</label>
+          <textarea
+            id="expert-prompt"
+            v-model="editForm.prompt"
+            class="modal-textarea"
+            placeholder="请输入专家评价提示语"
+            rows="5"
+            @keydown.stop
+          ></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-save-btn" @click="saveConfig">保存</button>
+          <button class="modal-cancel-btn" @click="closeConfigModal">取消</button>
+        </div>
       </div>
     </div>
   </div>
@@ -225,7 +286,6 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
         margin: 0 0 6px 0;
         color: $text-color;
       }
-
       .expert-intro {
         font-size: 12px;
         color: rgba(220, 240, 255, 0.8);
@@ -233,11 +293,11 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
         overflow: hidden;
         display: -webkit-box;
         -webkit-line-clamp: 3;
+        line-clamp: 3;
         -webkit-box-orient: vertical;
         line-height: 1.3;
       }
     }
-
     .select-indicator {
       position: absolute;
       top: 5px;
@@ -252,6 +312,115 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
       color: #0a1525;
       font-weight: bold;
       font-size: 14px;
+    }
+
+    .config-icon {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      width: 22px;
+      height: 22px;
+      background: rgba(255, 193, 7, 0.8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 10;
+
+      &:hover {
+        background: rgba(255, 193, 7, 1);
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .config-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .config-modal {
+    background: rgba(20, 30, 50, 0.95);
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 15px 0;
+      color: $text-color;
+      text-align: center;
+    }
+
+    .modal-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-label {
+      font-size: 14px;
+      color: $text-color;
+      margin-bottom: 6px;
+    }
+
+    .modal-input,
+    .modal-textarea {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      padding: 10px;
+      font-size: 14px;
+      color: $text-color;
+      width: 100%;
+      box-sizing: border-box;
+
+      &::placeholder {
+        color: rgba(220, 240, 255, 0.7);
+      }
+    }
+
+    .modal-textarea {
+      resize: none;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .modal-save-btn,
+    .modal-cancel-btn {
+      background: $accent-color;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 15px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #0a1525;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: rgba(64, 169, 255, 0.8);
+      }
     }
   }
 }

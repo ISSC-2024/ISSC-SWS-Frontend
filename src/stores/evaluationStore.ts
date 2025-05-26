@@ -46,6 +46,13 @@ const DEFAULT_INDICATOR_DATA: IndicatorItem[] = [
 export interface ExpertInfo {
   id: string
   name: string
+  desc?: string
+  prompt?: string
+}
+
+// 完整专家信息接口（包含头像）
+export interface FullExpertInfo extends ExpertInfo {
+  avatar: string
 }
 
 // AI工具配置接口
@@ -69,6 +76,78 @@ export interface EvaluationState {
 }
 
 export const useEvaluationStore = defineStore('evaluation', () => {
+  // 基础专家数据 - 从localStorage加载或使用默认值
+  const defaultExpertsData: FullExpertInfo[] = [
+    {
+      id: '1',
+      name: '张教授',
+      avatar: '/images/experts/default-avatar.png',
+      desc: '环境科学专家，在海洋污染治理领域有20年研究经验',
+      prompt: '你是一位环境科学专家，在海洋污染治理领域有20年研究经验。请基于你的专业知识进行评价。',
+    },
+    {
+      id: '2',
+      name: '李博士',
+      avatar: '/images/experts/default-avatar.png',
+      desc: '工业智能化系统专家，擅长DCS/PLC系统架构、MES/SCADA应用部署与OT-IT融合',
+      prompt:
+        '你是一位在化工流程工业领域深耕20年的工业智能化系统专家，擅长 DCS/PLC 系统架构、MES/SCADA 应用部署与 OT-IT 融合。你对园区级别的传感网络、工业边缘计算与智能管网有深入理解，尤其关注生产全流程的数字化闭环与数据互通性。从"智能化管理水平"出发，结合化工流程控制与数据系统集成原理，请评价该产业园在关键工艺自动化、设备联网、数据同步频次等方面的智能运行能力。请依据指标反映的系统完备性、实时性与稳定性，为其智能化成熟度打分，并指出可能的短板与优化路径。',
+    },
+    {
+      id: '3',
+      name: '王工程师',
+      avatar: '/images/experts/default-avatar.png',
+      desc: '设备安全专家，具有丰富的工业设备安全检测经验',
+      prompt: '你是一位设备安全专家，具有丰富的工业设备安全检测经验。请基于你的专业知识进行评价。',
+    },
+    {
+      id: '4',
+      name: '陈研究员',
+      avatar: '/images/experts/default-avatar.png',
+      desc: '风险评估专家，参与制定多项国家安全标准',
+      prompt: '你是一位风险评估专家，参与制定多项国家安全标准。请基于你的专业知识进行评价。',
+    },
+    {
+      id: '5',
+      name: '刘顾问',
+      avatar: '/images/experts/default-avatar.png',
+      desc: '应急管理专家，曾参与多起重大事故的应急处置工作',
+      prompt: '你是一位应急管理专家，曾参与多起重大事故的应急处置工作。请基于你的专业知识进行评价。',
+    },
+    {
+      id: '6',
+      name: '赵研究员',
+      avatar: '/images/experts/default-avatar.png',
+      desc: '环境科学专家，在海洋污染治理领域有20年研究经验',
+      prompt: '你是一位环境科学专家，在海洋污染治理领域有20年研究经验。请基于你的专业知识进行评价。',
+    },
+  ]
+
+  // 从localStorage加载专家基础数据
+  const loadExpertsFromStorage = (): FullExpertInfo[] => {
+    try {
+      const stored = localStorage.getItem('expertBaseData')
+      if (stored) {
+        return JSON.parse(stored)
+      }
+    } catch (error) {
+      console.warn('Failed to load experts from localStorage:', error)
+    }
+    return [...defaultExpertsData]
+  }
+
+  // 保存专家基础数据到localStorage
+  const saveExpertsToStorage = (experts: FullExpertInfo[]) => {
+    try {
+      localStorage.setItem('expertBaseData', JSON.stringify(experts))
+    } catch (error) {
+      console.warn('Failed to save experts to localStorage:', error)
+    }
+  }
+
+  // 基础专家数据
+  const baseExpertsData = ref<FullExpertInfo[]>(loadExpertsFromStorage())
+
   // 选中的专家列表
   const selectedExperts = ref<ExpertInfo[]>([])
 
@@ -100,6 +179,38 @@ export const useEvaluationStore = defineStore('evaluation', () => {
   // 移除专家
   const removeExpert = (expertId: string) => {
     selectedExperts.value = selectedExperts.value.filter((e) => e.id !== expertId)
+  }
+  // 更新专家信息
+  const updateExpert = (expertId: string, expertData: ExpertInfo) => {
+    const index = selectedExperts.value.findIndex((e) => e.id === expertId)
+    if (index !== -1) {
+      selectedExperts.value[index] = { ...expertData }
+    }
+  }
+
+  // 更新基础专家数据
+  const updateBaseExpert = (expertId: string, expertData: Partial<FullExpertInfo>) => {
+    const index = baseExpertsData.value.findIndex((e) => e.id === expertId)
+    if (index !== -1) {
+      baseExpertsData.value[index] = { ...baseExpertsData.value[index], ...expertData }
+      saveExpertsToStorage(baseExpertsData.value)
+
+      // 如果该专家已被选中，同时更新选中专家列表
+      const selectedIndex = selectedExperts.value.findIndex((e) => e.id === expertId)
+      if (selectedIndex !== -1) {
+        selectedExperts.value[selectedIndex] = {
+          id: expertData.id || selectedExperts.value[selectedIndex].id,
+          name: expertData.name || selectedExperts.value[selectedIndex].name,
+          desc: expertData.desc || selectedExperts.value[selectedIndex].desc,
+          prompt: expertData.prompt || selectedExperts.value[selectedIndex].prompt,
+        }
+      }
+    }
+  }
+
+  // 获取基础专家数据
+  const getBaseExperts = () => {
+    return baseExpertsData.value
   }
 
   // 清空专家选择
@@ -236,7 +347,6 @@ export const useEvaluationStore = defineStore('evaluation', () => {
     isSubmitted.value = snapshot.isSubmitted
     markdownContent.value = snapshot.markdownContent
   }
-
   return {
     // 状态
     selectedExperts,
@@ -251,6 +361,9 @@ export const useEvaluationStore = defineStore('evaluation', () => {
     setSelectedExperts,
     addExpert,
     removeExpert,
+    updateExpert,
+    updateBaseExpert,
+    getBaseExperts,
     clearExperts,
 
     // 指标数据管理方法
