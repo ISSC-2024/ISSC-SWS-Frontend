@@ -7,7 +7,7 @@
  */
 import { ref, onMounted, watch, h, computed } from 'vue'
 import { Input, Button } from 'ant-design-vue'
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons-vue'
 import { useEvaluationStore } from '@/stores/evaluationStore'
 
 // 使用评价体系store
@@ -452,6 +452,10 @@ defineExpose({
         <template #icon><PlusOutlined /></template>
         添加一级指标
       </a-button>
+      <a-button type="primary" danger @click="resetToDefaultData" class="reset-btn">
+        <template #icon><SyncOutlined /></template>
+        重置表格
+      </a-button>
     </div>
 
     <div class="hierarchical-table">
@@ -512,6 +516,19 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
     display: flex;
     justify-content: flex-end;
     margin-bottom: 15px;
+    gap: 10px;
+    align-items: center;
+
+    .reset-btn {
+      background: rgba(30, 40, 60, 0.7);
+      border-color: rgba(100, 120, 150, 0.5);
+      color: rgba(220, 240, 255, 0.9);
+
+      &:hover {
+        background: rgba(40, 50, 70, 0.8);
+        border-color: rgba(100, 120, 150, 0.7);
+      }
+    }
   }
 
   .hierarchical-table {
