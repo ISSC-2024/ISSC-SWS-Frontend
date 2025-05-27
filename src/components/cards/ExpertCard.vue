@@ -5,7 +5,7 @@
  * 该组件用于展示评价体系中的各类专家信息
  * 包含专家头像、姓名、简要介绍
  */
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { useEvaluationStore, type FullExpertInfo } from '@/stores/evaluationStore'
 import ExpertConfigModal from '@/components/controls/windows/ExpertConfigModal.vue'
 
@@ -35,6 +35,15 @@ const selectedExpertNames = computed(() => {
   return evaluationStore.selectedExperts.map((expert) => expert.name)
 })
 
+// 滚动到最右侧，保证添加专家按钮可见
+const scrollToEnd = () => {
+  nextTick(() => {
+    if (cardsElement.value) {
+      cardsElement.value.scrollLeft = cardsElement.value.scrollWidth
+    }
+  })
+}
+
 // 处理图片加载失败
 const handleImageError = (e: Event) => {
   const target = e.target as HTMLImageElement
@@ -61,11 +70,17 @@ const toggleSelectExpert = (expert: FullExpertInfo) => {
     })
   } else {
     // 从选中列表移除
-    evaluationStore.removeExpert(expert.id)
+    evaluationStore.removeSelectedExpert(expert.id)
   }
 
   console.log('选中专家ID:', selectedExpertIds.value)
   console.log('选中专家名称:', selectedExpertNames.value)
+}
+
+// 删除专家
+const deleteExpert = (expertId: string, event: Event) => {
+  event.stopPropagation()
+  evaluationStore.removeBaseExpert(expertId)
 }
 
 // 检查专家是否被选中
@@ -80,6 +95,20 @@ const openConfigModal = (expert: FullExpertInfo, event: Event) => {
   showConfigModal.value = true
 }
 
+// 打开添加专家弹窗
+const openAddExpertModal = (event: Event) => {
+  event.stopPropagation()
+  // 创建新的空专家对象
+  currentEditingExpert.value = {
+    id: Date.now().toString(), // 使用时间戳作为临时ID
+    name: '',
+    desc: '',
+    prompt: '',
+    avatar: defaultAvatar,
+  }
+  showConfigModal.value = true
+}
+
 // 关闭配置弹窗
 const closeConfigModal = () => {
   showConfigModal.value = false
@@ -90,12 +119,32 @@ const closeConfigModal = () => {
 const handleSaveConfig = (data: { name: string; desc: string; prompt: string }) => {
   if (!currentEditingExpert.value) return
 
-  // 使用 store 的 updateBaseExpert 方法更新基础专家数据
-  evaluationStore.updateBaseExpert(currentEditingExpert.value.id, {
-    name: data.name,
-    desc: data.desc,
-    prompt: data.prompt,
-  })
+  // 判断是编辑现有专家还是添加新专家
+  const existingExpert = expertData.value.find((e) => e.id === currentEditingExpert.value?.id)
+
+  if (existingExpert) {
+    // 更新现有专家
+    evaluationStore.updateBaseExpert(currentEditingExpert.value.id, {
+      name: data.name,
+      desc: data.desc,
+      prompt: data.prompt,
+    })
+  } else {
+    // 添加新专家到基础数据
+    const newExpert: FullExpertInfo = {
+      id: currentEditingExpert.value.id,
+      name: data.name,
+      desc: data.desc,
+      prompt: data.prompt,
+      avatar: defaultAvatar,
+    }
+    // 这里需要将新专家添加到store中
+    evaluationStore.updateBaseExpert(newExpert.id, newExpert)
+    scrollToEnd() // 新增专家后滚动到最右侧
+  }
+
+  // 关闭弹窗
+  closeConfigModal()
 }
 
 // 暴露卡片元素和状态给父组件
@@ -116,6 +165,7 @@ defineExpose({
         :class="{ selected: isExpertSelected(expert.id) }"
         @click="toggleSelectExpert(expert)"
       >
+        <div class="delete-icon" @click="deleteExpert(expert.id, $event)">🗑️</div>
         <div class="expert-avatar">
           <img :src="expert.avatar" :alt="expert.name" @error="handleImageError" class="avatar-img" />
         </div>
@@ -126,7 +176,14 @@ defineExpose({
         <div class="select-indicator" v-show="isExpertSelected(expert.id)">✓</div>
         <div class="config-icon" @click="openConfigModal(expert, $event)">📖</div>
       </div>
+
+      <!-- 添加专家卡片 -->
+      <div class="expert-card add-expert-card" @click="openAddExpertModal($event)">
+        <div class="add-icon">+</div>
+        <p class="add-text">添加专家</p>
+      </div>
     </div>
+
     <!-- 专家配置弹窗 -->
     <ExpertConfigModal
       v-model:visible="showConfigModal"
@@ -196,6 +253,62 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
       border-color: rgba(64, 255, 170, 0.8);
       box-shadow: 0 0 15px rgba(64, 255, 170, 0.4);
       background: linear-gradient(rgba(25, 35, 55, 0.95), rgba(15, 25, 45, 0.95));
+    }
+
+    &.add-expert-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(rgba(25, 35, 45, 0.6), rgba(15, 25, 35, 0.6));
+      border: 2px dashed $border-color;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: $accent-color;
+        background: linear-gradient(rgba(30, 40, 55, 0.7), rgba(20, 30, 45, 0.7));
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(64, 169, 255, 0.15);
+      }
+
+      .add-icon {
+        font-size: 48px;
+        color: $accent-color;
+        margin-bottom: 10px;
+        font-weight: 300;
+        line-height: 1;
+      }
+
+      .add-text {
+        font-size: 14px;
+        color: $text-color;
+        margin: 0;
+        font-weight: 500;
+      }
+    }
+
+    .delete-icon {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 22px;
+      height: 22px;
+      background: rgba(255, 77, 79, 0.85);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 20;
+      transition:
+        background 0.2s,
+        transform 0.2s;
+      &:hover {
+        background: rgba(255, 77, 79, 1);
+        transform: scale(1.1);
+      }
     }
 
     .expert-avatar {
