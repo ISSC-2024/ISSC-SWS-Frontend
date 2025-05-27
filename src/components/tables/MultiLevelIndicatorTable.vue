@@ -160,6 +160,14 @@ const prepareData = () => {
           })
         }
       })
+    } else {
+      // 当一级指标没有二级指标时，也为三级添加占位空单元格（要保留，不然三级指标会缺少边界线）
+      processedTableData.value.level3.push({
+        id: `empty-level3-${level1.id}`,
+        isEmpty: true,
+        colSpan: level1.colSpan || 1,
+        parentId: `empty-${level1.id}`,
+      })
     }
   })
 }
@@ -342,7 +350,7 @@ const resetToDefaultData = () => {
 // 构建单元格内容
 const renderCell = (item: any, level: number) => {
   if (item.isEmpty) {
-    return h('div', { class: 'empty-cell' }, '未设置指标')
+    return h('div', { class: 'empty-cell' }, level === 3 ? '未设置三级指标' : '未设置指标')
   }
 
   const actualItem = item.item
@@ -468,7 +476,7 @@ defineExpose({
           :key="item.id"
           class="table-cell"
           :style="{
-            width: `${(item.colSpan / processedTableData.level2.reduce((sum, i) => sum + i.colSpan, 0)) * 100}%`,
+            width: `${(item.colSpan / processedTableData.level1.reduce((sum, i) => sum + i.colSpan, 0)) * 100}%`,
           }"
         >
           <component :is="renderCell(item, 2)" />
@@ -482,7 +490,7 @@ defineExpose({
           :key="item.id"
           class="table-cell"
           :style="{
-            width: `${(item.colSpan / processedTableData.level3.reduce((sum, i) => sum + i.colSpan, 0)) * 100}%`,
+            width: `${(item.colSpan / processedTableData.level1.reduce((sum, i) => sum + i.colSpan, 0)) * 100}%`,
           }"
         >
           <component :is="renderCell(item, 3)" />
@@ -558,6 +566,8 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
     font-size: 13px;
     width: 100%;
     background-color: rgba(20, 30, 50, 0.2);
+    min-height: 100%;
+    border-radius: 4px;
   }
 
   .indicator-cell {
@@ -628,6 +638,11 @@ $bg-gradient-end: rgba(12, 22, 40, 0.95);
 
   .level3-cell {
     font-size: 14px;
+    .indicator-name {
+      word-wrap: break-word;
+      word-break: break-all;
+      white-space: normal;
+    }
   }
 }
 </style>

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { IndicatorItem } from '@/components/tables/MultiLevelIndicatorTable.vue'
 
-// 默认指标数据结构（基于test.json）
+// 默认指标数据结构
 const DEFAULT_INDICATOR_DATA: IndicatorItem[] = [
   {
     id: '1',
@@ -12,18 +12,18 @@ const DEFAULT_INDICATOR_DATA: IndicatorItem[] = [
         id: '1-1',
         name: '基础设施智能化程度',
         children: [
-          { id: '1-1-1', name: '关键工艺段自动化控制率（%）', value: '', editable: true },
-          { id: '1-1-2', name: '关键节点传感器覆盖率（%）', value: '', editable: true },
-          { id: '1-1-3', name: '智能管网实时监测数据上传频次（次/天）', value: '', editable: true },
+          { id: '1-1-1', name: '关键工艺段自动化控制率(%)', value: '', editable: true },
+          { id: '1-1-2', name: '关键节点传感器覆盖率(%)', value: '', editable: true },
+          { id: '1-1-3', name: '智能管网实时监测数据上传频次(次/天)', value: '', editable: true },
         ],
       },
       {
         id: '1-2',
         name: '信息系统与数据集成水平',
         children: [
-          { id: '1-2-1', name: '生产调度系统（MES）运行稳定性（月均故障率）', value: '', editable: true },
-          { id: '1-2-2', name: '设备数据接入率（%联网设备占比）', value: '', editable: true },
-          { id: '1-2-3', name: '能源与物流调度系统数据同步周期（秒）', value: '', editable: true },
+          { id: '1-2-1', name: '生产调度系统(MES)运行稳定性(月均故障率)', value: '', editable: true },
+          { id: '1-2-2', name: '设备数据接入率(%联网设备占比)', value: '', editable: true },
+          { id: '1-2-3', name: '能源与物流调度系统数据同步周期(秒)', value: '', editable: true },
         ],
       },
     ],
@@ -36,18 +36,18 @@ const DEFAULT_INDICATOR_DATA: IndicatorItem[] = [
         id: '2-1',
         name: '碳排放控制与资源循环利用',
         children: [
-          { id: '2-1-1', name: '二氧化碳排放实时监测覆盖率（%工段）', value: '', editable: true },
-          { id: '2-1-2', name: 'CO₂捕集量/排放总量（%）', value: '', editable: true },
-          { id: '2-1-3', name: '副产物在线回收利用比例（%）', value: '', editable: true },
+          { id: '2-1-1', name: '二氧化碳排放实时监测覆盖率(%工段)', value: '', editable: true },
+          { id: '2-1-2', name: 'CO₂捕集量/排放总量(%)', value: '', editable: true },
+          { id: '2-1-3', name: '副产物在线回收利用比例(%)', value: '', editable: true },
         ],
       },
       {
         id: '2-2',
         name: '清洁能源与绿色技术应用',
         children: [
-          { id: '2-2-1', name: '清洁能源实时用量占比（%）', value: '', editable: true },
-          { id: '2-2-2', name: '绿色工艺产线数/总产线数（%）', value: '', editable: true },
-          { id: '2-2-3', name: '碳足迹标识产品出货占比（%）', value: '', editable: true },
+          { id: '2-2-1', name: '清洁能源实时用量占比(%)', value: '', editable: true },
+          { id: '2-2-2', name: '绿色工艺产线数/总产线数(%)', value: '', editable: true },
+          { id: '2-2-3', name: '碳足迹标识产品出货占比(%)', value: '', editable: true },
         ],
       },
     ],
@@ -60,18 +60,18 @@ const DEFAULT_INDICATOR_DATA: IndicatorItem[] = [
         id: '3-1',
         name: '产业链协同深度',
         children: [
-          { id: '3-1-1', name: '原料跨企业直供流量占比（%）', value: '', editable: true },
-          { id: '3-1-2', name: '跨企业物料交换实时记录数（条/日）', value: '', editable: true },
-          { id: '3-1-3', name: '共享设施使用率（%）', value: '', editable: true },
+          { id: '3-1-1', name: '原料跨企业直供流量占比(%)', value: '', editable: true },
+          { id: '3-1-2', name: '跨企业物料交换实时记录数(条/日)', value: '', editable: true },
+          { id: '3-1-3', name: '共享设施使用率(%)', value: '', editable: true },
         ],
       },
       {
         id: '3-2',
         name: '安全监测与应急响应能力',
         children: [
-          { id: '3-2-1', name: '关键危险源在线监测覆盖率（%）', value: '', editable: true },
-          { id: '3-2-2', name: '安全报警响应平均时间（秒）', value: '', editable: true },
-          { id: '3-2-3', name: '应急演练数据记录频次（次/季度）', value: '', editable: true },
+          { id: '3-2-1', name: '关键危险源在线监测覆盖率(%)', value: '', editable: true },
+          { id: '3-2-2', name: '安全报警响应平均时间(秒)', value: '', editable: true },
+          { id: '3-2-3', name: '应急演练数据记录频次(次/季度)', value: '', editable: true },
         ],
       },
     ],
@@ -137,7 +137,7 @@ export interface ExpertInfo {
   prompt?: string
 }
 
-// 完整专家信息接口（包含头像）
+// 完整专家信息接口(包含头像)
 export interface FullExpertInfo extends ExpertInfo {
   avatar: string
 }
@@ -326,7 +326,7 @@ export const useEvaluationStore = defineStore('evaluation', () => {
     }
   }
 
-  // 获取所有AI工具配置（包括未启用的工具）
+  // 获取所有AI工具配置(包括未启用的工具)
   const getEnabledAITools = (): AIToolConfig[] => {
     const tools: AIToolConfig[] = [
       {
