@@ -415,6 +415,66 @@ export default class AxiosClient {
   public clearToken(): void {
     delete this.instance.defaults.headers.common['Authorization']
   }
+
+  /**
+   * 流式NDJSON请求（适用于application/x-ndjson）
+   * @param url 请求地址
+   * @param data 请求体数据
+   * @param onMessage 每条消息的回调
+   * @param config 其他配置
+   * @returns Promise<void>
+   */
+  public async streamNDJSON(
+    url: string,
+    data: any,
+    onMessage: (msg: any) => void,
+    config?: RequestConfig,
+  ): Promise<void> {
+    // 仅支持浏览器Fetch API实现，axios不支持流式文本处理
+    const token = localStorage.getItem('token')
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Accept: 'application/x-ndjson',
+    }
+    if (token) headers['Authorization'] = `Bearer ${token}`
+    const resp = await fetch(this.baseURL + url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data),
+      signal: (config as any)?.signal,
+    })
+    if (!resp.body) throw new Error('流式响应不支持')
+    const reader = resp.body.getReader()
+    const decoder = new TextDecoder('utf-8')
+    let buffer = ''
+    while (true) {
+      const { value, done } = await reader.read()
+      if (done) break
+      buffer += decoder.decode(value, { stream: true })
+      let idx
+      while ((idx = buffer.indexOf('\n')) >= 0) {
+        const line = buffer.slice(0, idx).trim()
+        buffer = buffer.slice(idx + 1)
+        if (line) {
+          try {
+            const obj = JSON.parse(line)
+            onMessage(obj)
+          } catch (e) {
+            console.warn('解析NDJSON行失败:', line, e)
+          }
+        }
+      }
+    }
+    // 处理最后一行
+    if (buffer.trim()) {
+      try {
+        const obj = JSON.parse(buffer.trim())
+        onMessage(obj)
+      } catch (e) {
+        console.warn('解析NDJSON行失败:', buffer, e)
+      }
+    }
+  }
 }
 
-export const http = new AxiosClient('http://150.158.82.42:8000/api', 90000)
+export const http = new AxiosClient(import.meta.env.VITE_API_URL, 90000)
