@@ -2,8 +2,8 @@
  * 专家评估系统API服务
  */
 export default class EvaluationSystemAPI {
-  private static readonly BASE_PATH = '/llm/eval'
-  private static readonly API_BASE_URL = import.meta.env.VITE_API_URL
+  private static readonly BASE_PATH = '/eval-llm'
+  private static readonly API_BASE_URL = import.meta.env.VITE_LLM_API_URL
 
   /**
    * 评估LLM接口，流式获取专家评估结果

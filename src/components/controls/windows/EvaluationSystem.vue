@@ -4,29 +4,17 @@
  *
  * 该组件负责显示评价体系相关内容
  */
-import { ref, nextTick } from 'vue'
-import MultiLevelIndicatorTable, {
-  type IndicatorItem,
-} from '@/components/controls/windows/EvaluationSystem/MultiLevelIndicatorTable.vue'
-import ExpertCardCarousel from '@/components/controls/windows/EvaluationSystem/ExpertCardCarousel.vue'
+import { ref } from 'vue'
 import { useEvaluationStore } from '@/stores/evaluationStore'
-import { validateEvaluationData, processIndicators, generateConfigMarkdown } from '@/utils/evaluationUtils'
 import EvaluationSystemAPI from '@/apis/EvaluationSystem'
-import EvalFeatureSwitches from '@/components/controls/windows/EvaluationSystem/EvalFeatureSwitches.vue'
-import ConfigSummary from './EvaluationSystem/ConfigSummary.vue'
 import EvalReport from './EvaluationSystem/EvalReport.vue'
+import EvaluationConfigFlow from './EvaluationSystem/EvaluationConfigFlow.vue'
 
 // 定义组件向外发出的事件
 const emit = defineEmits(['close'])
 
 // 使用评价体系store
 const evaluationStore = useEvaluationStore()
-
-// 专家轮播组件引用
-const expertCarouselRef = ref<InstanceType<typeof ExpertCardCarousel> | null>(null)
-
-// 多级指标表格引用
-const indicatorTableRef = ref<InstanceType<typeof MultiLevelIndicatorTable> | null>(null)
 
 // 视图状态控制
 const isTransitioning = ref(false)
@@ -39,68 +27,10 @@ const evalError = ref('') // 错误信息
 const abortController = ref<AbortController | null>(null)
 
 // 数据变更处理
-const handleDataChange = (newData: IndicatorItem[]) => {
-  // 更新store中的指标数据
-  evaluationStore.updateIndicatorData(newData)
-  console.log('指标数据已更新', newData)
-}
+// const handleDataChange = (newData: IndicatorItem[]) => { ... }
 
 // 提交处理函数
-const handleSubmit = async () => {
-  try {
-    isTransitioning.value = true
-    // 1. 直接从store获取专家数据
-    const storeExperts = evaluationStore.selectedExperts
-    const selectedExperts = storeExperts.map((expert) => ({
-      id: expert.id,
-      name: expert.name,
-      desc: expert.desc || '',
-      prompt: expert.prompt || '',
-    }))
-    // 2. 获取当前表格数据
-    const currentTableData = indicatorTableRef.value?.getCurrentData() || []
-    // 3. 获取AI工具配置
-    const aiTools = evaluationStore.getEnabledAITools()
-    // 4. 组装三部分数据JSON
-    const evaluationData = {
-      experts: selectedExperts, // 格式化后的专家数据
-      indicators: {
-        id: 'root',
-        name: '智能化园区评价指标体系',
-        children: processIndicators(currentTableData),
-      },
-      tools: aiTools,
-    }
-    // 验证数据结构是否符合要求
-    const validationResult = validateEvaluationData(evaluationData)
-    if (!validationResult.valid) {
-      console.warn('评价数据格式验证警告:')
-      validationResult.errors.forEach((error) => console.warn(`- ${error}`))
-      alert('提交数据格式不符合要求，请检查配置后重新提交。')
-      isTransitioning.value = false
-      return
-    }
-    console.log(JSON.stringify(evaluationData))
-    evaluationStore.setSelectedExperts(evaluationData.experts)
-    evaluationStore.updateIndicatorData(currentTableData)
-    const markdownContent = generateConfigMarkdown(evaluationData)
-    evaluationStore.setMarkdownContent(markdownContent)
-    await new Promise((resolve) => setTimeout(resolve, 800))
-    await nextTick()
-    evaluationStore.setSubmitted(true)
-    await nextTick()
-    isTransitioning.value = false
-    // 提交后立即开始流式评估
-    startEvaluation(evaluationData)
-    return evaluationData
-  } catch (error) {
-    console.error('提交数据时出错:', error)
-    alert('提交数据时出错，请查看控制台获取详情')
-    await nextTick()
-    isTransitioning.value = false
-    throw error
-  }
-}
+// const handleSubmit = async () => { ... }
 
 // 评估流式请求（提交后自动调用）
 const startEvaluation = async (evaluationData: any) => {
@@ -138,9 +68,7 @@ const startEvaluation = async (evaluationData: any) => {
 }
 
 // 用户点击"查看评估报告"
-const handleShowEvalResult = () => {
-  showEvalResult.value = true
-}
+// const handleShowEvalResult = () => { ... }
 
 // 用户点击"返回配置信息"
 const handleBackToSummary = () => {
@@ -161,10 +89,7 @@ const handleBackToEdit = () => {
 }
 
 // 重置处理函数
-const handleReset = () => {
-  // 重置store中的所有状态
-  evaluationStore.resetAll()
-}
+// const handleReset = () => { ... }
 
 /**
  * 关闭窗口
@@ -205,63 +130,26 @@ const close = () => {
 
             <!-- 表单容器 -->
             <transition name="slide-fade" mode="out-in">
-              <!-- 配置表单视图 -->
-              <div v-if="!evaluationStore.isSubmitted" key="form" class="form-container">
-                <!-- 专家卡片轮播 -->
-                <div class="experts-section">
-                  <h3 class="section-title">评价专家团队</h3>
-                  <div class="experts-carousel-wrapper">
-                    <ExpertCardCarousel ref="expertCarouselRef" />
-                  </div>
-                </div>
-
-                <!-- 多级指标表格部分 -->
-                <div class="indicators-section">
-                  <h3 class="section-title">评价指标体系</h3>
-                  <MultiLevelIndicatorTable @change="handleDataChange" ref="indicatorTableRef" />
-                </div>
-
-                <!-- 智能评价功能开关 -->
-                <EvalFeatureSwitches />
-
-                <!-- 操作按钮 -->
-                <div class="action-buttons">
-                  <button
-                    class="submit-button"
-                    @click="() => handleSubmit().catch(console.error)"
-                    :disabled="isTransitioning"
-                  >
-                    <span class="button-icon">✓</span>
-                    提交
-                  </button>
-                  <button class="reset-button" @click="handleReset" :disabled="isTransitioning">
-                    <span class="button-icon">↺</span>
-                    重置
-                  </button>
-                </div>
-              </div>
-
-              <!-- 配置摘要与评估报告视图切换 -->
-              <template v-else>
-                <transition name="slide-fade" mode="out-in">
-                  <ConfigSummary
-                    v-if="!showEvalResult"
-                    :markdown="evaluationStore.markdownContent"
-                    :isEvaluating="isEvaluating"
-                    :evalError="evalError"
-                    @back-edit="handleBackToEdit"
-                    @show-eval="handleShowEvalResult"
-                    :showEvalBtn="!!evalResultMarkdown"
-                  />
-                  <EvalReport
-                    v-else
-                    :markdown="evalResultMarkdown"
-                    :isEvaluating="isEvaluating"
-                    :evalError="evalError"
-                    @back-summary="handleBackToSummary"
-                  />
-                </transition>
+              <!-- 配置表单与摘要视图 -->
+              <template v-if="!evaluationStore.isSubmitted || !showEvalResult">
+                <EvaluationConfigFlow
+                  :isEvaluating="isEvaluating"
+                  :evalError="evalError"
+                  :evalResultMarkdown="evalResultMarkdown"
+                  :showEvalBtn="true"
+                  @submitted="startEvaluation"
+                  @back-edit="handleBackToEdit"
+                  @show-eval="showEvalResult = true"
+                />
               </template>
+              <!-- 评估报告视图 -->
+              <EvalReport
+                v-else
+                :markdown="evalResultMarkdown"
+                :isEvaluating="isEvaluating"
+                :evalError="evalError"
+                @back-summary="handleBackToSummary"
+              />
             </transition>
           </div>
         </div>
