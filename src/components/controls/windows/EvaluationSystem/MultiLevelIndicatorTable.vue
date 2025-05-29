@@ -327,7 +327,8 @@ const findItem = (items: IndicatorItem[], id: string): IndicatorItem | null => {
 
 // 获取当前表格数据
 const getCurrentData = () => {
-  return tableData.value
+  // 返回深拷贝，避免响应式Proxy污染
+  return JSON.parse(JSON.stringify(tableData.value))
 }
 
 // 设置表格数据（用于从外部恢复状态）

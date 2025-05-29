@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { IndicatorItem } from '@/components/tables/MultiLevelIndicatorTable.vue'
+import type { IndicatorItem } from '@/components/controls/windows/EvaluationSystem/MultiLevelIndicatorTable.vue'
 
 // 默认指标数据结构
 const DEFAULT_INDICATOR_DATA: IndicatorItem[] = [
@@ -197,7 +197,7 @@ export const useEvaluationStore = defineStore('evaluation', () => {
   const indicatorData = ref<IndicatorItem[]>(structuredClone(DEFAULT_INDICATOR_DATA))
 
   // AI工具开关状态
-  const aiDebateEnabled = ref(false)
+  const aiDebateEnabled = ref(true)
   const autoIndicatorsEnabled = ref(false)
   const adversarialEvaluationEnabled = ref(false)
 

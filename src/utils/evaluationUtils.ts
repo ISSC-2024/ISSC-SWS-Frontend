@@ -3,7 +3,7 @@
  * 用于处理评价数据、验证、指标处理和生成Markdown内容
  */
 
-import { type IndicatorItem } from '@/components/tables/MultiLevelIndicatorTable.vue'
+import { type IndicatorItem } from '@/components/controls/windows/EvaluationSystem/MultiLevelIndicatorTable.vue'
 import { type AIToolConfig } from '@/stores/evaluationStore'
 
 /**

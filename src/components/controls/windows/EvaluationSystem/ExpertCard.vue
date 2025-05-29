@@ -165,7 +165,7 @@ defineExpose({
         :class="{ selected: isExpertSelected(expert.id) }"
         @click="toggleSelectExpert(expert)"
       >
-        <div class="delete-icon" @click="deleteExpert(expert.id, $event)">🗑️</div>
+        <div class="delete-icon" v-if="!isExpertSelected(expert.id)" @click="deleteExpert(expert.id, $event)">🗑️</div>
         <div class="expert-avatar">
           <img :src="expert.avatar" :alt="expert.name" @error="handleImageError" class="avatar-img" />
         </div>
