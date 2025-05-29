@@ -20,6 +20,7 @@ declare global {
 import SceneSwitcher from './windows/SceneSwitcher.vue'
 import ModelSelector from './windows/ModelSelector.vue'
 import AIInterface from './windows/AIInterface.vue'
+import EvaluationSystem from './windows/EvaluationSystem.vue'
 
 // 控制当前显示的浮窗
 const activeWindow = ref<string | null>(null)
@@ -136,6 +137,19 @@ onBeforeUnmount(() => {
       <div class="btn-glow"></div>
     </button>
 
+    <button class="control-btn" @click="toggleWindow('evaluation')">
+      <div class="btn-icon">
+        <svg viewBox="0 0 24 24" width="18" height="18">
+          <path
+            fill="currentColor"
+            d="M12,3C17.5,3 22,6.58 22,11C22,15.42 17.5,19 12,19C10.76,19 9.57,18.82 8.47,18.5C5.55,21 2,21 2,21C4.33,18.67 4.7,17.1 4.75,16.5C3.05,15.07 2,13.13 2,11C2,6.58 6.5,3 12,3M11,14L13,14.03L13.03,11H15.03L15,14L18,14.03L18,16L15,16.03L14.97,19H13L12.97,16L11,16.03V14Z"
+          />
+        </svg>
+      </div>
+      <span>评价体系</span>
+      <div class="btn-glow"></div>
+    </button>
+
     <!-- 全局消息提示 -->
     <transition name="tip">
       <div v-if="showMessage" class="message-tip">
@@ -169,6 +183,9 @@ onBeforeUnmount(() => {
 
     <!-- 人机接口浮窗 -->
     <AIInterface v-if="activeWindow === 'interface'" :model="modelValue" @close="closeWindow" />
+
+    <!-- 评价体系浮窗 -->
+    <EvaluationSystem v-if="activeWindow === 'evaluation'" @close="closeWindow" />
   </div>
 </template>
 

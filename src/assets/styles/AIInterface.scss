@@ -1,0 +1,1144 @@
+// AIInterface.scss - 人机接口组件样式
+
+// 颜色变量
+$ai-bg-dark: #121826;
+$ai-bg-darker: #0b101b;
+$ai-bg-medium: #1a2234;
+$ai-bg-light: #232b3c;
+$ai-accent: #61dafb;
+$ai-accent-hover: #4bc0e3;
+$ai-text-primary: #ffffff;
+$ai-danger: #ff3b30;
+
+// 颜色函数
+@function ai-accent-alpha($alpha) {
+  @return rgba($ai-accent, $alpha);
+}
+
+@function ai-text-alpha($alpha) {
+  @return rgba($ai-text-primary, $alpha);
+}
+
+// 透明度变量
+$ai-accent-soft: ai-accent-alpha(0.15);
+$ai-text-secondary: ai-text-alpha(0.8);
+$ai-text-tertiary: ai-text-alpha(0.6);
+$ai-text-dim: ai-text-alpha(0.4);
+$ai-border: ai-text-alpha(0.1);
+$ai-user-bubble: ai-accent-alpha(0.1);
+$ai-ai-bubble: rgba(55, 65, 81, 0.6);
+
+// 阴影和发光效果
+$ai-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+$ai-glow: 0 0 15px ai-accent-alpha(0.3);
+
+// 间距和尺寸
+$border-radius-small: 4px;
+$border-radius-medium: 8px;
+$border-radius-large: 12px;
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+$spacing-xl: 20px;
+
+// 混合宏 - 渐变背景
+@mixin gradient-background {
+  background-image:
+    linear-gradient(to bottom, rgba(18, 24, 38, 0.95), rgba(11, 16, 27, 0.98)),
+    repeating-linear-gradient(
+      45deg,
+      ai-accent-alpha(0.02) 0,
+      ai-accent-alpha(0.02) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
+// 混合宏 - 渐变线条
+@mixin gradient-line($opacity: 1) {
+  background: linear-gradient(90deg, transparent, $ai-accent, transparent);
+  opacity: $opacity;
+}
+
+// 混合宏 - 消息气泡基础样式
+@mixin message-bubble-base {
+  border-radius: $border-radius-large;
+  padding: 18px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+// 混合宏 - 渐变线装饰
+@mixin bubble-decoration($direction: 'left-to-right', $color: $ai-accent, $opacity: 0.5) {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    @if $direction == 'left-to-right' {
+      background: linear-gradient(90deg, transparent, rgba($color, $opacity), transparent);
+    } @else {
+      background: linear-gradient(90deg, rgba($color, $opacity), transparent);
+    }
+  }
+}
+
+// 混合宏 - 头像基础样式
+@mixin avatar-base {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-sm;
+}
+
+// 混合宏 - 带动画的按钮
+@mixin animated-button {
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+// 混合宏 - 文本框样式
+@mixin text-input-base {
+  background-color: rgba($ai-bg-medium, 0.7);
+  border: 1px solid $ai-accent;
+  border-radius: $border-radius-small;
+  color: $ai-text-primary;
+  outline: none;
+
+  &:focus {
+    border-color: $ai-accent;
+    box-shadow: 0 0 12px ai-accent-alpha(0.4);
+  }
+}
+
+// 基础样式
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.ai-window {
+  position: relative;
+  width: 90%;
+  max-width: 1200px;
+  height: 85vh;
+  background-color: $ai-bg-dark;
+  border-radius: $border-radius-large;
+  box-shadow:
+    0 0 0 1px ai-accent-alpha(0.3),
+    0 8px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid ai-accent-alpha(0.3);
+  @include gradient-background;
+}
+
+// 装饰线条
+.window-top-line {
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  @include gradient-line(0.8);
+  box-shadow: 0 0 8px ai-accent-alpha(0.5);
+}
+
+.window-bottom-line {
+  height: 1px;
+  margin: 0 5%;
+  @include gradient-line(0.3);
+}
+
+// 头部样式
+.ai-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px $spacing-xl;
+  background-color: #081020;
+  border-bottom: 1px solid rgba($ai-accent, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 10;
+
+  h2 {
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: $ai-text-primary;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 10px rgba($ai-accent, 0.3);
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.ai-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle, $ai-accent-soft, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-md;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 10px rgba($ai-accent, 0.4);
+  color: $ai-accent;
+
+  &-svg {
+    filter: drop-shadow(0 0 5px rgba($ai-accent, 0.6));
+  }
+}
+
+// 关闭按钮样式
+.close-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba($ai-text-primary, 0.05);
+  border: 1px solid rgba($ai-text-primary, 0.1);
+  color: $ai-text-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  padding: 0;
+  outline: none;
+
+  &:hover {
+    background: rgba($ai-text-primary, 0.15);
+    transform: rotate(90deg);
+  }
+}
+
+// 内容区域调整
+.ai-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+// 对话历史面板
+.chat-history {
+  width: 240px;
+  min-width: 240px;
+  background-color: $ai-bg-darker;
+  border-right: 1px solid rgba($ai-accent, 0.15);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.history-header {
+  padding: $spacing-lg;
+  border-bottom: 1px solid rgba($ai-accent, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: $ai-text-primary;
+  }
+}
+
+.new-chat-button {
+  display: flex;
+  align-items: center;
+  background-color: rgba($ai-accent, 0.1);
+  color: $ai-accent;
+  border: 1px solid rgba($ai-accent, 0.2);
+  border-radius: $border-radius-small;
+  padding: $spacing-xs $spacing-sm;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  svg {
+    margin-right: $spacing-xs;
+  }
+
+  &:hover {
+    background-color: rgba($ai-accent, 0.2);
+    border-color: rgba($ai-accent, 0.3);
+  }
+}
+
+// 历史记录列表
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-sm;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-medium;
+  margin-bottom: $spacing-xs;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+
+  &:hover {
+    background-color: rgba($ai-accent, 0.05);
+
+    .history-item-icon {
+      transform: scale(1.1);
+    }
+
+    .delete-icon {
+      display: flex;
+    }
+  }
+
+  &.active {
+    background-color: rgba($ai-accent, 0.1);
+    border-color: rgba($ai-accent, 0.2);
+
+    .history-item-icon {
+      background-color: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 8px 0 currentColor;
+      transform: scale(1.1);
+    }
+
+    .history-item-title {
+      color: $ai-accent;
+    }
+  }
+
+  &-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.3);
+    margin-right: $spacing-md;
+    font-size: 16px;
+    transition: all 0.3s;
+  }
+
+  &-content {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  &-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $ai-text-secondary;
+    margin-bottom: $spacing-xs;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &-date {
+    font-size: 0.7rem;
+    color: $ai-text-dim;
+  }
+}
+
+// 创建删除图标样式的混合宏
+@mixin icon-button($bg-color, $icon-color, $hover-bg-color) {
+  display: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: $bg-color;
+  color: $icon-color;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
+  opacity: 0.8;
+
+  &:hover {
+    background-color: $hover-bg-color;
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+.delete-icon {
+  @include icon-button(rgba(255, 59, 48, 0.1), #ff3b30, rgba(255, 59, 48, 0.2));
+}
+
+// 历史面板底部
+.history-footer {
+  padding: $spacing-lg;
+  border-top: 1px solid rgba($ai-accent, 0.1);
+  background-color: rgba(8, 16, 32, 0.5);
+
+  > div > .model-select {
+    width: 100%;
+    position: relative;
+    text-align: center;
+  }
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+// select元素样式
+.model-select {
+  width: 100%;
+  height: 38px;
+  background-color: rgba(26, 34, 52, 0.8);
+  border: 1px solid rgba($ai-accent, 0.2);
+  border-radius: 8px;
+  color: $ai-text-secondary;
+  font-size: 0.85rem;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  text-align-last: center;
+  -moz-text-align-last: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background-color: rgba($ai-accent, 0.12);
+    border-color: rgba($ai-accent, 0.3);
+  }
+
+  &:focus {
+    border-color: $ai-accent;
+    box-shadow:
+      0 0 0 2px rgba($ai-accent, 0.15),
+      0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  option {
+    background-color: #081020;
+    color: $ai-text-primary;
+    padding: 10px;
+  }
+}
+
+.select-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.model-badge {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background-color: rgba($ai-accent, 0.1);
+  color: $ai-accent;
+  border-radius: 4px;
+  margin: 0 8px;
+  border: 1px solid rgba($ai-accent, 0.2);
+  box-shadow: 0 0 5px rgba($ai-accent, 0.1);
+  text-shadow: 0 0 3px rgba($ai-accent, 0.3);
+  display: inline-flex;
+  align-items: center;
+}
+
+.message-time {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: $ai-text-dim;
+  padding-left: $spacing-sm;
+}
+
+// 对话区域，让其占据剩余空间
+.ai-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0; // 确保flexbox可以正常收缩
+  overflow: hidden; // 防止溢出
+}
+
+// 对话标题
+.chat-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background-color: rgba(11, 16, 27, 0.5);
+  border-bottom: 1px solid rgba($ai-accent, 0.1);
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: $ai-accent;
+  }
+}
+
+.title-editing-container {
+  flex: 1;
+}
+
+.title-input {
+  @include text-input-base;
+  padding: $spacing-xs $spacing-sm;
+  font-size: 1rem;
+  font-weight: 500;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 0 8px ai-accent-alpha(0.3);
+}
+
+.title-actions {
+  display: flex;
+}
+
+.title-action-button {
+  display: flex;
+  align-items: center;
+  background-color: rgba($ai-accent, 0.05);
+  color: $ai-text-tertiary;
+  border: 1px solid rgba($ai-accent, 0.1);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  svg {
+    margin-right: 4px;
+  }
+
+  &:hover {
+    background-color: rgba($ai-accent, 0.1);
+    color: $ai-accent;
+    border-color: rgba($ai-accent, 0.2);
+  }
+}
+
+// 消息列表
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-xl;
+  background-color: rgba(11, 16, 27, 0.6);
+  scroll-behavior: smooth;
+  background-image:
+    linear-gradient(to bottom, rgba(18, 24, 38, 0.3), rgba(11, 16, 27, 0.4)),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2361dafb' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  display: flex;
+  flex-direction: column;
+}
+
+// 空状态占满高度
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: $ai-text-tertiary;
+  text-align: center;
+  padding: 20px;
+  background: radial-gradient(circle at center, rgba($ai-accent, 0.03) 0%, transparent 70%);
+
+  &-svg {
+    filter: drop-shadow(0 0 10px rgba($ai-accent, 0.6));
+  }
+}
+
+.empty-icon {
+  margin-bottom: 20px;
+  color: $ai-accent;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba($ai-accent, 0.3));
+}
+
+.empty-text {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: $ai-text-primary;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba($ai-accent, 0.2);
+}
+
+.empty-desc {
+  color: $ai-text-tertiary;
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+}
+
+.model-name-highlight {
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.empty-suggestions {
+  background-color: rgba(26, 34, 52, 0.8);
+  border-radius: 12px;
+  padding: 20px;
+  width: 100%;
+  max-width: 450px;
+  border: 1px solid rgba($ai-accent, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+
+  p {
+    color: $ai-text-secondary;
+    margin-bottom: 14px;
+    font-size: 0.9rem;
+  }
+
+  ul {
+    text-align: left;
+    list-style-type: none;
+  }
+
+  li {
+    margin-bottom: 12px;
+    padding: 12px;
+    background-color: rgba(35, 43, 60, 0.8);
+    border-radius: 8px;
+    cursor: pointer;
+    color: $ai-text-secondary;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+    border: 1px solid rgba($ai-accent, 0.05);
+    position: relative;
+    overflow: hidden;
+
+    // 点击波纹效果
+    &:active::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      background-color: rgba($ai-accent, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      animation: ripple 0.6s linear;
+    }
+
+    &:hover {
+      background-color: rgba($ai-accent, 0.15);
+      color: $ai-text-primary;
+      border-color: rgba($ai-accent, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+@keyframes ripple {
+  to {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
+  }
+}
+
+.suggestion-tag {
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  background-color: rgba($ai-accent, 0.15);
+  color: $ai-accent;
+  border-radius: 4px;
+  margin-right: 10px;
+  border: 1px solid rgba($ai-accent, 0.2);
+}
+
+// 消息样式
+.message {
+  margin-bottom: 28px;
+  animation: messageAppear 0.3s ease;
+  position: relative;
+
+  &-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+  }
+
+  &-avatar-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  &-avatar {
+    @include avatar-base;
+  }
+
+  &-sender {
+    color: $ai-text-tertiary;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-left: $spacing-sm;
+  }
+
+  &-bubble {
+    @include message-bubble-base;
+  }
+
+  &-text {
+    line-height: 1.6;
+    color: $ai-text-primary;
+    word-break: break-word;
+
+    // Markdown渲染的代码块样式
+    pre {
+      background-color: rgba(0, 0, 0, 0.3) !important;
+      border-radius: 8px !important;
+      border: 1px solid rgba($ai-accent, 0.1) !important;
+      margin: 12px 0 !important;
+      padding: 14px !important;
+    }
+
+    code {
+      font-family: 'Courier New', monospace !important;
+      font-size: 0.9em !important;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: $ai-accent !important;
+      margin-top: 16px !important;
+      margin-bottom: 12px !important;
+      font-weight: 500 !important;
+    }
+
+    ul,
+    ol {
+      padding-left: 2.5em !important;
+      margin: 12px 0 !important;
+      list-style-position: outside !important;
+    }
+
+    li {
+      margin-bottom: 8px !important;
+      line-height: 1.5 !important;
+      color: $ai-text-secondary !important;
+      position: relative !important;
+
+      > p {
+        display: inline-block !important;
+        margin: 0 !important;
+      }
+
+      pre,
+      code {
+        display: block !important;
+        margin-top: 8px !important;
+        margin-bottom: 8px !important;
+      }
+
+      > ul,
+      > ol {
+        margin: 8px 0 0 0 !important;
+        padding-left: 2em !important;
+      }
+    }
+
+    // 无序列表样式
+    ul {
+      list-style-type: disc !important;
+
+      ul {
+        list-style-type: circle !important; // 二级列表使用空心圆
+
+        ul {
+          list-style-type: square !important; // 三级列表使用方块
+        }
+      }
+    }
+
+    // 有序列表样式
+    ol {
+      list-style-type: decimal !important;
+    }
+  }
+}
+
+.user-message {
+  .message-container {
+    margin-left: auto;
+  }
+
+  .message-bubble {
+    @include bubble-decoration('left-to-right', $ai-accent, 0.5);
+    background-color: rgba($ai-accent, 0.12);
+    border-top-right-radius: 4px;
+    border: 1px solid rgba($ai-accent, 0.25);
+  }
+}
+
+.ai-message {
+  .message-container {
+    margin-right: auto;
+  }
+
+  .message-bubble {
+    @include bubble-decoration('left-to-right', $ai-accent, 0.5);
+    background-color: rgba(26, 34, 52, 0.75);
+    border-top-left-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+  }
+}
+
+// 用户头像样式
+.user-avatar {
+  @include avatar-base;
+  background-color: ai-accent-alpha(0.15);
+  color: $ai-accent;
+  border: 1px solid ai-accent-alpha(0.3);
+}
+
+// AI头像样式
+.ai-avatar {
+  @include avatar-base;
+  background-color: ai-accent-alpha(0.1);
+  color: $ai-accent;
+  border: 1px solid ai-accent-alpha(0.2);
+}
+
+// 思考框样式
+.thinking-box {
+  background-color: rgba(35, 43, 60, 0.8);
+  border-radius: $border-radius-medium;
+  margin-bottom: $spacing-md;
+  overflow: hidden;
+  border-left: 3px solid $ai-accent;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.thinking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.thinking-title {
+  font-weight: 500;
+  color: $ai-accent;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+
+  svg {
+    margin-right: 6px;
+    filter: drop-shadow(0 0 2px rgba($ai-accent, 0.3));
+  }
+}
+
+.thinking-toggle {
+  font-size: 0.8rem;
+  color: $ai-text-tertiary;
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: $ai-text-secondary;
+  }
+
+  svg {
+    margin-left: 4px;
+    transition: transform 0.2s;
+  }
+}
+
+.toggle-rotated {
+  transform: rotate(180deg);
+}
+
+.thinking-content {
+  padding: 14px 16px;
+  border-top: 1px solid rgba($ai-accent, 0.1);
+  color: $ai-text-tertiary;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  animation: slideDown 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.2);
+  font-family: 'Courier New', monospace;
+}
+
+// 输入区域
+.input-area {
+  padding: $spacing-xl;
+  background-color: #081020;
+  position: relative;
+  z-index: 100;
+  isolation: isolate;
+  border-top: 1px solid ai-accent-alpha(0.15);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.input-container {
+  display: flex;
+  align-items: flex-end;
+  padding: $spacing-sm $spacing-sm $spacing-sm $spacing-lg;
+  background-color: rgba(26, 34, 52, 0.8);
+  border-radius: $border-radius-large;
+  border: 1px solid ai-accent-alpha(0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s;
+  overflow: visible;
+  backdrop-filter: blur(5px);
+
+  &:focus-within {
+    border-color: $ai-accent;
+    box-shadow:
+      0 0 0 2px ai-accent-alpha(0.15),
+      0 0 15px ai-accent-alpha(0.3);
+    transform: translateY(-2px);
+  }
+}
+
+.input-hint {
+  text-align: center;
+  color: $ai-text-dim;
+  font-size: 0.75rem;
+  margin-top: $spacing-sm;
+  background-color: ai-accent-alpha(0.05);
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-large;
+  display: inline-block;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid ai-accent-alpha(0.1);
+}
+
+// 动画
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba($ai-accent, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba($ai-accent, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($ai-accent, 0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+// 过渡动画
+.fade-enter-active,
+.fade-leave-active {
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-from .ai-window,
+.fade-leave-to .ai-window {
+  transform: scale(0.95);
+}
+
+// 覆盖 Ant Design 文本输入区域的默认样式
+:deep(.ant-input) {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: $ai-text-primary !important;
+  outline: none !important;
+
+  &:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}
+
+:deep(.ant-input-affix-wrapper) {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  &:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}
+
+:deep(.ant-input-affix-wrapper-focused) {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+// 发送按钮样式自定义
+.send-button {
+  margin-left: $spacing-sm !important;
+  align-self: flex-end !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  flex-shrink: 0 !important;
+  border: none !important;
+  box-shadow: 0 2px 8px ai-accent-alpha(0.3) !important;
+  transition: all 0.2s !important;
+  background-color: $ai-accent !important;
+  border-color: $ai-accent !important;
+  color: #121826 !important;
+  @include animated-button;
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 4px 12px ai-accent-alpha(0.4) !important;
+    background-color: $ai-accent-hover !important;
+    border-color: $ai-accent-hover !important;
+  }
+
+  &:disabled {
+    background-color: $ai-bg-light !important;
+    border-color: ai-text-alpha(0.1) !important;
+    color: ai-text-alpha(0.4) !important;
+    transform: none !important;
+  }
+}
+
+// 原生文本框样式
+.ai-textarea {
+  flex: 1;
+  min-height: 42px;
+  max-height: 150px;
+  background-color: transparent;
+  color: $ai-text-primary;
+  border: none;
+  resize: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  outline: none;
+  padding: 10px 0;
+  overflow-y: auto;
+
+  // 专门处理输入框聚焦时的样式
+  &:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    padding-left: 1em;
+  }
+
+  // 自定义滚动条
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($ai-accent, 0.2);
+    border-radius: 2px;
+
+    &:hover {
+      background-color: rgba($ai-accent, 0.4);
+    }
+  }
+}

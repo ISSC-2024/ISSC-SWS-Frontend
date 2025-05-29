@@ -257,183 +257,12 @@ const close = () => {
   </transition>
 </template>
 
-<style scoped>
-/* 遮罩层样式 */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(5, 15, 30, 0.7);
-  backdrop-filter: blur(4px);
-  z-index: 99;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+<style lang="scss" scoped>
+@use './styles/common-window.scss';
 
-/* 浮窗样式 */
-.floating-window {
-  position: relative;
-  top: -5%;
-  width: 80%;
-  max-width: 700px;
-  background: linear-gradient(135deg, rgba(20, 30, 50, 0.95), rgba(12, 22, 40, 0.95));
-  border: 1px solid rgba(64, 169, 255, 0.3);
-  border-radius: 12px;
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(32, 160, 255, 0.2);
-  z-index: 100;
-  overflow: hidden;
-  padding: 45px 25px 30px;
-  backdrop-filter: blur(10px);
-}
-
-/* 装饰性角落 */
-.corner {
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  z-index: 2;
-}
-
-.top-left {
-  top: 0;
-  left: 0;
-  border-top: 2px solid rgba(64, 169, 255, 0.6);
-  border-left: 2px solid rgba(64, 169, 255, 0.6);
-  border-top-left-radius: 8px;
-}
-
-.top-right {
-  top: 0;
-  right: 0;
-  border-top: 2px solid rgba(64, 169, 255, 0.6);
-  border-right: 2px solid rgba(64, 169, 255, 0.6);
-  border-top-right-radius: 8px;
-}
-
-.bottom-left {
-  bottom: 0;
-  left: 0;
-  border-bottom: 2px solid rgba(64, 169, 255, 0.6);
-  border-left: 2px solid rgba(64, 169, 255, 0.6);
-  border-bottom-left-radius: 8px;
-}
-
-.bottom-right {
-  bottom: 0;
-  right: 0;
-  border-bottom: 2px solid rgba(64, 169, 255, 0.6);
-  border-right: 2px solid rgba(64, 169, 255, 0.6);
-  border-bottom-right-radius: 8px;
-}
-
-/* 关闭按钮 */
-.close-btn {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(32, 160, 255, 0.15);
-  border: 1px solid rgba(64, 169, 255, 0.3);
-  color: rgba(220, 240, 255, 0.9);
-  font-size: 18px;
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-  z-index: 3;
-}
-
-.close-btn:hover {
-  background: rgba(32, 160, 255, 0.3);
-  transform: rotate(90deg);
-  box-shadow: 0 0 10px rgba(32, 160, 255, 0.4);
-}
-
-.close-icon {
-  display: block;
-  line-height: 0.8;
-}
-
-.window-content {
-  max-height: 70vh;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(64, 169, 255, 0.5) rgba(20, 30, 50, 0.2);
-}
-
-.window-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.window-content::-webkit-scrollbar-track {
-  background: rgba(20, 30, 50, 0.2);
-  border-radius: 3px;
-}
-
-.window-content::-webkit-scrollbar-thumb {
-  background-color: rgba(64, 169, 255, 0.5);
-  border-radius: 3px;
-}
-
-/* 窗口标题 */
-.window-title {
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 15px;
-  font-size: 26px;
-  font-weight: 500;
-  color: rgba(220, 240, 255, 0.95);
-  letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(64, 169, 255, 0.5);
-}
-
-.title-underline {
-  width: 120px;
-  height: 2px;
-  margin: 0 auto 40px;
-  background: linear-gradient(to right, rgba(32, 160, 255, 0), rgba(64, 169, 255, 0.7) 50%, rgba(32, 160, 255, 0) 100%);
-  position: relative;
-}
-
-.title-underline::after {
-  content: '';
-  position: absolute;
-  width: 40%;
-  height: 2px;
-  left: 30%;
-  bottom: -3px;
-  background: rgba(64, 169, 255, 0.3);
-  filter: blur(1px);
-}
-
-/* 表单样式 */
-.form-container {
-  max-width: 520px;
-  margin: 0 auto;
-  padding-top: 20px;
-}
-
-.form-group {
-  margin-bottom: 30px;
-  display: flex;
-  align-items: center;
-}
-
-.form-label {
-  flex: 0 0 120px;
-  text-align: right;
-  margin-right: 20px;
-  font-size: 16px;
-  color: rgba(220, 240, 255, 0.85);
-  font-weight: 400;
+/* 场景窗口特定样式 */
+.scene-window {
+  min-height: 450px;
 }
 
 /* 下拉框容器 */
@@ -457,25 +286,25 @@ const close = () => {
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-}
 
-.form-select:focus {
-  outline: none;
-  border-color: rgba(64, 169, 255, 0.6);
-  box-shadow:
-    0 0 12px rgba(32, 160, 255, 0.3),
-    inset 0 0 5px rgba(0, 0, 0, 0.2);
-}
+  &:focus {
+    outline: none;
+    border-color: rgba(64, 169, 255, 0.6);
+    box-shadow:
+      0 0 12px rgba(32, 160, 255, 0.3),
+      inset 0 0 5px rgba(0, 0, 0, 0.2);
+  }
 
-.form-select:hover:not(:disabled) {
-  border-color: rgba(64, 169, 255, 0.5);
-}
+  &:hover:not(:disabled) {
+    border-color: rgba(64, 169, 255, 0.5);
+  }
 
-.form-select:disabled {
-  background-color: rgba(20, 30, 50, 0.6);
-  color: rgba(220, 240, 255, 0.5);
-  cursor: not-allowed;
-  border-color: rgba(64, 169, 255, 0.15);
+  &:disabled {
+    background-color: rgba(20, 30, 50, 0.6);
+    color: rgba(220, 240, 255, 0.5);
+    cursor: not-allowed;
+    border-color: rgba(64, 169, 255, 0.15);
+  }
 }
 
 /* 自定义下拉箭头 */
@@ -502,106 +331,5 @@ const close = () => {
   background-color: rgba(20, 30, 50, 0.95);
   color: rgba(220, 240, 255, 0.9);
   padding: 10px;
-}
-
-/* 按钮组 */
-.button-group {
-  display: flex;
-  justify-content: center;
-  gap: 25px;
-  margin-top: 60px;
-}
-
-.submit-btn,
-.reset-btn {
-  min-width: 120px;
-  padding: 12px 30px;
-  border-radius: 25px;
-  font-size: 15px;
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
-  overflow: hidden;
-}
-
-.submit-btn {
-  background: linear-gradient(135deg, #1890ff, #40a9ff);
-  color: white;
-  border: none;
-  box-shadow: 0 4px 15px rgba(32, 160, 255, 0.3);
-}
-
-.reset-btn {
-  background: rgba(20, 40, 70, 0.5);
-  color: rgba(220, 240, 255, 0.85);
-  border: 1px solid rgba(64, 169, 255, 0.4);
-}
-
-.submit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(32, 160, 255, 0.5);
-}
-
-.submit-btn:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 10px rgba(32, 160, 255, 0.3);
-}
-
-.reset-btn:hover {
-  background: rgba(30, 50, 80, 0.6);
-  border-color: rgba(64, 169, 255, 0.6);
-}
-
-/* 提交按钮光晕 */
-.btn-glow {
-  position: absolute;
-  top: 0;
-  left: -120%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transform: skewX(-25deg);
-  animation: btnShine 3s infinite;
-}
-
-/* 场景窗口特定样式 */
-.scene-window {
-  min-height: 450px;
-}
-
-/* 过渡动画 */
-.fade-enter-active,
-.fade-leave-active {
-  transition:
-    opacity 0.4s,
-    transform 0.4s;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-from .floating-window,
-.fade-leave-to .floating-window {
-  transform: scale(0.95) translateY(20px);
-}
-
-/* 按钮光晕动画 */
-@keyframes btnShine {
-  0% {
-    left: -120%;
-  }
-  20% {
-    left: 120%;
-  }
-  100% {
-    left: 120%;
-  }
 }
 </style>
