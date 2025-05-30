@@ -4,15 +4,11 @@ import { ref, provide, onMounted, watch, nextTick, onBeforeUnmount } from 'vue'
 import UnityContainer from '../components/display/UnityContainer.vue'
 import IndustryRelationshipGraph from '../components/charts/IndustryRelationshipGraph.vue'
 import UnityService from '../services/UnityService'
-import { Marked } from 'marked'
-import { markedHighlight } from 'marked-highlight'
-import DOMPurify from 'dompurify'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/atom-one-dark.css' // 使用暗色主题
-import AIInterfaceAPI from '../apis/AIInterface'
 import type { AIModelType } from '../apis/AIInterface'
-import type { ChatMessage } from '@/types/common'
 import AIInterface from '../components/controls/windows/AIInterface.vue'
+import EvaluationConfigFlow from '../components/controls/windows/EvaluationSystem/EvaluationConfigFlow.vue'
+import EvaluationSystemAPI from '../apis/EvaluationSystem'
+import MarkdownRenderer from '../components/common/MarkdownRenderer.vue'
 
 // 定义类型接口
 interface Industry {
@@ -36,6 +32,7 @@ interface LinkType {
   name: string
   color: string
   description: string
+  imageUrl: string
 }
 
 interface Link {
@@ -45,6 +42,7 @@ interface Link {
   type?: string
   linkType?: string
   description: string
+  imageUrl?: string
 }
 
 // 为所有子组件提供展开状态
@@ -129,9 +127,27 @@ const industryPlants: Record<string, Plant[]> = {
 
 // 链接类型
 const linkTypes: LinkType[] = [
-  { id: 'value', name: '价值链', color: '#F56C6C', description: '展示价值如何在各厂区传递' },
-  { id: 'logistics', name: '物流链', color: '#409EFF', description: '展示物料在厂区间的运输路径' },
-  { id: 'business', name: '业务链', color: '#67C23A', description: '展示各厂区间的业务协作关系' },
+  {
+    id: 'value',
+    name: '价值链',
+    color: '#F56C6C',
+    description: '展示价值如何在各厂区传递',
+    imageUrl: '/images/value-chain.png',
+  },
+  {
+    id: 'logistics',
+    name: '物流链',
+    color: '#409EFF',
+    description: '展示物料在厂区间的运输路径',
+    imageUrl: '/images/logistics-chain.png',
+  },
+  {
+    id: 'business',
+    name: '业务链',
+    color: '#67C23A',
+    description: '展示各厂区间的业务协作关系',
+    imageUrl: '/images/business-chain.png',
+  },
 ]
 
 // 链接数据 - 定义行业内部厂区间的链接
@@ -212,49 +228,77 @@ const interIndustryLinks: Link[] = [
   },
 ]
 
-// 使用markedHighlight配置marked
-const marked = new Marked(
-  markedHighlight({
-    async: false,
-    langPrefix: 'language-', // 代码块类名前缀
-    emptyLangClass: 'no-lang', // 无语言代码块的类名
-    highlight: (code, lang) => {
-      if (lang && hljs.getLanguage(lang)) {
-        return hljs.highlight(code, { language: lang }).value
-      }
-      return hljs.highlightAuto(code).value
-    },
-  }),
-)
-
-// 渲染Markdown函数
-const renderMarkdown = (content: string): string => {
-  if (!content) return ''
-  const html = marked.parse(content)
-  return DOMPurify.sanitize(html as string)
+// 行业图片映射
+const industryImages: Record<string, string> = {
+  chemical: '/images/industries/chemical.png',
+  steel: '/images/industries/steel.png',
+  newEnergy: '/images/industries/new-energy.png',
+  pharmaceutical: '/images/industries/pharmaceutical.png',
 }
 
-// 当前使用的AI模型
-const currentModel: AIModelType = 'top-llm'
+// 厂区图片映射
+const plantImages: Record<string, Record<string, string>> = {
+  chemical: {
+    'material-storage': '/images/plants/chemical/material-storage.png',
+    reactor: '/images/plants/chemical/reactor.png',
+    separation: '/images/plants/chemical/separation.png',
+    'product-storage': '/images/plants/chemical/product-storage.png',
+    utility: '/images/plants/chemical/utility.png',
+  },
+  steel: {
+    'raw-material': '/images/plants/steel/raw-material.png',
+    smelting: '/images/plants/steel/smelting.png',
+    casting: '/images/plants/steel/casting.png',
+    rolling: '/images/plants/steel/rolling.png',
+  },
+  newEnergy: {
+    solar: '/images/plants/new-energy/solar.png',
+    wind: '/images/plants/new-energy/wind.png',
+    storage: '/images/plants/new-energy/storage.png',
+    distribution: '/images/plants/new-energy/distribution.png',
+    control: '/images/plants/new-energy/control.png',
+  },
+  pharmaceutical: {
+    'r-and-d': '/images/plants/pharmaceutical/r-and-d.png',
+    production: '/images/plants/pharmaceutical/production.png',
+    quality: '/images/plants/pharmaceutical/quality.png',
+    packaging: '/images/plants/pharmaceutical/packaging.png',
+  },
+}
+
+// 消息类型定义
+interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+  isThinking?: boolean
+  thinking?: string
+  isThinkingExpanded?: boolean
+}
+
 // 控制AI对话框显示
 const showAIDialog = ref(false)
 // 当前使用的AI模型类型
 const currentAIModel = ref<AIModelType>('top-llm')
 
+// 评估配置流状态
+const showEvaluationFlow = ref(true) // 默认显示评估配置界面
+const isEvaluating = ref(false)
+const evalError = ref('')
+const evalResultMarkdown = ref('')
+const abortController = ref<AbortController | null>(null)
+
+// 聊天相关状态
+const chatHistory = ref<ChatMessage[]>([])
+const messagesContainer = ref<HTMLElement | null>(null)
+
 // 弹窗状态
 const showLinkDialog = ref(false)
 const dialogTitle = ref('')
 const dialogContent = ref('')
-
-// 是否正在加载
-const isLoading = ref(false)
-const messagesContainer = ref<HTMLElement | null>(null)
-
-// 聊天记录和用户输入
-const chatHistory = ref<ChatMessage[]>([
-  { role: 'assistant', content: '欢迎使用工业智能体协同平台！请问有什么可以帮您？' },
-])
-const userInput = ref('')
+const dialogImageUrl = ref('')
+const dialogDetailedText = ref('')
+const dialogSourceImage = ref('')
+const dialogTargetImage = ref('')
 
 // 选择行业并跳转
 const selectIndustry = (industryId: string): void => {
@@ -306,17 +350,55 @@ const selectPlant = (industryId: string, plantId: string): void => {
 
 // 处理链接的点击事件
 const handleLinkClick = (link: Link, isInterIndustry = false): void => {
+  // 获取链接类型图片
+  const linkTypeId = link.linkType || link.type || ''
+  const linkType = linkTypes.find((lt) => lt.id === linkTypeId)
+  const linkTypeImage = linkType?.imageUrl || ''
+
+  // 设置弹窗内容
   if (isInterIndustry) {
-    const sourceIndustry = getIndustryName(link.source)
-    const targetIndustry = getIndustryName(link.target)
+    // 行业间链接
+    const sourceId = link.source
+    const targetId = link.target
+    const sourceIndustry = getIndustryName(sourceId)
+    const targetIndustry = getIndustryName(targetId)
+
     dialogTitle.value = `${sourceIndustry} → ${targetIndustry}`
-    dialogContent.value = `【${getLinkTypeName(link.type || '')}】${link.description}`
+    dialogContent.value = `【${getLinkTypeName(linkTypeId)}】${link.description}`
+    dialogImageUrl.value = linkTypeImage
+    dialogSourceImage.value = industryImages[sourceId] || ''
+    dialogTargetImage.value = industryImages[targetId] || ''
+
+    // 添加详细描述
+    dialogDetailedText.value = `
+      这是一条${getLinkTypeName(linkTypeId)}，展示了${sourceIndustry}行业与${targetIndustry}行业之间的深度协作关系。
+      
+      ${link.description}
+      
+      通过这种协作，两个行业能够实现优势互补，共同提升生产效率与价值创造。
+    `
   } else {
+    // 厂区间链接
     const industryId = link.industry || ''
-    const sourcePlant = getPlantName(industryId, link.source.replace(`${industryId}_`, ''))
-    const targetPlant = getPlantName(industryId, link.target.replace(`${industryId}_`, ''))
+    const sourceId = link.source.replace(`${industryId}_`, '')
+    const targetId = link.target.replace(`${industryId}_`, '')
+    const sourcePlant = getPlantName(industryId, sourceId)
+    const targetPlant = getPlantName(industryId, targetId)
+
     dialogTitle.value = `${sourcePlant} → ${targetPlant}`
-    dialogContent.value = `【${getLinkTypeName(link.linkType || '')}】${link.description}`
+    dialogContent.value = `【${getLinkTypeName(linkTypeId)}】${link.description}`
+    dialogImageUrl.value = linkTypeImage
+    dialogSourceImage.value = plantImages[industryId]?.[sourceId] || ''
+    dialogTargetImage.value = plantImages[industryId]?.[targetId] || ''
+
+    // 添加厂区间链接的详细描述
+    dialogDetailedText.value = `
+      在${getIndustryName(industryId)}行业内部，${sourcePlant}与${targetPlant}通过${getLinkTypeName(linkTypeId)}紧密协作。
+      
+      ${link.description}
+      
+      这种协作方式确保了生产流程的高效运转与价值最大化。
+    `
   }
 
   // 显示弹窗
@@ -366,76 +448,86 @@ watch(
   { deep: true },
 )
 
-// 处理回车键
-const handleEnter = (e: KeyboardEvent) => {
-  if (e.shiftKey) return // Shift+Enter 允许换行
-  sendMessage()
-}
+// 处理评估配置提交
+const handleEvaluationSubmit = async (evaluationData: any) => {
+  console.log('提交评估配置:', evaluationData)
 
-// 发送消息
-const sendMessage = async (): Promise<void> => {
-  const trimmedInput = userInput.value.trim()
-  if (!trimmedInput || isLoading.value) return
+  // 隐藏配置界面，显示"正在思考"消息
+  showEvaluationFlow.value = false
 
-  // 添加用户消息
-  chatHistory.value.push({
-    role: 'user',
-    content: trimmedInput,
-  })
-
-  // 清空输入框
-  userInput.value = ''
-
-  isLoading.value = true
-
-  // 添加思考中的助手消息
-  const thinkingMessageIndex = chatHistory.value.length
+  // 添加思考消息到聊天记录
   chatHistory.value.push({
     role: 'assistant',
-    content: '',
-    isThinking: true,
-    thinking: '正在思考中...',
-    isThinkingExpanded: true, // 思考过程中默认展开
+    content: '正在思考并生成评价报告...',
   })
 
+  // 开始评估
+  isEvaluating.value = true
+  evalError.value = ''
+  evalResultMarkdown.value = ''
+  abortController.value = new AbortController()
+
   try {
-    // 调用AI接口获取回复
-    const { response, thinking } = await AIInterfaceAPI.queryLLM(currentModel, trimmedInput)
+    await EvaluationSystemAPI.evalLLMStream(
+      evaluationData,
+      (msg: any) => {
+        // 处理流式消息
+        if (msg?.type === 'expert_response') {
+          evalResultMarkdown.value += `\n**专家：${msg.expert_name}**（第${msg.round}轮）\n\n${msg.response}\n\n---\n`
+        } else if (msg?.type === 'summary') {
+          evalResultMarkdown.value += `\n## 🏁 最终报告\n\n${msg.content}\n\n`
+        } else if (msg?.content) {
+          evalResultMarkdown.value += msg.content
+        }
 
-    // 思考过程展示完毕后，收起思考内容
-    chatHistory.value[thinkingMessageIndex].isThinkingExpanded = false
+        // 更新聊天记录中的最后一条消息
+        if (chatHistory.value.length > 0) {
+          const lastIndex = chatHistory.value.length - 1
+          chatHistory.value[lastIndex].content = evalResultMarkdown.value
+        }
+      },
+      { signal: abortController.value.signal },
+    )
+  } catch (err: any) {
+    if (err?.name === 'AbortError') {
+      evalError.value = '已中断评估。'
+    } else {
+      evalError.value = '评估过程中发生错误。'
+      console.error(err)
+    }
 
-    // 更新回复内容
-    chatHistory.value[thinkingMessageIndex].content = response
-    chatHistory.value[thinkingMessageIndex].thinking = thinking || '(无思考过程)'
-    chatHistory.value[thinkingMessageIndex].isThinking = false
-  } catch (error) {
-    console.error('调用AI接口出错:', error)
-    chatHistory.value[thinkingMessageIndex].content = '抱歉，发生了错误，请稍后再试。'
-    chatHistory.value[thinkingMessageIndex].isThinking = false
+    // 更新聊天记录显示错误
+    if (chatHistory.value.length > 0) {
+      const lastIndex = chatHistory.value.length - 1
+      chatHistory.value[lastIndex].content = evalError.value || '评估过程中发生错误'
+    }
   } finally {
-    isLoading.value = false
-    // 滚动到最新消息
-    scrollToBottom()
+    isEvaluating.value = false
+    abortController.value = null
   }
 }
 
-// 处理键盘输入事件
-const handleKeyDown = (e: KeyboardEvent): void => {
-  // 阻止事件冒泡，防止被外部事件处理器捕获
-  e.stopPropagation()
+// 处理返回编辑
+const handleBackToEdit = () => {
+  // 中断流式请求
+  abortController.value?.abort()
 
-  // 对于退格键，确保它能正常工作
-  if (e.key === 'Backspace') {
-    // 由于使用v-model，Vue会自动处理输入，这里只需确保事件不被干扰
-    // 不要阻止默认行为，让浏览器处理退格键
+  // 重置状态
+  showEvaluationFlow.value = true
+  evalResultMarkdown.value = ''
+  evalError.value = ''
+  isEvaluating.value = false
+  abortController.value = null
+
+  // 清除聊天记录中的评估相关消息
+  const lastMessage = chatHistory.value[chatHistory.value.length - 1]
+  if (
+    lastMessage &&
+    lastMessage.role === 'assistant' &&
+    (lastMessage.content.includes('正在思考') || lastMessage.content.includes('专家：'))
+  ) {
+    chatHistory.value.pop()
   }
-  // 对于回车键，我们在keydown事件中处理，而不是keyup
-  else if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault()
-    sendMessage()
-  }
-  // 其他按键正常处理
 }
 
 // 组件挂载完成后，滚动到底部
@@ -453,7 +545,7 @@ onBeforeUnmount(() => {
 })
 
 // 处理Unity发来的聊天请求
-const handleUnityChatRequest = (data: string) => {
+const handleUnityChatRequest = (data: any) => {
   // 根据Unity发送的区域代码设置模型
   const areaToModel: Record<string, AIModelType> = {
     RMS: 'sub-llm1', // 原料存储区
@@ -476,6 +568,54 @@ const handleUnityChatRequest = (data: string) => {
 const closeAIDialog = () => {
   showAIDialog.value = false
 }
+
+// 图片预览状态
+const showImagePreview = ref(false)
+const previewImageUrl = ref('')
+const previewImageScale = ref(1)
+const previewImageRotation = ref(0)
+
+// 打开图片预览
+const openImagePreview = (imageUrl: string) => {
+  previewImageUrl.value = imageUrl
+  showImagePreview.value = true
+}
+
+// 关闭图片预览
+const closeImagePreview = () => {
+  showImagePreview.value = false
+  previewImageUrl.value = ''
+  previewImageScale.value = 1
+  previewImageRotation.value = 0
+}
+
+// 放大图片
+const zoomIn = () => {
+  previewImageScale.value += 0.1
+}
+
+// 缩小图片
+const zoomOut = () => {
+  previewImageScale.value -= 0.1
+  if (previewImageScale.value < 0.1) {
+    previewImageScale.value = 0.1
+  }
+}
+
+// 重置图片缩放
+const resetZoom = () => {
+  previewImageScale.value = 1
+}
+
+// 顺时针旋转图片
+const rotateClockwise = () => {
+  previewImageRotation.value += 90
+}
+
+// 逆时针旋转图片
+const rotateCounterclockwise = () => {
+  previewImageRotation.value -= 90
+}
 </script>
 
 <template>
@@ -491,14 +631,73 @@ const closeAIDialog = () => {
           <h2>{{ dialogTitle }}</h2>
           <button class="close-button" @click="showLinkDialog = false">×</button>
         </div>
+
         <div class="link-dialog-content">
-          {{ dialogContent }}
+          <!-- 链接类型与描述 -->
+          <div class="link-summary">
+            {{ dialogContent }}
+          </div>
+
+          <!-- 图片展示区 -->
+          <div class="link-images">
+            <!-- 源节点图片 -->
+            <div class="link-image-container" v-if="dialogSourceImage">
+              <div class="image-label">源节点</div>
+              <div class="link-image source-image" @click="openImagePreview(dialogSourceImage)">
+                <img :src="dialogSourceImage" alt="源节点图片" />
+              </div>
+            </div>
+
+            <!-- 链接类型图片 -->
+            <div class="link-image-container main-image" v-if="dialogImageUrl">
+              <div class="image-label">链接类型</div>
+              <div class="link-image" @click="openImagePreview(dialogImageUrl)">
+                <img :src="dialogImageUrl" alt="链接类型图片" />
+              </div>
+            </div>
+
+            <!-- 目标节点图片 -->
+            <div class="link-image-container" v-if="dialogTargetImage">
+              <div class="image-label">目标节点</div>
+              <div class="link-image target-image" @click="openImagePreview(dialogTargetImage)">
+                <img :src="dialogTargetImage" alt="目标节点图片" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 详细描述 -->
+          <div class="link-detailed-text">
+            <h3>详细信息</h3>
+            <p>{{ dialogDetailedText }}</p>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- AI对话框 -->
     <AIInterface v-if="showAIDialog" :model="currentAIModel" @close="closeAIDialog" />
+
+    <!-- 图片预览弹窗 -->
+    <div v-if="showImagePreview" class="image-preview-overlay" @click.self="closeImagePreview">
+      <div class="image-preview-container">
+        <img
+          :src="previewImageUrl"
+          alt="预览图片"
+          class="preview-image"
+          :style="{
+            transform: `scale(${previewImageScale}) rotate(${previewImageRotation}deg)`,
+          }"
+        />
+        <button class="close-preview-button" @click="closeImagePreview">×</button>
+        <div class="image-controls">
+          <button class="control-button" @click="zoomIn">+</button>
+          <button class="control-button" @click="zoomOut">-</button>
+          <button class="control-button" @click="resetZoom">1:1</button>
+          <button class="control-button" @click="rotateClockwise">↻</button>
+          <button class="control-button" @click="rotateCounterclockwise">↺</button>
+        </div>
+      </div>
+    </div>
 
     <div class="main-content">
       <!-- 左侧：分为上下两部分 -->
@@ -525,72 +724,41 @@ const closeAIDialog = () => {
           />
         </div>
       </div>
-      <!-- 右侧：大模型对话框 -->
+
+      <!-- 右侧：评估大模型对话框 -->
       <div class="chat-container">
-        <div class="chat-history" ref="messagesContainer">
-          <!-- 对话信息 -->
-          <div
-            v-for="(message, index) in chatHistory"
-            :key="index"
-            class="message"
-            :class="{ 'user-message': message.role === 'user', 'assistant-message': message.role === 'assistant' }"
-          >
-            <div class="message-container">
-              <div class="message-avatar-container">
-                <div
-                  class="message-avatar"
-                  :class="{ 'user-avatar': message.role === 'user', 'ai-avatar': message.role === 'assistant' }"
-                >
-                  <template v-if="message.role === 'user'">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                  </template>
-                  <template v-else>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path
-                        d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"
-                      ></path>
-                      <circle cx="7.5" cy="14.5" r="1.5"></circle>
-                      <circle cx="16.5" cy="14.5" r="1.5"></circle>
-                    </svg>
-                  </template>
-                </div>
-                <div class="message-sender">
-                  {{ message.role === 'user' ? '您' : 'AI助手' }}
-                </div>
-              </div>
+        <!-- 评估配置流界面 -->
+        <div v-if="showEvaluationFlow" class="evaluation-flow-wrapper">
+          <EvaluationConfigFlow
+            :isEvaluating="isEvaluating"
+            :evalError="evalError"
+            :showEvalBtn="false"
+            @submitted="handleEvaluationSubmit"
+            @back-edit="handleBackToEdit"
+          />
+        </div>
 
-              <div class="message-bubble">
-                <!-- 思考内容 -->
-                <div v-if="message.role === 'assistant' && message.thinking" class="thinking-box">
-                  <div class="thinking-header" @click="toggleThinking(index)">
-                    <div class="thinking-title">
+        <!-- 聊天界面 -->
+        <div v-else class="chat-interface">
+          <div class="chat-history" ref="messagesContainer">
+            <!-- 对话信息 -->
+            <div
+              v-for="(message, index) in chatHistory"
+              :key="index"
+              class="message"
+              :class="{ 'user-message': message.role === 'user', 'assistant-message': message.role === 'assistant' }"
+            >
+              <div class="message-container">
+                <div class="message-avatar-container">
+                  <div
+                    class="message-avatar"
+                    :class="{ 'user-avatar': message.role === 'user', 'ai-avatar': message.role === 'assistant' }"
+                  >
+                    <template v-if="message.role === 'user'">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
+                        width="20"
+                        height="20"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -598,57 +766,97 @@ const closeAIDialog = () => {
                         stroke-linecap="round"
                         stroke-linejoin="round"
                       >
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 16v-4"></path>
-                        <path d="M12 8h.01"></path>
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
                       </svg>
-                      思考过程
-                    </div>
-                    <div class="thinking-toggle">
-                      {{ message.isThinkingExpanded ? '收起' : '展开' }}
+                    </template>
+                    <template v-else>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="12"
-                        height="12"
+                        width="20"
+                        height="20"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        :class="{ 'toggle-rotated': message.isThinkingExpanded }"
                       >
-                        <polyline points="6 9 12 15 18 9"></polyline>
+                        <path
+                          d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"
+                        ></path>
+                        <circle cx="7.5" cy="14.5" r="1.5"></circle>
+                        <circle cx="16.5" cy="14.5" r="1.5"></circle>
                       </svg>
-                    </div>
+                    </template>
                   </div>
-
-                  <div class="thinking-content" v-show="message.isThinkingExpanded">
-                    {{ message.thinking }}
+                  <div class="message-sender">
+                    {{ message.role === 'user' ? '您' : 'AI评估助手' }}
                   </div>
                 </div>
 
-                <!-- 消息内容 -->
-                <div class="message-text" v-html="renderMarkdown(message.content)"></div>
+                <div class="message-bubble">
+                  <!-- 思考内容 -->
+                  <div v-if="message.role === 'assistant' && message.thinking" class="thinking-box">
+                    <div class="thinking-header" @click="toggleThinking(index)">
+                      <div class="thinking-title">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <path d="M12 16v-4"></path>
+                          <path d="M12 8h.01"></path>
+                        </svg>
+                        思考过程
+                      </div>
+                      <div class="thinking-toggle">
+                        {{ message.isThinkingExpanded ? '收起' : '展开' }}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          :class="{ 'toggle-rotated': message.isThinkingExpanded }"
+                        >
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div class="thinking-content" v-show="message.isThinkingExpanded">
+                      {{ message.thinking }}
+                    </div>
+                  </div>
+
+                  <!-- 消息内容 -->
+                  <div class="message-text">
+                    <MarkdownRenderer :content="message.content" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="chat-input-area">
-          <!-- 用户输入文本 -->
-          <div class="input-wrapper">
-            <textarea
-              v-model="userInput"
-              placeholder="在此输入您的问题..."
-              rows="3"
-              @keydown.enter.prevent="handleEnter"
-              @keydown="handleKeyDown"
-              :disabled="isLoading"
-            ></textarea>
-            <button @click="sendMessage" class="send-btn" :disabled="isLoading || !userInput.trim()">
-              {{ isLoading ? '发送中...' : '发送' }}
-            </button>
+          <!-- 返回配置按钮 -->
+          <div class="chat-input-area">
+            <div class="input-wrapper">
+              <button @click="handleBackToEdit" class="back-to-config-btn">
+                <span class="button-icon">⟲</span> 返回评估配置
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1066,11 +1274,14 @@ const closeAIDialog = () => {
 .link-dialog {
   background-color: #1a2940;
   border-radius: 8px;
-  width: 500px;
+  width: 700px;
   max-width: 90%;
+  max-height: 90vh;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   animation: scaleIn 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .link-dialog-header {
@@ -1080,6 +1291,7 @@ const closeAIDialog = () => {
   background-color: #263c5a;
   padding: 15px 20px;
   border-bottom: 1px solid #409eff;
+  flex-shrink: 0;
 }
 
 .link-dialog-header h2 {
@@ -1113,6 +1325,105 @@ const closeAIDialog = () => {
   padding: 20px;
   color: #e0e0e0;
   line-height: 1.6;
+  overflow-y: auto;
+  max-height: calc(90vh - 60px);
+}
+
+/* 链接摘要部分 */
+.link-summary {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  padding: 12px;
+  background-color: rgba(64, 158, 255, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #409eff;
+}
+
+/* 图片容器样式 */
+.link-images {
+  display: flex;
+  justify-content: space-between;
+  margin: 25px 0;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.link-image-container {
+  flex: 1;
+  min-width: 180px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.link-image-container.main-image {
+  flex: 1.5;
+}
+
+.image-label {
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.link-image {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.link-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.link-image:hover img {
+  transform: scale(1.05);
+}
+
+.source-image::after {
+  content: '→';
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  color: #409eff;
+  z-index: 10;
+}
+
+/* 详细信息部分 */
+.link-detailed-text {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.link-detailed-text h3 {
+  margin-top: 0;
+  color: #e0e0e0;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.link-detailed-text p {
+  margin: 0;
+  white-space: pre-line;
+  color: #bbb;
 }
 
 @keyframes fadeIn {
@@ -1250,5 +1561,150 @@ const closeAIDialog = () => {
   background-color: transparent;
   padding: 0;
   white-space: pre;
+}
+
+/* 图片预览弹窗样式 */
+.image-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  animation: fadeIn 0.3s ease;
+}
+
+.image-preview-container {
+  background-color: transparent;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 800px;
+  height: 80vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform-origin: center center;
+}
+
+.close-preview-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.close-preview-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 图片控制按钮 */
+.image-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 20px;
+  padding: 8px 15px;
+  z-index: 10;
+}
+
+.control-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(64, 158, 255, 0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.control-button:hover {
+  background-color: rgba(64, 158, 255, 0.5);
+}
+
+.control-button:active {
+  background-color: rgba(64, 158, 255, 0.7);
+}
+
+/* 评估配置流样式 */
+.evaluation-flow-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  padding-top: 50px;
+}
+
+.chat-interface {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.back-to-config-btn {
+  background: linear-gradient(135deg, #409eff, #67c23a);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.back-to-config-btn:hover {
+  background: linear-gradient(135deg, #337ecc, #529b2e);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+}
+
+.back-to-config-btn .button-icon {
+  font-size: 16px;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 </style>
