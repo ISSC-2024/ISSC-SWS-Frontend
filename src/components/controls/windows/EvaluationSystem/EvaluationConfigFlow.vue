@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, defineProps, defineEmits } from 'vue'
+import { ref, nextTick, defineProps } from 'vue'
 import MultiLevelIndicatorTable, {
   type IndicatorItem,
 } from '@/components/controls/windows/EvaluationSystem/MultiLevelIndicatorTable.vue'

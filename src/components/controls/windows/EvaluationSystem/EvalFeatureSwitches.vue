@@ -43,6 +43,10 @@ const toggleFeature = (feature: 'debate' | 'indicators' | 'adversarial') => {
 <style scoped lang="scss">
 .ai-features-section {
   margin-top: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
   .section-title {
     font-size: 16px;
     color: rgba(220, 240, 255, 0.95);

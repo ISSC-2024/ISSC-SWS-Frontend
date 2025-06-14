@@ -11,6 +11,25 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'back-summary'): void
 }>()
+
+// 导出评估结果为markdown文件
+const exportMarkdown = () => {
+  if (!props.markdown || props.isEvaluating) return
+
+  const blob = new Blob([props.markdown], { type: 'text/markdown' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+
+  const date = new Date()
+  const fileName = `evaluation-result-${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}.md`
+
+  link.href = url
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
 </script>
 
 <template>
@@ -18,6 +37,9 @@ const emit = defineEmits<{
     <div class="eval-result-header">
       <span class="eval-title">专家评估结果</span>
       <div class="eval-actions">
+        <button class="export-button" @click="exportMarkdown" :disabled="isEvaluating || !!evalError">
+          <span class="button-icon">⬇️</span> 导出结果
+        </button>
         <button class="back-edit-button" @click="() => emit('back-summary')">
           <span class="button-icon">⟲</span> 返回查看配置
         </button>
@@ -59,7 +81,8 @@ const emit = defineEmits<{
     .eval-actions {
       display: flex;
       gap: 12px;
-      .back-edit-button {
+      .back-edit-button,
+      .export-button {
         background: rgba(64, 169, 255, 0.15);
         color: #fff;
         border: 1px solid rgba(64, 169, 255, 0.3);
@@ -75,10 +98,22 @@ const emit = defineEmits<{
           margin-right: 6px;
           font-size: 16px;
         }
-        &:hover {
+        &:hover:not(:disabled) {
           background: rgba(64, 169, 255, 0.35);
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(64, 169, 255, 0.2);
+        }
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+      .export-button {
+        background: rgba(0, 150, 136, 0.15);
+        border-color: rgba(0, 150, 136, 0.3);
+        &:hover:not(:disabled) {
+          background: rgba(0, 150, 136, 0.35);
+          box-shadow: 0 4px 12px rgba(0, 150, 136, 0.2);
         }
       }
     }
