@@ -12,23 +12,23 @@ import 'ant-design-vue/dist/reset.css'
 import './assets/styles/main.css'
 
 // 在开发环境中导入stagewise工具栏
-// if (import.meta.env.DEV) {
-//   const { StagewiseToolbar } = await import('@stagewise/toolbar-vue')
+if (import.meta.env.DEV) {
+  const { StagewiseToolbar } = await import('@stagewise/toolbar-vue')
 
-//   // 创建stagewise配置
-//   const stagewiseConfig = {
-//     plugins: [],
-//   }
+  // 创建stagewise配置
+  const stagewiseConfig = {
+    plugins: [],
+  }
 
-//   // 创建工具栏容器
-//   const toolbarContainer = document.createElement('div')
-//   toolbarContainer.id = 'stagewise-toolbar-container'
-//   document.body.appendChild(toolbarContainer)
+  // 创建工具栏容器
+  const toolbarContainer = document.createElement('div')
+  toolbarContainer.id = 'stagewise-toolbar-container'
+  document.body.appendChild(toolbarContainer)
 
-//   // 创建并挂载工具栏
-//   const toolbarApp = createApp(StagewiseToolbar, { config: stagewiseConfig })
-//   toolbarApp.mount('#stagewise-toolbar-container')
-// }
+  // 创建并挂载工具栏
+  const toolbarApp = createApp(StagewiseToolbar, { config: stagewiseConfig })
+  toolbarApp.mount('#stagewise-toolbar-container')
+}
 
 const app = createApp(App)
 
