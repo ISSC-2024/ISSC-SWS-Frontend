@@ -10,6 +10,11 @@ import EvaluationSystemAPI from '@/apis/EvaluationSystem'
 import EvalReport from './EvaluationSystem/EvalReport.vue'
 import EvaluationConfigFlow from './EvaluationSystem/EvaluationConfigFlow.vue'
 
+// ==================== 演示逻辑模块 ====================
+// 注意：这是演示功能，可以通过删除 evaluation-demo-config.ts 文件或注释下面的导入来禁用演示功能
+import { checkDemoCondition, handleDemoEvaluation } from './EvaluationSystem/evaluation-demo-config'
+// ==================== 演示逻辑模块结束 ====================
+
 // 定义组件向外发出的事件
 const emit = defineEmits(['close'])
 
@@ -39,21 +44,38 @@ const startEvaluation = async (evaluationData: any) => {
   evalResultMarkdown.value = ''
   evalError.value = ''
   abortController.value = new AbortController()
+
   try {
-    await EvaluationSystemAPI.evalLLMStream(
-      evaluationData,
-      (msg: any) => {
-        console.log('msg', msg)
-        if (msg?.type === 'expert_response') {
-          evalResultMarkdown.value += `\n**专家：${msg.expert_name}**（第${msg.round}轮）\n\n${msg.response}\n\n---\n`
-        } else if (msg?.type === 'summary') {
-          evalResultMarkdown.value += `\n## 🏁 最终报告\n\n${msg.content}\n\n`
+    // ==================== 演示逻辑检查 ====================
+    const demoConfig = checkDemoCondition(evaluationData)
+    if (demoConfig) {
+      // 处理演示评估
+      console.log('触发演示逻辑，使用预设评估结果')
+      await handleDemoEvaluation(evaluationData, demoConfig, (msg: any) => {
+        console.log('演示消息:', msg)
+        if (msg?.type === 'demo_result') {
+          evalResultMarkdown.value = msg.content
         } else if (msg?.content) {
           evalResultMarkdown.value += msg.content
         }
-      },
-      { signal: abortController.value.signal },
-    )
+      })
+    } else {
+      // ==================== 正常API调用逻辑 ====================
+      await EvaluationSystemAPI.evalLLMStream(
+        evaluationData,
+        (msg: any) => {
+          console.log('msg', msg)
+          if (msg?.type === 'expert_response') {
+            evalResultMarkdown.value += `\n**专家：${msg.expert_name}**（第${msg.round}轮）\n\n${msg.response}\n\n---\n`
+          } else if (msg?.type === 'summary') {
+            evalResultMarkdown.value += `\n## 🏁 最终报告\n\n${msg.content}\n\n`
+          } else if (msg?.content) {
+            evalResultMarkdown.value += msg.content
+          }
+        },
+        { signal: abortController.value.signal },
+      )
+    }
   } catch (err: any) {
     if (err?.name === 'AbortError') {
       evalError.value = '已中断评估。'

@@ -641,6 +641,11 @@ const renameConversationWithoutPrompt = async (conversationId: number, title: st
   }
 }
 
+// ==================== 演示逻辑模块 ====================
+// 注意：这是演示功能，可以通过删除 demo-config.ts 文件或注释下面的导入来禁用演示功能
+import { checkDemoQuestion, handleDemoQuestion } from './demo-config'
+// ==================== 演示逻辑模块结束 ====================
+
 // 发送消息处理函数
 const sendMessage = async () => {
   const content = inputText.value.trim()
@@ -724,8 +729,40 @@ const sendMessage = async () => {
   messages.value.push(assistantTempMessage)
 
   try {
-    // 调用API获取响应
-    const { response, thinking } = await AIInterfaceAPI.queryLLM(selectedModel.value, content)
+    // 检查是否为演示问题
+    let response = ''
+    let thinking = ''
+    let contentToDisplay = ''
+
+    // ==================== 演示逻辑调用 ====================
+    const demoConfig = checkDemoQuestion(content)
+    if (demoConfig) {
+      // 处理演示问题
+      const updateThinking = (thinkingText: string) => {
+        messages.value[thinkingMessageIndex].thinking = thinkingText
+      }
+      const demoResult = await handleDemoQuestion(content, demoConfig, updateThinking)
+      thinking = demoResult.thinking
+      contentToDisplay = demoResult.response
+    } else {
+      // ==================== 正常API调用逻辑 ====================
+      // 调用API获取响应
+      const apiResponse = await AIInterfaceAPI.queryLLM(selectedModel.value, content)
+      response = apiResponse.response
+      thinking = apiResponse.thinking || ''
+
+      // 检查是否为特殊算法关键词
+      const specialAlgorithms = ['TimeMixer', 'KonwledgeGraph', 'DQN', 'MAPPO']
+
+      if (specialAlgorithms.includes(response.trim())) {
+        //! 如果是特殊算法关键词，使用特殊处理函数生成响应
+        const algorithm = response.trim()
+        contentToDisplay = await handleSpecialAlgorithm(algorithm)
+      } else {
+        // 正常响应
+        contentToDisplay = response
+      }
+    }
 
     // 更新对话标题（新对话）（截取部分前缀）
     if (currentConversation.value && currentConversation.value.title === '新对话') {
@@ -736,20 +773,6 @@ const sendMessage = async () => {
     // 更新思考过程
     messages.value[thinkingMessageIndex].thinking = thinking || '已完成思考'
     messages.value[thinkingMessageIndex].isThinkingExpanded = false
-
-    // 检查是否为特殊算法关键词
-    const specialAlgorithms = ['TimeMixer', 'KonwledgeGraph', 'DQN', 'MAPPO']
-
-    let contentToDisplay = ''
-
-    if (specialAlgorithms.includes(response.trim())) {
-      //! 如果是特殊算法关键词，使用特殊处理函数生成响应
-      const algorithm = response.trim()
-      contentToDisplay = await handleSpecialAlgorithm(algorithm)
-    } else {
-      // 正常响应
-      contentToDisplay = response
-    }
 
     // 使用流式输出
     let displayedContent = ''

@@ -3,14 +3,34 @@
  * @description 应用头部组件
  *
  * 该组件显示应用的顶部标题栏，包含以下功能：
- * 1. 显示应用名称"全域互联的工业智能体协同平台"
- * 2. 实时显示当前系统时间，每秒更新一次
- * 3. 高科技暗色调界面设计，增强用户体验
- * 4. 响应式布局设计
- * 5. 动态视觉效果
+ * 1. 可配置的应用标题显示
+ * 2. 可配置的Logo图标类型（通用/化工行业专用）
+ * 3. 实时显示当前系统时间，每秒更新一次
+ * 4. 高科技暗色调界面设计，增强用户体验
+ * 5. 响应式布局设计
+ * 6. 动态视觉效果
  */
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import AuthService from '@/services/AuthService'
+
+// 定义组件props
+interface Props {
+  title?: string
+  logoType?: 'generic' | 'chemical'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  title: '全域互联的工业智能体协同平台',
+  logoType: 'generic',
+})
+
+// 计算属性：根据logoType决定显示的标题
+const displayTitle = computed(() => {
+  if (props.logoType === 'chemical') {
+    return '化工行业-全域互联的工业智能体协同平台'
+  }
+  return props.title
+})
 
 // 时间显示逻辑
 const currentTime = ref(new Date().toLocaleTimeString())
@@ -58,18 +78,171 @@ onMounted(() => {
 
     <div class="logo">
       <div class="logo-icon">
-        <!-- Logo SVG -->
-        <svg viewBox="0 0 24 24" width="28" height="28">
-          <path
-            fill="currentColor"
-            d="M12,2L1,21H23L12,2M12,6L19.53,19H4.47L12,6M11,10V14H13V10H11M11,16V18H13V16H11Z"
-          />
+        <!-- 全域互联的工业智能体协同平台图标 -->
+        <svg v-if="props.logoType === 'generic'" viewBox="0 0 24 24" width="28" height="28">
+          <!-- 中央智能体核心 -->
+          <g fill="currentColor">
+            <!-- 中央处理核心 -->
+            <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2.2" opacity="0.9" />
+            <circle cx="12" cy="12" r="1.2" fill="currentColor" opacity="0.8" />
+
+            <!-- 核心脉冲环 -->
+            <circle
+              cx="12"
+              cy="12"
+              r="2"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="0.8"
+              opacity="0.4"
+              stroke-dasharray="2,1"
+            />
+          </g>
+
+          <!-- 四个行业智能体节点 -->
+          <g fill="currentColor" opacity="0.85">
+            <!-- 化工行业节点（左上） - 分子结构 -->
+            <g transform="translate(5,5)">
+              <circle cx="0" cy="0" r="1.8" fill="currentColor" opacity="0.3" />
+              <circle cx="0" cy="0" r="0.6" fill="currentColor" />
+              <circle cx="1.2" cy="0.8" r="0.4" fill="currentColor" opacity="0.7" />
+              <path d="M0 0 L1.2 0.8" stroke="currentColor" stroke-width="1" />
+            </g>
+
+            <!-- 钢铁行业节点（右上） - 齿轮 -->
+            <g transform="translate(19,5)">
+              <circle cx="0" cy="0" r="1.8" fill="currentColor" opacity="0.3" />
+              <path
+                d="M-1.2,-1.2 L1.2,-1.2 L1.2,1.2 L-1.2,1.2 Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <circle cx="0" cy="0" r="0.5" fill="currentColor" />
+            </g>
+
+            <!-- 新能源行业节点（左下） - 闪电/能源 -->
+            <g transform="translate(5,19)">
+              <circle cx="0" cy="0" r="1.8" fill="currentColor" opacity="0.3" />
+              <path
+                d="M-0.8,-1 L0.3,-0.2 L-0.3,0.2 L0.8,1"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+              />
+            </g>
+
+            <!-- 医药行业节点（右下） - 十字 -->
+            <g transform="translate(19,19)">
+              <circle cx="0" cy="0" r="1.8" fill="currentColor" opacity="0.3" />
+              <path d="M0,-1.2 L0,1.2 M-1.2,0 L1.2,0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+            </g>
+          </g>
+
+          <!-- 全域互联网络连接 -->
+          <g stroke="currentColor" fill="none" opacity="0.6">
+            <!-- 主连接线 - 形成网状结构 -->
+            <path d="M6.8 6.8 L10.2 10.2" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M17.2 6.8 L13.8 10.2" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M6.8 17.2 L10.2 13.8" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M17.2 17.2 L13.8 13.8" stroke-width="1.5" stroke-linecap="round" />
+
+            <!-- 横向和纵向连接 -->
+            <path d="M5 12 L9 12" stroke-width="1.2" stroke-linecap="round" />
+            <path d="M15 12 L19 12" stroke-width="1.2" stroke-linecap="round" />
+            <path d="M12 5 L12 9" stroke-width="1.2" stroke-linecap="round" />
+            <path d="M12 15 L12 19" stroke-width="1.2" stroke-linecap="round" />
+          </g>
+
+          <!-- 数据流动指示器 -->
+          <g fill="currentColor" opacity="0.7">
+            <!-- 流动箭头 - 顺时针方向 -->
+            <path
+              d="M8.5 8.5 L9.5 9.5 L8.5 10.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M15.5 8.5 L14.5 9.5 L15.5 10.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M15.5 15.5 L14.5 14.5 L15.5 13.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M8.5 15.5 L9.5 14.5 L8.5 13.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </g>
+
+          <!-- 协同标识 - 外围轨道 -->
+          <g fill="none" stroke="currentColor" opacity="0.4">
+            <circle cx="12" cy="12" r="10" stroke-width="0.8" stroke-dasharray="3,2" />
+          </g>
         </svg>
+
+        <!-- 化工行业特色图标 - 锥形烧瓶 -->
+        <svg v-else-if="props.logoType === 'chemical'" viewBox="0 0 24 24" width="28" height="28">
+          <!-- 锥形烧瓶主体 -->
+          <g fill="currentColor">
+            <!-- 烧瓶颈部 -->
+            <path
+              d="M10.5 4 L10.5 8 L13.5 8 L13.5 4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+            />
+
+            <!-- 烧瓶口 -->
+            <path d="M9.5 4 L14.5 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+
+            <!-- 锥形瓶身 -->
+            <path
+              d="M10.5 8 L7 18 Q7 19.5 8.5 19.5 L15.5 19.5 Q17 19.5 17 18 L13.5 8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linejoin="round"
+            />
+
+            <!-- 液体 -->
+            <path
+              d="M10.8 9 L8 17.5 Q8 18.5 9 18.5 L15 18.5 Q16 18.5 16 17.5 L13.2 9"
+              fill="currentColor"
+              opacity="0.25"
+            />
+
+            <!-- 动态气泡 - 将通过CSS动画控制 -->
+            <circle class="bubble bubble-1" cx="10" cy="16" r="0.6" fill="currentColor" opacity="0.5" />
+            <circle class="bubble bubble-2" cx="12" cy="15" r="0.4" fill="currentColor" opacity="0.6" />
+            <circle class="bubble bubble-3" cx="14" cy="17" r="0.5" fill="currentColor" opacity="0.4" />
+            <circle class="bubble bubble-4" cx="11" cy="13" r="0.3" fill="currentColor" opacity="0.7" />
+            <circle class="bubble bubble-5" cx="13.5" cy="14" r="0.35" fill="currentColor" opacity="0.5" />
+          </g>
+        </svg>
+
         <!-- 添加光环效果 -->
         <div class="logo-halo"></div>
       </div>
       <div class="logo-text-container">
-        <span class="logo-text">全域互联的工业智能体协同平台</span>
+        <span class="logo-text">{{ displayTitle }}</span>
         <span class="logo-shine"></span>
         <span class="logo-underline"></span>
         <div class="text-particles">
@@ -519,6 +692,76 @@ onMounted(() => {
   .logout-btn {
     padding: 6px 12px;
     font-size: 12px;
+  }
+}
+
+/* 化工烧瓶气泡动画 */
+.bubble {
+  animation: bubbleFloat 3s infinite ease-in-out;
+  transform-origin: center center;
+}
+
+.bubble-1 {
+  animation-delay: 0s;
+  animation-duration: 2.8s;
+}
+
+.bubble-2 {
+  animation-delay: 0.6s;
+  animation-duration: 3.2s;
+}
+
+.bubble-3 {
+  animation-delay: 1.2s;
+  animation-duration: 2.5s;
+}
+
+.bubble-4 {
+  animation-delay: 1.8s;
+  animation-duration: 3.5s;
+}
+
+.bubble-5 {
+  animation-delay: 2.4s;
+  animation-duration: 2.9s;
+}
+
+/* 气泡浮动动画 */
+@keyframes bubbleFloat {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translateY(-1px) scale(1.1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-2px) scale(0.9);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-3px) scale(1.05);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-4px) scale(0.8);
+    opacity: 0.3;
+  }
+}
+
+/* 为化工Logo添加整体的微妙脉冲效果 */
+.logo-icon svg[v-if*='chemical'] {
+  animation: chemicalPulse 4s infinite ease-in-out;
+}
+
+@keyframes chemicalPulse {
+  0%,
+  100% {
+    filter: brightness(1) drop-shadow(0 0 2px rgba(255, 255, 255, 0.2));
+  }
+  50% {
+    filter: brightness(1.1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
   }
 }
 </style>

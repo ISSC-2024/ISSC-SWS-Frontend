@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { ref, provide, onMounted, watch, nextTick, onBeforeUnmount } from 'vue'
+
 import UnityContainer from '../components/display/UnityContainer.vue'
 import IndustryRelationshipGraph from '../components/charts/IndustryRelationshipGraph.vue'
 import UnityService from '../services/UnityService'
@@ -9,6 +10,7 @@ import AIInterface from '../components/controls/windows/AIInterface.vue'
 import EvaluationConfigFlow from '../components/controls/windows/EvaluationSystem/EvaluationConfigFlow.vue'
 import EvaluationSystemAPI from '../apis/EvaluationSystem'
 import MarkdownRenderer from '../components/common/MarkdownRenderer.vue'
+import AuthService from '../services/AuthService'
 
 // 定义类型接口
 interface Industry {
@@ -305,8 +307,27 @@ const selectIndustry = (industryId: string): void => {
   selectedIndustry.value = industryId
   // 将所选行业保存到会话存储中，以便在仪表板中使用
   sessionStorage.setItem('selectedIndustry', industryId)
-  // 跳转到仪表板页面
-  router.push('/dashboard')
+
+  // 检查登录状态
+  const isLoggedIn = AuthService.isLoggedIn()
+
+  if (!isLoggedIn) {
+    // 如果未登录，跳转到登录页面
+    console.log(`用户未登录，跳转到登录页面`)
+    router.push('/login')
+    return
+  }
+
+  // 根据不同行业跳转到相应的仪表板页面
+  if (industryId === 'steel') {
+    // 钢铁行业跳转到独立的5174端口应用
+    window.location.href = 'http://localhost:5174/dashboard/steel'
+    console.log(`跳转到${getIndustryName(industryId)}行业仪表板: http://localhost:5174/dashboard/steel`)
+  } else {
+    // 其他行业在当前应用内跳转
+    router.push(`/dashboard/${industryId}`)
+    console.log(`跳转到${getIndustryName(industryId)}行业仪表板: /dashboard/${industryId}`)
+  }
 }
 
 // 选择厂区并在Unity WebGL中显示相应视图
@@ -620,10 +641,6 @@ const rotateCounterclockwise = () => {
 
 <template>
   <div class="industry-selection-container">
-    <header class="header">
-      <h1 class="title">全域互联的工业智能体协同平台</h1>
-    </header>
-
     <!-- 链接信息弹窗 -->
     <div v-if="showLinkDialog" class="link-dialog-overlay" @click.self="showLinkDialog = false">
       <div class="link-dialog">
@@ -874,28 +891,13 @@ const rotateCounterclockwise = () => {
   overflow: hidden; /* 防止主容器上出现滚动条 */
 }
 
-.header {
-  text-align: center;
-  padding: 15px 0;
-  background-color: rgba(0, 0, 0, 0.2); /* 稍微透明的黑色 */
-  flex-shrink: 0; /* 防止头部收缩 */
-}
-
-.title {
-  margin: 0;
-  font-size: 28px; /* 调整大小 */
-  color: #e0e0e0; /* 较浅的文字颜色 */
-  font-weight: bold;
-  text-shadow: 0 0 8px rgba(64, 158, 255, 0.7); /* 调整阴影 */
-}
-
 .main-content {
   flex: 0.95; /* 占据剩余垂直空间 */
   display: flex;
   gap: 15px; /* 增加间距 */
   padding: 15px; /* 增加内边距 */
   overflow: hidden; /* 尽可能防止内部滚动条 */
-  height: calc(100vh - 75px); /* 明确的高度计算 */
+  height: calc(100vh - 60px); /* 明确的高度计算，AppHeader高度为60px */
   box-sizing: border-box; /* 确保内边距计入总高度 */
 }
 
@@ -1465,10 +1467,6 @@ const rotateCounterclockwise = () => {
     width: 100%; /* 占据全部宽度 */
     height: 40vh; /* 示例固定高度 */
   }
-
-  .title {
-    font-size: 24px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -1478,10 +1476,6 @@ const rotateCounterclockwise = () => {
 
   .chat-container {
     height: 45vh; /* 调整高度 */
-  }
-
-  .title {
-    font-size: 20px;
   }
 
   .chat-message {

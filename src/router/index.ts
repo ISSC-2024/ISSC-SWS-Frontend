@@ -21,10 +21,15 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/dashboard',
+    path: '/dashboard/:industry',
     name: 'Dashboard',
     component: DashboardView,
     meta: { requiresAuth: true },
+    props: true, // 将路由参数作为props传递给组件
+  },
+  {
+    path: '/dashboard',
+    redirect: '/dashboard/chemical', // 默认重定向到化工行业
   },
 ]
 
