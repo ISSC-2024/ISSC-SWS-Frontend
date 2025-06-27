@@ -1,0 +1,5 @@
+Strive to use mature, modern, and best-practice approaches, including the use of third-party libraries.
+Prioritize reusing existing components and avoid reinventing the wheel.
+Avoid duplicating code within the project. Instead, abstract and reuse it.
+Focus on writing maintainable and reusable code, with a keen eye on performance.
+All code should be purposeful and free of redundancy. Maintaining a high standard of code cleanliness is required.
