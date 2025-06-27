@@ -10,6 +10,19 @@ import ChartCarousel from '../components/layouts/ChartCarousel.vue'
 import EventResponseRadarChart from '../components/charts/EventResponseRadarChart.vue'
 import ChemicalKnowledgeGraph from '../components/charts/ChemicalKnowledgeGraph.vue'
 import ScrollingRegionList from '../components/charts/ScrollingRegionList.vue'
+import { onMounted } from 'vue'
+
+// 接收路由参数
+const props = defineProps<{
+  industry: string
+}>()
+
+// 组件挂载时打印当前行业信息
+onMounted(() => {
+  console.log(`当前仪表板行业: ${props.industry}`)
+  // 确保sessionStorage中的行业信息与路由参数一致
+  sessionStorage.setItem('selectedIndustry', props.industry)
+})
 </script>
 
 <template>
