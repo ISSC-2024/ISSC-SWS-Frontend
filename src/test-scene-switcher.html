@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行业选择组件测试</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #0c1e3e;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #1890ff, #40a9ff);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background: linear-gradient(135deg, #337ecc, #529b2e);
+        }
+        .info {
+            background: rgba(64, 169, 255, 0.1);
+            border: 1px solid rgba(64, 169, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>SceneSwitcher 组件测试页面</h1>
+        
+        <div class="info">
+            <h3>组件修改完成！</h3>
+            <p>✅ 已将 SceneSwitcher.vue 组件成功改造为行业选择跳转页面</p>
+            
+            <h4>主要功能：</h4>
+            <ul>
+                <li>🎯 四个行业选项：化工、钢铁、新能源、制药</li>
+                <li>🎨 卡片式选择界面，支持单选</li>
+                <li>🔄 智能跳转逻辑：钢铁行业外部跳转，其他内部路由</li>
+                <li>🔐 登录状态检查</li>
+                <li>⚡ 加载状态和错误处理</li>
+                <li>📱 响应式设计</li>
+            </ul>
+            
+            <h4>跳转逻辑：</h4>
+            <ul>
+                <li><strong>化工行业：</strong> /dashboard/chemical (内部路由)</li>
+                <li><strong>钢铁行业：</strong> http://localhost:5174/dashboard/steel (外部跳转)</li>
+                <li><strong>新能源行业：</strong> /dashboard/newEnergy (内部路由)</li>
+                <li><strong>制药行业：</strong> /dashboard/pharmaceutical (内部路由)</li>
+            </ul>
+            
+            <h4>用户体验优化：</h4>
+            <ul>
+                <li>🎨 美观的卡片式设计，与项目整体风格一致</li>
+                <li>✨ 选中状态明显，带有动画效果</li>
+                <li>🔄 加载状态显示，防止重复点击</li>
+                <li>⚠️ 完善的错误提示和验证</li>
+                <li>📱 移动端适配</li>
+            </ul>
+        </div>
+        
+        <div class="info">
+            <h4>使用方法：</h4>
+            <p>在需要显示行业选择的地方引入并使用 SceneSwitcher 组件：</p>
+            <pre><code>&lt;SceneSwitcher 
+  v-if="showSceneSwitcher" 
+  @close="showSceneSwitcher = false"
+  @show-tip="handleShowTip"
+/&gt;</code></pre>
+        </div>
+    </div>
+</body>
+</html>
