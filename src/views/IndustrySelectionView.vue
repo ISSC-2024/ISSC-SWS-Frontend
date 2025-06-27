@@ -321,8 +321,8 @@ const selectIndustry = (industryId: string): void => {
   // 根据不同行业跳转到相应的仪表板页面
   if (industryId === 'steel') {
     // 钢铁行业跳转到独立的5174端口应用
-    window.location.href = 'http://localhost:5174/dashboard'
-    console.log(`跳转到${getIndustryName(industryId)}行业仪表板: http://localhost:5174/dashboard`)
+    window.location.href = 'http://localhost:5174/dashboard/steel'
+    console.log(`跳转到${getIndustryName(industryId)}行业仪表板: http://localhost:5174/dashboard/steel`)
   } else {
     // 其他行业在当前应用内跳转
     router.push(`/dashboard/${industryId}`)
