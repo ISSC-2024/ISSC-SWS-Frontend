@@ -52,7 +52,7 @@ export const DEMO_CONFIG: DemoConfig = {
     useDefaultIndicators: true,
     enabledTools: ['debate'], // 只启用多智能体辩论评价
   },
-  thinkingMessage: '正在执行专家评估流程...',
+  thinkingMessage: '',
   finalThinking: '专家评估已完成',
   minDelay: 30000,
   maxDelay: 40000,
