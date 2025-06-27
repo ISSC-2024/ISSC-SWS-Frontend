@@ -93,7 +93,7 @@ export const checkDemoQuestion = (question: string): DemoQuestionConfig | null =
  * @returns 演示响应结果
  */
 export const handleDemoQuestion = async (
-  question: string,
+  _question: string,
   demoConfig: DemoQuestionConfig,
   updateThinkingCallback: (thinking: string) => void,
 ): Promise<{ thinking: string; response: string }> => {

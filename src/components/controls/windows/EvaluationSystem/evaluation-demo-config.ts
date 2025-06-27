@@ -290,7 +290,7 @@ export const checkDemoCondition = (evaluationData: any): DemoConfig | null => {
  * @returns 演示处理结果
  */
 export const handleDemoEvaluation = async (
-  evaluationData: any,
+  _evaluationData: any,
   demoConfig: DemoConfig,
   onMessage: (msg: any) => void,
 ): Promise<void> => {
