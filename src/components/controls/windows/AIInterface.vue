@@ -642,8 +642,8 @@ const renameConversationWithoutPrompt = async (conversationId: number, title: st
 }
 
 // ==================== 演示逻辑模块 ====================
-// 注意：这是演示功能，可以通过删除 demo-config.ts 文件或注释下面的导入来禁用演示功能
-import { checkDemoQuestion, handleDemoQuestion } from './demo-config'
+// 注意：这是演示功能，可以通过删除或修改 src/config/demo.config.ts 文件来禁用或配置演示功能
+import { checkDemoQuestion, handleDemoQuestion } from '@/config/demo.config'
 // ==================== 演示逻辑模块结束 ====================
 
 // 发送消息处理函数

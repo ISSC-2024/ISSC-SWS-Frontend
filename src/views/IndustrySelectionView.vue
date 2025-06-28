@@ -11,6 +11,7 @@ import EvaluationConfigFlow from '../components/controls/windows/EvaluationSyste
 import EvaluationSystemAPI from '../apis/EvaluationSystem'
 import MarkdownRenderer from '../components/common/MarkdownRenderer.vue'
 import AuthService from '../services/AuthService'
+import { checkEvaluationDemoCondition, handleEvaluationDemo } from '@/config/demo.config'
 
 // 定义类型接口
 interface Industry {
@@ -476,12 +477,6 @@ const handleEvaluationSubmit = async (evaluationData: any) => {
   // 隐藏配置界面，显示"正在思考"消息
   showEvaluationFlow.value = false
 
-  // 添加思考消息到聊天记录
-  chatHistory.value.push({
-    role: 'assistant',
-    content: '正在思考并生成评价报告...',
-  })
-
   // 开始评估
   isEvaluating.value = true
   evalError.value = ''
@@ -489,26 +484,57 @@ const handleEvaluationSubmit = async (evaluationData: any) => {
   abortController.value = new AbortController()
 
   try {
-    await EvaluationSystemAPI.evalLLMStream(
-      evaluationData,
-      (msg: any) => {
-        // 处理流式消息
-        if (msg?.type === 'expert_response') {
-          evalResultMarkdown.value += `\n**专家：${msg.expert_name}**（第${msg.round}轮）\n\n${msg.response}\n\n---\n`
-        } else if (msg?.type === 'summary') {
-          evalResultMarkdown.value += `\n## 🏁 最终报告\n\n${msg.content}\n\n`
-        } else if (msg?.content) {
-          evalResultMarkdown.value += msg.content
-        }
+    // ==================== 演示逻辑检查 ====================
+    const demoConfig = checkEvaluationDemoCondition(evaluationData)
+    if (demoConfig) {
+      // 处理演示评估
+      console.log('触发演示逻辑，使用预设评估结果')
 
-        // 更新聊天记录中的最后一条消息
-        if (chatHistory.value.length > 0) {
-          const lastIndex = chatHistory.value.length - 1
-          chatHistory.value[lastIndex].content = evalResultMarkdown.value
+      // 添加初始消息
+      const initialMessage = demoConfig.thinkingMessage || '正在思考并生成评价报告...'
+      chatHistory.value.push({
+        role: 'assistant',
+        content: initialMessage,
+      })
+
+      await handleEvaluationDemo(evaluationData, demoConfig, (msg: any) => {
+        console.log('演示消息:', msg)
+        const lastIndex = chatHistory.value.length - 1
+        if (lastIndex >= 0) {
+          if (msg?.type === 'demo_result') {
+            chatHistory.value[lastIndex].content = msg.content
+          }
         }
-      },
-      { signal: abortController.value.signal },
-    )
+      })
+    } else {
+      // ==================== 正常API调用逻辑 ====================
+      // 添加思考消息到聊天记录
+      chatHistory.value.push({
+        role: 'assistant',
+        content: '正在思考并生成评价报告...',
+      })
+
+      await EvaluationSystemAPI.evalLLMStream(
+        evaluationData,
+        (msg: any) => {
+          // 处理流式消息
+          if (msg?.type === 'expert_response') {
+            evalResultMarkdown.value += `\n**专家：${msg.expert_name}**（第${msg.round}轮）\n\n${msg.response}\n\n---\n`
+          } else if (msg?.type === 'summary') {
+            evalResultMarkdown.value += `\n## 🏁 最终报告\n\n${msg.content}\n\n`
+          } else if (msg?.content) {
+            evalResultMarkdown.value += msg.content
+          }
+
+          // 更新聊天记录中的最后一条消息
+          if (chatHistory.value.length > 0) {
+            const lastIndex = chatHistory.value.length - 1
+            chatHistory.value[lastIndex].content = evalResultMarkdown.value
+          }
+        },
+        { signal: abortController.value.signal },
+      )
+    }
   } catch (err: any) {
     if (err?.name === 'AbortError') {
       evalError.value = '已中断评估。'

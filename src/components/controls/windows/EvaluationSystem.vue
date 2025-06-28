@@ -11,8 +11,8 @@ import EvalReport from './EvaluationSystem/EvalReport.vue'
 import EvaluationConfigFlow from './EvaluationSystem/EvaluationConfigFlow.vue'
 
 // ==================== 演示逻辑模块 ====================
-// 注意：这是演示功能，可以通过删除 evaluation-demo-config.ts 文件或注释下面的导入来禁用演示功能
-import { checkDemoCondition, handleDemoEvaluation } from './EvaluationSystem/evaluation-demo-config'
+// 注意：这是演示功能，可以通过删除或修改 src/config/demo.config.ts 文件来禁用或配置演示功能
+import { checkEvaluationDemoCondition, handleEvaluationDemo } from '@/config/demo.config'
 // ==================== 演示逻辑模块结束 ====================
 
 // 定义组件向外发出的事件
@@ -47,11 +47,11 @@ const startEvaluation = async (evaluationData: any) => {
 
   try {
     // ==================== 演示逻辑检查 ====================
-    const demoConfig = checkDemoCondition(evaluationData)
+    const demoConfig = checkEvaluationDemoCondition(evaluationData)
     if (demoConfig) {
       // 处理演示评估
       console.log('触发演示逻辑，使用预设评估结果')
-      await handleDemoEvaluation(evaluationData, demoConfig, (msg: any) => {
+      await handleEvaluationDemo(evaluationData, demoConfig, (msg: any) => {
         console.log('演示消息:', msg)
         if (msg?.type === 'demo_result') {
           evalResultMarkdown.value = msg.content
