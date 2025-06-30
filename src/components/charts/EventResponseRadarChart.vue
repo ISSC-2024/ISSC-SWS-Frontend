@@ -13,19 +13,43 @@
  *
  * 支持图表展开/收起状态的响应式调整
  */
-import { ref, onMounted, inject, computed, watch, onBeforeUnmount } from 'vue'
+import { ref, onMounted, inject, computed, watch, onBeforeUnmount, nextTick } from 'vue'
 import type { Ref } from 'vue'
 import * as echarts from 'echarts'
 
-// 导入所有算法结果文件
-import mappo005 from '@/mock/MAPPO/0.005_1000.json'
-import mappo001 from '@/mock/MAPPO/0.001_1000.json'
-import maddpg005 from '@/mock/MADDPG/0.005_1000.json'
-import maddpg001 from '@/mock/MADDPG/0.001_1000.json'
-import iqlearning005 from '@/mock/IQL/0.005_1000.json'
-import iqlearning001 from '@/mock/IQL/0.001_1000.json'
-import dqn005 from '@/mock/DQN/0.005_1000.json'
-import dqn001 from '@/mock/DQN/0.001_1000.json'
+// 动态加载算法结果文件
+const algorithmData = ref<Record<string, any>>({})
+const isLoading = ref(true)
+
+// 加载算法数据的函数
+const loadAlgorithmData = async () => {
+  isLoading.value = true
+  const dataFiles = [
+    { key: 'mappo005', path: '/mock/MAPPO/0.005_1000.json' },
+    { key: 'mappo001', path: '/mock/MAPPO/0.001_1000.json' },
+    { key: 'maddpg005', path: '/mock/MADDPG/0.005_1000.json' },
+    { key: 'maddpg001', path: '/mock/MADDPG/0.001_1000.json' },
+    { key: 'iqlearning005', path: '/mock/IQL/0.005_1000.json' },
+    { key: 'iqlearning001', path: '/mock/IQL/0.001_1000.json' },
+    { key: 'dqn005', path: '/mock/DQN/0.005_1000.json' },
+    { key: 'dqn001', path: '/mock/DQN/0.001_1000.json' },
+  ]
+
+  for (const file of dataFiles) {
+    try {
+      const response = await fetch(file.path)
+      if (response.ok) {
+        algorithmData.value[file.key] = await response.json()
+      } else {
+        console.warn(`无法加载算法数据文件: ${file.path}`)
+      }
+    } catch (error) {
+      console.error(`加载算法数据文件失败: ${file.path}`, error)
+    }
+  }
+
+  isLoading.value = false
+}
 
 // 为每个算法分配不同颜色
 const algorithmColors = {
@@ -40,7 +64,7 @@ const algorithmColors = {
 }
 
 // 准备算法性能指标数据
-const responseData = {
+const responseData = computed(() => ({
   indicators: [
     { name: '响应时间', max: 25000 },
     { name: '响应及时性', max: 1 },
@@ -51,94 +75,110 @@ const responseData = {
   data: [
     {
       name: 'MAPPO (0.005)',
-      values: [
-        mappo005.performance.response_time,
-        Math.abs(mappo005.performance.response_timeliness),
-        mappo005.performance.response_quality,
-        mappo005.performance.resource_utilization,
-        mappo005.performance.event_completion_rate,
-      ],
+      values: algorithmData.value.mappo005?.performance
+        ? [
+            algorithmData.value.mappo005.performance.response_time,
+            Math.abs(algorithmData.value.mappo005.performance.response_timeliness),
+            algorithmData.value.mappo005.performance.response_quality,
+            algorithmData.value.mappo005.performance.resource_utilization,
+            algorithmData.value.mappo005.performance.event_completion_rate,
+          ]
+        : [0, 0, 0, 0, 0],
       color: algorithmColors['MAPPO (0.005)'],
     },
     {
       name: 'MAPPO (0.001)',
-      values: [
-        mappo001.performance.response_time,
-        Math.abs(mappo001.performance.response_timeliness),
-        mappo001.performance.response_quality,
-        mappo001.performance.resource_utilization,
-        mappo001.performance.event_completion_rate,
-      ],
+      values: algorithmData.value.mappo001?.performance
+        ? [
+            algorithmData.value.mappo001.performance.response_time,
+            Math.abs(algorithmData.value.mappo001.performance.response_timeliness),
+            algorithmData.value.mappo001.performance.response_quality,
+            algorithmData.value.mappo001.performance.resource_utilization,
+            algorithmData.value.mappo001.performance.event_completion_rate,
+          ]
+        : [0, 0, 0, 0, 0],
       color: algorithmColors['MAPPO (0.001)'],
     },
     {
       name: 'MADDPG (0.005)',
-      values: [
-        maddpg005.performance.response_time,
-        Math.abs(maddpg005.performance.response_timeliness),
-        maddpg005.performance.response_quality,
-        maddpg005.performance.resource_utilization,
-        maddpg005.performance.event_completion_rate,
-      ],
+      values: algorithmData.value.maddpg005?.performance
+        ? [
+            algorithmData.value.maddpg005.performance.response_time,
+            Math.abs(algorithmData.value.maddpg005.performance.response_timeliness),
+            algorithmData.value.maddpg005.performance.response_quality,
+            algorithmData.value.maddpg005.performance.resource_utilization,
+            algorithmData.value.maddpg005.performance.event_completion_rate,
+          ]
+        : [0, 0, 0, 0, 0],
       color: algorithmColors['MADDPG (0.005)'],
     },
     {
       name: 'MADDPG (0.001)',
-      values: [
-        maddpg001.performance.response_time,
-        Math.abs(maddpg001.performance.response_timeliness),
-        maddpg001.performance.response_quality,
-        maddpg001.performance.resource_utilization,
-        maddpg001.performance.event_completion_rate,
-      ],
+      values: algorithmData.value.maddpg001?.performance
+        ? [
+            algorithmData.value.maddpg001.performance.response_time,
+            Math.abs(algorithmData.value.maddpg001.performance.response_timeliness),
+            algorithmData.value.maddpg001.performance.response_quality,
+            algorithmData.value.maddpg001.performance.resource_utilization,
+            algorithmData.value.maddpg001.performance.event_completion_rate,
+          ]
+        : [0, 0, 0, 0, 0],
       color: algorithmColors['MADDPG (0.001)'],
     },
     {
       name: 'IQL (0.005)',
-      values: [
-        iqlearning005.performance.response_time,
-        Math.abs(iqlearning005.performance.response_timeliness),
-        iqlearning005.performance.response_quality,
-        iqlearning005.performance.resource_utilization,
-        iqlearning005.performance.event_completion_rate,
-      ],
+      values: algorithmData.value.iqlearning005?.performance
+        ? [
+            algorithmData.value.iqlearning005.performance.response_time,
+            Math.abs(algorithmData.value.iqlearning005.performance.response_timeliness),
+            algorithmData.value.iqlearning005.performance.response_quality,
+            algorithmData.value.iqlearning005.performance.resource_utilization,
+            algorithmData.value.iqlearning005.performance.event_completion_rate,
+          ]
+        : [0, 0, 0, 0, 0],
       color: algorithmColors['IQL (0.005)'],
     },
     {
       name: 'IQL (0.001)',
-      values: [
-        iqlearning001.performance.response_time,
-        Math.abs(iqlearning001.performance.response_timeliness),
-        iqlearning001.performance.response_quality,
-        iqlearning001.performance.resource_utilization,
-        iqlearning001.performance.event_completion_rate,
-      ],
+      values: algorithmData.value.iqlearning001?.performance
+        ? [
+            algorithmData.value.iqlearning001.performance.response_time,
+            Math.abs(algorithmData.value.iqlearning001.performance.response_timeliness),
+            algorithmData.value.iqlearning001.performance.response_quality,
+            algorithmData.value.iqlearning001.performance.resource_utilization,
+            algorithmData.value.iqlearning001.performance.event_completion_rate,
+          ]
+        : [0, 0, 0, 0, 0],
       color: algorithmColors['IQL (0.001)'],
     },
     {
       name: 'DQN (0.005)',
-      values: [
-        dqn005.performance.response_time,
-        Math.abs(dqn005.performance.response_timeliness),
-        dqn005.performance.response_quality,
-        dqn005.performance.resource_utilization,
-        dqn005.performance.event_completion_rate,
-      ],
+      values: algorithmData.value.dqn005?.performance
+        ? [
+            algorithmData.value.dqn005.performance.response_time,
+            Math.abs(algorithmData.value.dqn005.performance.response_timeliness),
+            algorithmData.value.dqn005.performance.response_quality,
+            algorithmData.value.dqn005.performance.resource_utilization,
+            algorithmData.value.dqn005.performance.event_completion_rate,
+          ]
+        : [0, 0, 0, 0, 0],
       color: algorithmColors['DQN (0.005)'],
     },
     {
       name: 'DQN (0.001)',
-      values: [
-        dqn001.performance.response_time,
-        Math.abs(dqn001.performance.response_timeliness),
-        dqn001.performance.response_quality,
-        dqn001.performance.resource_utilization,
-        dqn001.performance.event_completion_rate,
-      ],
+      values: algorithmData.value.dqn001?.performance
+        ? [
+            algorithmData.value.dqn001.performance.response_time,
+            Math.abs(algorithmData.value.dqn001.performance.response_timeliness),
+            algorithmData.value.dqn001.performance.response_quality,
+            algorithmData.value.dqn001.performance.resource_utilization,
+            algorithmData.value.dqn001.performance.event_completion_rate,
+          ]
+        : [0, 0, 0, 0, 0],
       color: algorithmColors['DQN (0.001)'],
     },
   ],
-}
+}))
 
 // 注入展开状态
 const isExpanded = inject<Ref<boolean>>('isChartExpanded', ref(false))
@@ -178,7 +218,7 @@ const updateChart = () => {
   if (!chartInstance) return
 
   const option: echarts.EChartsOption = {
-    color: responseData.data.map((item) => item.color),
+    color: responseData.value.data.map((item) => item.color),
     tooltip: {
       trigger: 'item',
       confine: false,
@@ -186,7 +226,7 @@ const updateChart = () => {
       className: 'event-radar-tooltip',
       formatter: (params: any) => {
         const { name, value } = params
-        const indicators = responseData.indicators
+        const indicators = responseData.value.indicators
         let result = `<div style="font-weight:bold;margin-bottom:8px;font-size:14px;color:#ffffff;">${name}</div>`
         result += '<div style="display:table;width:100%;">'
         value.forEach((val: number, index: number) => {
@@ -210,7 +250,7 @@ const updateChart = () => {
         'border-radius: 8px; backdrop-filter: blur(6px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(32, 160, 255, 0.15);',
     },
     legend: {
-      data: responseData.data.map((item) => item.name),
+      data: responseData.value.data.map((item) => item.name),
       bottom: isExpanded.value ? 15 : 10,
       itemWidth: isExpanded.value ? 12 : 10,
       itemHeight: isExpanded.value ? 12 : 10,
@@ -226,7 +266,7 @@ const updateChart = () => {
       borderWidth: 1,
     },
     radar: {
-      indicator: responseData.indicators.map((indicator) => ({
+      indicator: responseData.value.indicators.map((indicator) => ({
         name: indicator.name,
         max: indicator.max,
       })),
@@ -275,7 +315,7 @@ const updateChart = () => {
       {
         type: 'radar',
         symbolSize: isExpanded.value ? 6 : 4,
-        data: responseData.data.map((item) => ({
+        data: responseData.value.data.map((item) => ({
           value: item.values,
           name: item.name,
           symbol: 'circle',
@@ -375,10 +415,39 @@ watch(isExpanded, () => {
   }
 })
 
+// 监听算法数据变化，更新图表
+watch(
+  algorithmData,
+  () => {
+    if (chartInstance && !isLoading.value) {
+      updateChart()
+    }
+  },
+  { deep: true },
+)
+
+// 监听加载状态变化，在数据加载完成后初始化图表
+watch(isLoading, async (newLoading) => {
+  if (!newLoading) {
+    // 等待DOM更新
+    await nextTick()
+    if (chartRef.value && !chartInstance) {
+      initChart()
+    }
+  }
+})
+
 // 组件挂载时初始化图表
-onMounted(() => {
+onMounted(async () => {
   addGlobalStyle()
-  initChart()
+
+  // 确保DOM元素存在，先初始化图表容器
+  await nextTick()
+
+  // 加载算法数据
+  await loadAlgorithmData()
+
+  // 数据加载完成后，initChart会通过watch自动调用
 
   // 添加窗口大小变化监听
   window.addEventListener('resize', () => {
@@ -430,8 +499,15 @@ const chartStyle = computed(() => {
       </div>
     </div>
 
-    <!-- 雷达图 -->
-    <div class="event-response-radar-chart" ref="chartRef" :style="chartStyle"></div>
+    <!-- 雷达图内容区域 -->
+    <div class="chart-content">
+      <!-- 加载状态提示 -->
+      <div v-if="isLoading" class="loading-indicator">
+        <span>正在加载数据...</span>
+      </div>
+      <!-- 雷达图 -->
+      <div v-show="!isLoading" class="event-response-radar-chart" ref="chartRef" :style="chartStyle"></div>
+    </div>
   </div>
 </template>
 
@@ -498,10 +574,31 @@ const chartStyle = computed(() => {
   filter: drop-shadow(0 0 5px rgba(32, 160, 255, 0.5));
 }
 
+/* 图表内容区域 */
+.chart-content {
+  flex: 1;
+  width: 100%;
+  height: calc(100% - 60px);
+  position: relative;
+  z-index: 2;
+}
+
+/* 加载状态指示器 */
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100%;
+  color: rgba(32, 160, 255, 0.7);
+  font-size: 16px;
+  text-align: center;
+}
+
 /* 雷达图样式 */
 .event-response-radar-chart {
   width: 100%;
-  flex: 1;
+  height: 100%;
   position: relative;
   backdrop-filter: blur(2px);
 }

@@ -30,7 +30,7 @@ const industries = [
     name: '钢铁',
     description: '钢铁行业生产管理与优化系统',
     icon: '🏭',
-    route: 'http://localhost:5174/dashboard/steel', // 外部跳转
+    route: 'http://150.158.82.42:5174/dashboard/steel', // 外部跳转
   },
   {
     id: 'newEnergy',
