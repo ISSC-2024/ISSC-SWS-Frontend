@@ -225,12 +225,17 @@ export const useAlgorithmStore = defineStore('algorithm', () => {
     }
   }
 
-  // 动态导入特定算法的数据文件
+  // 从public目录加载算法数据文件
   const importAlgorithmData = async (type: AlgorithmType) => {
     const path = getAlgorithmFilePath(type)
     try {
-      // 尝试使用当前参数导入
-      return await import(`../${path}`)
+      // 尝试使用当前参数加载
+      const response = await fetch(`/${path}`)
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+      const data = await response.json()
+      return { default: data }
     } catch (error) {
       console.warn(`找不到指定参数的算法数据文件: ${path}，尝试使用默认参数，error:`, error)
 
@@ -240,9 +245,14 @@ export const useAlgorithmStore = defineStore('algorithm', () => {
       // 使用默认参数重新尝试
       const defaultPath = getAlgorithmFilePath(type)
       try {
-        return await import(`../${defaultPath}`)
+        const response = await fetch(`/${defaultPath}`)
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
+        const data = await response.json()
+        return { default: data }
       } catch (defaultError) {
-        console.error(`导入算法数据文件失败: ${defaultPath}`, defaultError)
+        console.error(`加载算法数据文件失败: ${defaultPath}`, defaultError)
         return { default: null }
       }
     }

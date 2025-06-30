@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
 import MarkdownRenderer from '@/components/common/MarkdownRenderer.vue'
 
 const props = defineProps<{
@@ -12,23 +11,32 @@ const emit = defineEmits<{
   (e: 'back-summary'): void
 }>()
 
-// 导出评估结果为markdown文件
-const exportMarkdown = () => {
+// 导出评估结果为PDF文件
+const exportPDF = async () => {
   if (!props.markdown || props.isEvaluating) return
 
-  const blob = new Blob([props.markdown], { type: 'text/markdown' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
+  try {
+    // 生成文件名
+    const date = new Date()
+    const fileName = `evaluation-result-${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}.pdf`
 
-  const date = new Date()
-  const fileName = `evaluation-result-${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}.md`
+    // 临时使用 Markdown 文件导出，稍后会改为 PDF
+    const blob = new Blob([props.markdown], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
 
-  link.href = url
-  link.download = fileName
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
+    link.href = url
+    link.download = fileName.replace('.pdf', '.md') // 临时改为 .md
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+
+    console.log('临时导出为 Markdown 文件，正在准备 PDF 导出功能...')
+  } catch (error) {
+    console.error('导出失败:', error)
+    alert('导出失败，请稍后重试')
+  }
 }
 </script>
 
@@ -37,8 +45,8 @@ const exportMarkdown = () => {
     <div class="eval-result-header">
       <span class="eval-title">专家评估结果</span>
       <div class="eval-actions">
-        <button class="export-button" @click="exportMarkdown" :disabled="isEvaluating || !!evalError">
-          <span class="button-icon">⬇️</span> 导出结果
+        <button class="export-button" @click="exportPDF" :disabled="isEvaluating || !!evalError">
+          <span class="button-icon">📄</span> 导出PDF
         </button>
         <button class="back-edit-button" @click="() => emit('back-summary')">
           <span class="button-icon">⟲</span> 返回查看配置

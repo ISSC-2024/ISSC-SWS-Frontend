@@ -1,0 +1,474 @@
+{
+  "timestamp": "2025-04-05 22:02:51",
+  "risk_data": {
+    "workshop_risks": {
+      "合成车间": {
+        "risk_score": 0.5719435147713704,
+        "risk_factors": {
+          "equipment": 0.02827982653761163,
+          "process": 0.40780536387062993,
+          "environment": 0.2912830059991387,
+          "human": 0.9125688383212722
+        },
+        "historical_incidents": 1
+      },
+      "精制车间": {
+        "risk_score": 0.08966844236614313,
+        "risk_factors": {
+          "equipment": 0.6893572883607173,
+          "process": 0.5777621732805814,
+          "environment": 0.21582635682681028,
+          "human": 0.24851216794115472
+        },
+        "historical_incidents": 2
+      },
+      "包装车间": {
+        "risk_score": 0.24746274099869425,
+        "risk_factors": {
+          "equipment": 0.33801905623315576,
+          "process": 0.9543789281904915,
+          "environment": 0.7362518006401778,
+          "human": 0.26490376732513055
+        },
+        "historical_incidents": 1
+      },
+      "质检车间": {
+        "risk_score": 0.5511599623027029,
+        "risk_factors": {
+          "equipment": 0.7197655490653264,
+          "process": 0.6198925287321485,
+          "environment": 0.06666343689172427,
+          "human": 0.012867010796964506
+        },
+        "historical_incidents": 3
+      },
+      "仓储车间": {
+        "risk_score": 0.6811889768001694,
+        "risk_factors": {
+          "equipment": 0.5802679843032639,
+          "process": 0.7220400207418444,
+          "environment": 0.45684649001675304,
+          "human": 0.14495216709232828
+        },
+        "historical_incidents": 2
+      }
+    },
+    "risk_levels": {
+      "合成车间": "high",
+      "精制车间": "low",
+      "包装车间": "low",
+      "质检车间": "high",
+      "仓储车间": "high"
+    },
+    "priority_weights": {
+      "合成车间": 0.2727272727272727,
+      "精制车间": 0.09090909090909091,
+      "包装车间": 0.09090909090909091,
+      "质检车间": 0.2727272727272727,
+      "仓储车间": 0.2727272727272727
+    }
+  },
+  "resource_allocation": {
+    "personnel": {
+      "title": "人员分配",
+      "data": [
+        {
+          "name": "合成车间",
+          "value": 67.16691910584673,
+          "color": "#4CAF50"
+        },
+        {
+          "name": "精制车间",
+          "value": 68.04393265057882,
+          "color": "#2196F3"
+        },
+        {
+          "name": "包装车间",
+          "value": 64.6996758958632,
+          "color": "#FFC107"
+        },
+        {
+          "name": "质检车间",
+          "value": 69.39743194882332,
+          "color": "#9C27B0"
+        },
+        {
+          "name": "仓储车间",
+          "value": 70.6920403988879,
+          "color": "#FF5722"
+        }
+      ],
+      "subtypes": {
+        "technician": {
+          "title": "技术员",
+          "data": [
+            {
+              "name": "合成车间",
+              "value": 19.44195702222312,
+              "color": "#4CAF50"
+            },
+            {
+              "name": "精制车间",
+              "value": 18.29184992180042,
+              "color": "#2196F3"
+            },
+            {
+              "name": "包装车间",
+              "value": 18.27148282781572,
+              "color": "#FFC107"
+            },
+            {
+              "name": "质检车间",
+              "value": 16.815023371280137,
+              "color": "#9C27B0"
+            },
+            {
+              "name": "仓储车间",
+              "value": 17.179686856880597,
+              "color": "#FF5722"
+            }
+          ]
+        },
+        "manager": {
+          "title": "管理员",
+          "data": [
+            {
+              "name": "合成车间",
+              "value": 7.940053840619291,
+              "color": "#4CAF50"
+            },
+            {
+              "name": "精制车间",
+              "value": 8.484319958419121,
+              "color": "#2196F3"
+            },
+            {
+              "name": "包装车间",
+              "value": 8.903410261251699,
+              "color": "#FFC107"
+            },
+            {
+              "name": "质检车间",
+              "value": 9.169348737754294,
+              "color": "#9C27B0"
+            },
+            {
+              "name": "仓储车间",
+              "value": 10.502867201955599,
+              "color": "#FF5722"
+            }
+          ]
+        },
+        "maintenance": {
+          "title": "维修员",
+          "data": [
+            {
+              "name": "合成车间",
+              "value": 10.044967368182883,
+              "color": "#4CAF50"
+            },
+            {
+              "name": "精制车间",
+              "value": 14.215964916983504,
+              "color": "#2196F3"
+            },
+            {
+              "name": "包装车间",
+              "value": 12.432122605403649,
+              "color": "#FFC107"
+            },
+            {
+              "name": "质检车间",
+              "value": 15.290525636912868,
+              "color": "#9C27B0"
+            },
+            {
+              "name": "仓储车间",
+              "value": 13.016419472517105,
+              "color": "#FF5722"
+            }
+          ]
+        },
+        "operator": {
+          "title": "操作员",
+          "data": [
+            {
+              "name": "合成车间",
+              "value": 19.504196176755062,
+              "color": "#4CAF50"
+            },
+            {
+              "name": "精制车间",
+              "value": 28.593866864812767,
+              "color": "#2196F3"
+            },
+            {
+              "name": "包装车间",
+              "value": 23.458620481298304,
+              "color": "#FFC107"
+            },
+            {
+              "name": "质检车间",
+              "value": 21.026845307502136,
+              "color": "#9C27B0"
+            },
+            {
+              "name": "仓储车间",
+              "value": 17.416471169631734,
+              "color": "#FF5722"
+            }
+          ]
+        },
+        "safety": {
+          "title": "安全员",
+          "data": [
+            {
+              "name": "合成车间",
+              "value": 6.804180083631934,
+              "color": "#4CAF50"
+            },
+            {
+              "name": "精制车间",
+              "value": 6.261612083020755,
+              "color": "#2196F3"
+            },
+            {
+              "name": "包装车间",
+              "value": 5.9052578702007805,
+              "color": "#FFC107"
+            },
+            {
+              "name": "质检车间",
+              "value": 4.957769914774335,
+              "color": "#9C27B0"
+            },
+            {
+              "name": "仓储车间",
+              "value": 6.071180048372195,
+              "color": "#FF5722"
+            }
+          ]
+        }
+      }
+    },
+    "materials": {
+      "title": "物料分配",
+      "data": [
+        {
+          "name": "合成车间",
+          "value": 326.93810019291993,
+          "color": "#4CAF50"
+        },
+        {
+          "name": "精制车间",
+          "value": 330.6604689507185,
+          "color": "#2196F3"
+        },
+        {
+          "name": "包装车间",
+          "value": 354.2899432486122,
+          "color": "#FFC107"
+        },
+        {
+          "name": "质检车间",
+          "value": 343.80012425209776,
+          "color": "#9C27B0"
+        },
+        {
+          "name": "仓储车间",
+          "value": 344.3113633556512,
+          "color": "#FF5722"
+        }
+      ],
+      "subtypes": {
+        "raw_material": {
+          "title": "原料",
+          "data": [
+            {
+              "name": "合成车间",
+              "value": 227.89969860421934,
+              "color": "#4CAF50"
+            },
+            {
+              "name": "精制车间",
+              "value": 180.3846222542205,
+              "color": "#2196F3"
+            },
+            {
+              "name": "包装车间",
+              "value": 180.44192466491702,
+              "color": "#FFC107"
+            },
+            {
+              "name": "质检车间",
+              "value": 142.82810628008653,
+              "color": "#9C27B0"
+            },
+            {
+              "name": "仓储车间",
+              "value": 168.44564819655656,
+              "color": "#FF5722"
+            }
+          ]
+        },
+        "catalyst": {
+          "title": "催化剂",
+          "data": [
+            {
+              "name": "合成车间",
+              "value": 76.03066639984543,
+              "color": "#4CAF50"
+            },
+            {
+              "name": "精制车间",
+              "value": 74.7451759158979,
+              "color": "#2196F3"
+            },
+            {
+              "name": "包装车间",
+              "value": 80.95096701868326,
+              "color": "#FFC107"
+            },
+            {
+              "name": "质检车间",
+              "value": 74.38920828531236,
+              "color": "#9C27B0"
+            },
+            {
+              "name": "仓储车间",
+              "value": 93.88398238026107,
+              "color": "#FF5722"
+            }
+          ]
+        },
+        "storage": {
+          "title": "存储容量",
+          "data": [
+            {
+              "name": "合成车间",
+              "value": 87.89668326719212,
+              "color": "#4CAF50"
+            },
+            {
+              "name": "精制车间",
+              "value": 67.61378232404758,
+              "color": "#2196F3"
+            },
+            {
+              "name": "包装车间",
+              "value": 74.91671775770983,
+              "color": "#FFC107"
+            },
+            {
+              "name": "质检车间",
+              "value": 75.42196305987481,
+              "color": "#9C27B0"
+            },
+            {
+              "name": "仓储车间",
+              "value": 94.15085359117563,
+              "color": "#FF5722"
+            }
+          ]
+        }
+      }
+    },
+    "electricity": {
+      "title": "电力分配",
+      "data": [
+        {
+          "name": "合成车间",
+          "value": 470.72986438904826,
+          "color": "#4CAF50"
+        },
+        {
+          "name": "精制车间",
+          "value": 542.950100766388,
+          "color": "#2196F3"
+        },
+        {
+          "name": "包装车间",
+          "value": 510.85730059318587,
+          "color": "#FFC107"
+        },
+        {
+          "name": "质检车间",
+          "value": 567.0971080612896,
+          "color": "#9C27B0"
+        },
+        {
+          "name": "仓储车间",
+          "value": 508.36562619008816,
+          "color": "#FF5722"
+        }
+      ]
+    }
+  },
+  "optimization_summary": {
+    "total_resources": {
+      "personnel": 340.0,
+      "personnel_technician": 89.99999999999999,
+      "personnel_manager": 45.0,
+      "personnel_maintenance": 65.00000000000001,
+      "personnel_operator": 110.0,
+      "personnel_safety": 30.0,
+      "materials": 1699.9999999999995,
+      "materials_raw_material": 900.0,
+      "materials_catalyst": 400.0,
+      "materials_storage": 400.0,
+      "electricity": 2600.0000000000005
+    },
+    "risk_priority_weights": {
+      "合成车间": 0.2727272727272727,
+      "精制车间": 0.09090909090909091,
+      "包装车间": 0.09090909090909091,
+      "质检车间": 0.2727272727272727,
+      "仓储车间": 0.2727272727272727
+    },
+    "resource_interactions": {
+      "personnel_technician": {
+        "materials_raw_material": 0.06045491683572296,
+        "materials_catalyst": 0.09983694981366997,
+        "electricity": 0.03990333789624818
+      },
+      "personnel_manager": {
+        "personnel_operator": 0.07935765387471327,
+        "personnel_safety": 0.05976718426830425
+      },
+      "personnel_maintenance": {
+        "electricity": 0.08067782109196239,
+        "materials_storage": 0.039647975052027204
+      },
+      "personnel_operator": {
+        "materials_raw_material": 0.059917473347897536,
+        "electricity": -0.04018773181068263
+      },
+      "personnel_safety": {
+        "materials_catalyst": 0.08007263724408682
+      },
+      "materials_raw_material": {
+        "electricity": -0.059490833466898554
+      },
+      "materials_catalyst": {
+        "materials_raw_material": 0.11976068764472986,
+        "electricity": -0.07986172805855735,
+        "risk": -120.0
+      },
+      "materials_storage": {
+        "materials_raw_material": 0.040209949259766
+      },
+      "electricity": {
+        "materials_raw_material": 0.07932111128919808,
+        "materials_catalyst": 0.059896296043917996,
+        "risk": -520.0000000000001
+      }
+    }
+  },
+  "performance_metrics": {
+    "response_time": 6397.87,
+    "response_timeliness": 1.0,
+    "response_quality": 0.85,
+    "resource_utilization": 0.5,
+    "event_completion_rate": 0.95
+  }
+}

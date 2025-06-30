@@ -7,7 +7,7 @@
  * 支持多种链接类型：价值链、物流链、业务链
  * 实现节点和链接的交互效果
  */
-import { ref, onMounted, onUnmounted, inject, watch, defineEmits } from 'vue'
+import { ref, onMounted, onUnmounted, inject, watch } from 'vue'
 import * as echarts from 'echarts'
 
 // 定义组件事件

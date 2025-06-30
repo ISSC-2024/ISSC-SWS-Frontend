@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
+import { defineEmits } from 'vue'
 import MarkdownRenderer from '@/components/common/MarkdownRenderer.vue'
 
 const props = defineProps<{
