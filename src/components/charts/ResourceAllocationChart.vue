@@ -54,7 +54,7 @@ interface ResourceAllocationData {
 const typedResourceData = {
   personnel: {
     title: optimizationReport.resource_allocation.personnel.title,
-    data: optimizationReport.resource_allocation.personnel.data.map((item) => ({
+    data: optimizationReport.resource_allocation.personnel.data.map((item: any) => ({
       name: item.name,
       value: item.value,
       color: item.color,
@@ -62,7 +62,7 @@ const typedResourceData = {
   },
   materials: {
     title: optimizationReport.resource_allocation.materials.title,
-    data: optimizationReport.resource_allocation.materials.data.map((item) => ({
+    data: optimizationReport.resource_allocation.materials.data.map((item: any) => ({
       name: item.name,
       value: item.value,
       color: item.color,
@@ -70,7 +70,7 @@ const typedResourceData = {
   },
   electricity: {
     title: optimizationReport.resource_allocation.electricity.title,
-    data: optimizationReport.resource_allocation.electricity.data.map((item) => ({
+    data: optimizationReport.resource_allocation.electricity.data.map((item: any) => ({
       name: item.name,
       value: item.value,
       color: item.color,
